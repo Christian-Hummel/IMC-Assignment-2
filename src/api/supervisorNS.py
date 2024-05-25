@@ -1,8 +1,9 @@
 from flask import jsonify
-from flask_restx import Namespace, reqparse, Resource, fields, abort
+from flask_restx import Namespace, Resource, fields, abort
 
 from ..model.agency import Agency
-from ..model.supervisor import Supervisor
+#from ..model.supervisor import Supervisor
+from ..database import Employee
 
 
 supervisor_ns = Namespace("supervisor", description="Supervisor related operations")
@@ -47,11 +48,11 @@ class SupervisorAPI(Resource):
 
         #Create a new Supervisor and add it
 
-        new_supervisor = Supervisor(employee_id=id(self),
-                                    name=supervisor_ns.payload["name"],
-                                    address=supervisor_ns.payload["address"],
-                                    salary=supervisor_ns.payload["salary"],
-                                    nationality=supervisor_ns.payload["nationality"])
+        new_supervisor = Employee(employee_id=id(self),
+                                  name=supervisor_ns.payload["name"],
+                                  address=supervisor_ns.payload["address"],
+                                  salary=supervisor_ns.payload["salary"],
+                                  nationality=supervisor_ns.payload["nationality"])
 
         # set salary to a minimum if not set to a higher amount
         if new_supervisor.salary < 8000:
@@ -62,6 +63,8 @@ class SupervisorAPI(Resource):
             new_supervisor.email = f"{first}.{last}@hammertrips.com"
         else:
             return abort(400, message="Please insert your first and last name seperated by a space")
+        # set role to supervisor
+        new_supervisor.role = "supervisor"
 
         # transfer new supervisor to the agency
         Agency.get_instance().add_supervisor(new_supervisor)
