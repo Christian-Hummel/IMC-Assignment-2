@@ -3,3 +3,4 @@ flask-restx
 flask-sqlalchemy
 thread6
 SQLAlchemy~=2.0.30
+pytest
