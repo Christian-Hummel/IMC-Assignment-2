@@ -1,7 +1,7 @@
-from ..src.model.agency import Agency
-from ..src.model.supervisor import Supervisor
-from ..src.model.travelAgent import TravelAgent
-from ..src.database import Employee, Customer, Country, Activity, db
+from src.model.agency import Agency
+from src.model.supervisor import Supervisor
+from src.model.travelAgent import TravelAgent
+from src.database import Employee, Customer, Country, Activity, db
 
 
 def create_supervisors(agency: Agency):
