@@ -1,21 +1,16 @@
+import os
 from flask import Flask
 from flask_restx import Api
-import os
-
-
-
 from .model.agency import Agency
 from .database import db
 from .api.supervisorNS import supervisor_ns
 
-
-
 agency = Agency()
 
-def create_app():
+def create_app(database_uri="sqlite:///travelbase.db"):
     travelroute_app = Flask(__name__)
     # Configure the database
-    travelroute_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///travelbase.db'
+    travelroute_app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
 
     # Initialize database on app
     db.init_app(travelroute_app)
