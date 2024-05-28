@@ -21,3 +21,6 @@ def test_add_supervisor(client,agency):
 
 
     assert supervisor_response["name"] == "Warren Buffet"
+    assert supervisor_response["address"] == "103 Avenue, 4932 New York"
+    assert supervisor_response["salary"] == 20000
+    assert supervisor_response["nationality"] == "USA"
