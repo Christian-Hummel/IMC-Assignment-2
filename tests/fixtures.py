@@ -28,5 +28,5 @@ def agency(app):
         agency = Agency.get_instance()
         populate(agency)
 
-    yield agency
+        yield agency
 
