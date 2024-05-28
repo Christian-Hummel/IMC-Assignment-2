@@ -6,7 +6,17 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 # add database tables
 
-class Employee(db.Model):
+class Supervisor(db.Model):
+    employee_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50),nullable = False)
+    address = db.Column(db.String(100),nullable = False)
+    email = db.Column(db.String(100),nullable = False, unique=True)
+    salary = db.Column(db.Integer,nullable=False)
+    nationality = db.Column(db.String(20),nullable=False)
+    role = db.Column(db.String(20),nullable=False, default="supervisor")
+
+
+class TravelAgent(db.Model):
     employee_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50),nullable = False)
     address = db.Column(db.String(100),nullable = False)

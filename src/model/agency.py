@@ -1,13 +1,7 @@
 from typing import List, Union, Optional
 
-#from .travelAgent import TravelAgent
-#from .supervisor import Supervisor
-#from .customer import Customer
-#from .country import Country
-#from .activity import Activity
 
-
-from ..database import Employee, Customer, Country, Activity, db
+from ..database import Supervisor, TravelAgent, Customer, Country, Activity, db
 
 
 
@@ -26,7 +20,7 @@ class Agency(object):
 
 
 
-    def add_supervisor(self, new_supervisor:Employee):
+    def add_supervisor(self, new_supervisor:Supervisor):
 
         db.session.add(new_supervisor)
         db.session.commit()

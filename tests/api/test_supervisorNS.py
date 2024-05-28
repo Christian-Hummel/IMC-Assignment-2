@@ -1,6 +1,6 @@
 import pytest
 
-from src.database import db
+
 from tests.fixtures import app, client, agency
 
 def test_add_supervisor(client,agency):

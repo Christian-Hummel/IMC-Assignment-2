@@ -2,7 +2,7 @@ import pytest
 
 
 
-from src.database import Employee, Customer, Country, Activity, db
+from src.database import Supervisor, TravelAgent, Customer, Country, Activity, db
 
 
 
@@ -10,15 +10,15 @@ from tests.fixtures import app, client, agency
 
 
 def test_add_supervisor(agency):
-        before = Employee.query.count()
+        before = Supervisor.query.count()
 
-        new_supervisor = Employee(employee_id= 12, name="Terry Pratchett", address="Penny Lane 23, 1255 Liverpool",email="John.Grisham@hammertrips.com", salary=8000, nationality="England", role="supervisor")
+        new_supervisor = Supervisor(employee_id= 12, name="Terry Pratchett", address="Penny Lane 23, 1255 Liverpool",email="John.Grisham@hammertrips.com", salary=8000, nationality="England")
         agency.add_supervisor(new_supervisor)
 
-        supervisor = db.session.query(Employee).filter_by(employee_id = 12).first()
+        supervisor = db.session.query(Supervisor).filter_by(employee_id = 12).first()
 
 
-        assert Employee.query.count() == before + 1
+        assert Supervisor.query.count() == before + 1
 
         assert supervisor.employee_id == 12
         assert supervisor.name == "Terry Pratchett"

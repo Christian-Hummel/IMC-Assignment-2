@@ -2,8 +2,7 @@ from flask import jsonify
 from flask_restx import Namespace, Resource, fields, abort
 
 from ..model.agency import Agency
-#from ..model.supervisor import Supervisor
-from ..database import Employee
+from ..database import Supervisor
 
 
 supervisor_ns = Namespace("supervisor", description="Supervisor related operations")
@@ -48,7 +47,7 @@ class SupervisorAPI(Resource):
 
         #Create a new Supervisor and add it
 
-        new_supervisor = Employee(employee_id=id(self),
+        new_supervisor = Supervisor(employee_id=id(self),
                                   name=supervisor_ns.payload["name"],
                                   address=supervisor_ns.payload["address"],
                                   salary=supervisor_ns.payload["salary"],
