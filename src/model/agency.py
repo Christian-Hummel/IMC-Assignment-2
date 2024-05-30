@@ -32,4 +32,10 @@ class Agency(object):
         db.session.commit()
 
 
+    def add_travelagent(self, new_agent: TravelAgent):
+
+        db.session.add(new_agent)
+        db.session.commit()
+
+
 
