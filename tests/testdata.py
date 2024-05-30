@@ -76,9 +76,77 @@ def create_users(agency: Agency):
     db.session.add_all(users)
     db.session.commit()
 
+
+def create_agents(agency: Agency):
+    travel_agents = [
+        TravelAgent(employee_id=240, name="Christopher Lee", address="Arlington Boulevard 9, 3829 Chicago",
+                    email="Christopher.Lee@hammertrips.com", salary=3500, role="travelAgent", nationality="UK",
+                    supervisor_id=23),
+        TravelAgent(employee_id=245, name="Philipp Lienhart", address="Brauhausgasse 38, 3829 Freiburg",
+                    email="Philipp.Lienhart@hammertrips.com", salary=3900, role="travelAgent", nationality="Austria",
+                    supervisor_id=34),
+        TravelAgent(employee_id=250, name="John Doe", address="Main Street 5, 1234 Springfield",
+                    email="John.Doe@hammertrips.com", salary=3100, role="travelAgent", nationality="USA",
+                    supervisor_id=45),
+        TravelAgent(employee_id=255, name="Jane Smith", address="Elm Street 12, 5678 Gotham",
+                    email="Jane.Smith@hammertrips.com", salary=3200, role="travelAgent", nationality="Canada",
+                    supervisor_id=56),
+        TravelAgent(employee_id=260, name="Robert Brown", address="Oak Avenue 22, 9101 Metropolis",
+                    email="Robert.Brown@hammertrips.com", salary=3400, role="travelAgent", nationality="Australia",
+                    supervisor_id=67),
+        TravelAgent(employee_id=265, name="Emily Davis", address="Pine Lane 34, 1121 Smallville",
+                    email="Emily.Davis@hammertrips.com", salary=3300, role="travelAgent", nationality="Germany",
+                    supervisor_id=78),
+        TravelAgent(employee_id=270, name="Michael Johnson", address="Maple Road 45, 3141 Star City",
+                    email="Michael.Johnson@hammertrips.com", salary=3500, role="travelAgent", nationality="France",
+                    supervisor_id=89),
+        TravelAgent(employee_id=275, name="Sarah Wilson", address="Birch Boulevard 56, 5161 Central City",
+                    email="Sarah.Wilson@hammertrips.com", salary=3200, role="travelAgent", nationality="Italy",
+                    supervisor_id=91),
+        TravelAgent(employee_id=280, name="David Miller", address="Cedar Drive 67, 7181 Coast City",
+                    email="David.Miller@hammertrips.com", salary=3700, role="travelAgent", nationality="Spain",
+                    supervisor_id=102),
+        TravelAgent(employee_id=285, name="Emma Taylor", address="Willow Way 78, 9201 Bludhaven",
+                    email="Emma.Taylor@hammertrips.com", salary=3600, role="travelAgent", nationality="Japan",
+                    supervisor_id=113),
+        TravelAgent(employee_id=290, name="James Anderson", address="Aspen Avenue 89, 1122 Atlantis",
+                    email="James.Anderson@hammertrips.com", salary=3300, role="travelAgent", nationality="China",
+                    supervisor_id=124),
+        TravelAgent(employee_id=295, name="Olivia Thomas", address="Cypress Street 90, 3344 Wakanda",
+                    email="Olivia.Thomas@hammertrips.com", salary=3500, role="travelAgent", nationality="India",
+                    supervisor_id=135),
+        TravelAgent(employee_id=300, name="William Martinez", address="Redwood Lane 101, 5566 Asgard",
+                    email="William.Martinez@hammertrips.com", salary=3700, role="travelAgent", nationality="Brazil",
+                    supervisor_id=146),
+        TravelAgent(employee_id=305, name="Isabella Moore", address="Juniper Drive 112, 7788 Themyscira",
+                    email="Isabella.Moore@hammertrips.com", salary=3400, role="travelAgent", nationality="Mexico",
+                    supervisor_id=157),
+        TravelAgent(employee_id=310, name="Benjamin Harris", address="Olive Road 123, 9900 Nanda Parbat",
+                    email="Benjamin.Harris@hammertrips.com", salary=3600, role="travelAgent",
+                    nationality="South Africa", supervisor_id=168),
+        TravelAgent(employee_id=315, name="Sophia Clark", address="Spruce Street 134, 1112 Korugar",
+                    email="Sophia.Clark@hammertrips.com", salary=3700, role="travelAgent", nationality="Russia",
+                    supervisor_id=179),
+        TravelAgent(employee_id=320, name="Matthew Lewis", address="Chestnut Avenue 145, 3334 K'un-Lun",
+                    email="Matthew.Lewis@hammertrips.com", salary=3300, role="travelAgent", nationality="Netherlands",
+                    supervisor_id=190),
+        TravelAgent(employee_id=325, name="Charlotte Walker", address="Hickory Lane 156, 5556 Madripoor",
+                    email="Charlotte.Walker@hammertrips.com", salary=3100, role="travelAgent", nationality="Sweden",
+                    supervisor_id=201),
+        TravelAgent(employee_id=330, name="Elijah Young", address="Poplar Boulevard 167, 7778 Attilan",
+                    email="Elijah.Young@hammertrips.com", salary=3900, role="travelAgent", nationality="Norway",
+                    supervisor_id=23),
+        TravelAgent(employee_id=335, name="Amelia King", address="Alder Drive 178, 9990 Genosha",
+                    email="Amelia.King@hammertrips.com", salary=3400, role="travelAgent", nationality="Denmark",
+                    supervisor_id=34)
+    ]
+
+    db.session.add_all(travel_agents)
+    db.session.commit()
 def populate(agency: Agency):
     create_supervisors(agency)
     create_users(agency)
+    create_agents(agency)
 
 
 
