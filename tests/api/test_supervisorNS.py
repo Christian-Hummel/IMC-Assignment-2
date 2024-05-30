@@ -134,4 +134,31 @@ def test_supervisor_login(client, agency):
 
 
 def test_supervisor_login_errors(client,agency):
-    pass
+
+    login_response1 = client.post("/supervisor/login", json={
+        "username": "Ferdinand",
+        "password": "asdfasdg"
+    })
+
+    assert login_response1.status_code == 400
+
+    parsed_response1 = login_response1.get_json()
+    error1 = parsed_response1["message"]
+
+    assert error1 == "User does not exist"
+
+    login_response2 = client.post("/supervisor/login", json={
+        "username": "Tom",
+        "password": "1234"
+    })
+
+    assert login_response2.status_code == 400
+
+    parsed_response2 = login_response2.get_json()
+    error2 = parsed_response2["message"]
+
+    assert error2 == "Incorrect Password"
+
+
+
+
