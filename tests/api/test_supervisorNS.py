@@ -4,6 +4,8 @@ from src.database import Supervisor, TravelAgent, Customer, Country, Activity, U
 
 from tests.fixtures import app, client, agency
 
+from flask_jwt_extended import create_access_token
+
 
 def test_add_supervisor(client,agency):
 
@@ -160,5 +162,37 @@ def test_supervisor_login_errors(client,agency):
     assert error2 == "Incorrect Password"
 
 
+def test_add_agent(client,agency):
+
+    before = TravelAgent.query.count()
+
+    user = db.session.query(User).filter_by(id=13).first()
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    agent_response = client.post(f"/supervisor/{user.manager_id}/employee", headers=headers, json={
+        "name":"Keanu Reeves",
+        "address": "Runaway Street 24, 3829 Minnesota",
+        "salary": 3000,
+        "nationality": "USA"
+    })
 
 
+    assert agent_response.status_code == 200
+
+    parsed_agent = agent_response.get_json()
+    agent_response = parsed_agent["travelAgent"]
+
+    assert agent_response["name"] == "Keanu Reeves"
+    assert agent_response["address"] == "Runaway Street 24, 3829 Minnesota"
+    assert agent_response["email"] == "Keanu.Reeves@hammertrips.com"
+    assert agent_response["salary"] == 3000
+    assert agent_response["nationality"] == "USA"
+    assert agent_response["supervisor_id"] == 135
+
+
+    assert TravelAgent.query.count() == before + 1
