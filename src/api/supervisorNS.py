@@ -1,20 +1,20 @@
 from flask import jsonify
 from flask_restx import Namespace, Resource, fields, abort
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, current_user
 from werkzeug.security import generate_password_hash,check_password_hash
 
 from ..model.agency import Agency
 from ..database import Supervisor, User, db
 
-#authorizations = {
-    #"authorizationToken":{
-        #"type":"apiKey",
-        #"in": "header",
-        #"name": "Authorization"
-    #}
-#}
+authorizations = {
+    "authorizationToken":{
+        "type":"apiKey",
+        "in": "header",
+        "name": "Authorization"
+    }
+}
 
-supervisor_ns = Namespace("supervisor", description="Supervisor related operations")
+supervisor_ns = Namespace("supervisor", description="Supervisor related operations", authorizations=authorizations)
 
 supervisor_input_model = supervisor_ns.model("SupervisorInputModel", {
     "name" : fields.String(required=True,
@@ -125,5 +125,22 @@ class RegisterSupervisor(Resource):
             Agency.get_instance().register_user(new_user)
             new_user.id = db.session.query(User).count()
             return new_user
+
+
+@supervisor_ns.route("/login")
+class UserLogin(Resource):
+
+    @supervisor_ns.doc(login_model,description="Log in for accessing more functionality")
+    @supervisor_ns.expect(login_model,validate=True)
+    def post(self):
+
+        user = User.query.filter_by(username=supervisor_ns.payload["username"]).first()
+
+        if not user:
+            return abort(400, message="User does not exist")
+        elif not check_password_hash(user.password_hash, supervisor_ns.payload["password"]):
+            return abort(400, message="Incorrect password")
+        else:
+            return {"access_token": create_access_token(user)}
 
 
