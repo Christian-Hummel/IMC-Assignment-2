@@ -66,4 +66,40 @@ def test_register_supervisor(client,agency):
     assert user_response["username"] == "Mark"
 
 
+def test_register_supervisor_errors(client,agency):
+
+
+    supervisor = db.session.query(Supervisor).filter_by(employee_id=13).first()
+
+    supervisor_id = supervisor.employee_id
+
+    response = client.post(f"/supervisor/{supervisor_id}/register", json={
+        "username": "Harry",
+        "password": "Stylish"
+    })
+
+
+    response1 = client.post(f"/supervisor/{supervisor_id}/register", json={
+        "username": "Harry",
+        "password": "Music"
+    })
+
+    assert response1.status_code == 400
+
+    parsed=response1.get_json()
+    error_response1 = parsed["message"]
+
+    assert error_response1 == "This user already exists"
+
+    response2 = client.post(f"/supervisor/734/register", json={
+        "username": "Markus",
+        "password": "Styles"
+    })
+
+    assert response2.status_code == 400
+
+    parsed_nfound = response2.get_json()
+    error_response2 = parsed_nfound["message"]
+
+    assert error_response2 == "Supervisor not found"
 
