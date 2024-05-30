@@ -1,5 +1,5 @@
 from src.model.agency import Agency
-from src.database import Supervisor, TravelAgent, Customer, Country, Activity, db
+from src.database import Supervisor, TravelAgent, Customer, Country, Activity, User, db
 
 
 def create_supervisors(agency: Agency):
@@ -50,8 +50,35 @@ def create_supervisors(agency: Agency):
     db.session.add_all(supervisors)
     db.session.commit()
 
+
+def create_users(agency: Agency):
+    users = [
+        User(id=1, username="Harry", password_hash="4k5@Jz!r8pQs#7Hd", manager_id=12),
+        User(id=2, username="Emma", password_hash="B7d#2lPw!3Qh@z8M", manager_id=23),
+        User(id=3, username="Chris", password_hash="z&3Kf$9Qh4Pw@8Jn", manager_id=34),
+        User(id=4, username="Scarlett", password_hash="U1m#8zLp@5Fs$6Th", manager_id=45),
+        User(id=5, username="Tom", password_hash="R2j$7Ls!8Fw@9Mv#", manager_id=56),
+        User(id=6, username="Gal", password_hash="V3c#6Kd$8Qs!1Pf@", manager_id=67),
+        User(id=7, username="Robert", password_hash="X5n@4Pw$9Lf!2Zr#", manager_id=78),
+        User(id=8, username="Jennifer", password_hash="A6q$7Zr!3Mw@9Lf#", manager_id=89),
+        User(id=9, username="Ryan", password_hash="D8s#2Lq$5Mw!1Nv@", manager_id=91),
+        User(id=10, username="Natalie", password_hash="F4n!3Mv$7Qh@9Kr#", manager_id=102),
+        User(id=11, username="Benedict", password_hash="G5k#8Zr$4Lq!1Pw@", manager_id=113),
+        User(id=12, username="Anne", password_hash="J6m@9Pw$3Lf!2Kr#", manager_id=124),
+        User(id=13, username="Mark", password_hash="L2p$4Jr!8Mv@5Qs#", manager_id=135),
+        User(id=14, username="Margot", password_hash="N3k#7Zr$1Lq!9Pw@", manager_id=146),
+        User(id=15, username="Hugh", password_hash="Q8s!2Pw$6Lf#3Jr@", manager_id=157),
+        User(id=16, username="Emily", password_hash="T4m@1Kr$9Qh!7Lz#", manager_id=168),
+        User(id=17, username="Christian", password_hash="Y5c#8Mv$3Lf!1Jr@", manager_id=179),
+        User(id=18, username="Zoe", password_hash="Z2p$6Qh!4Ls@9Kr#", manager_id=190)
+    ]
+
+    db.session.add_all(users)
+    db.session.commit()
+
 def populate(agency: Agency):
     create_supervisors(agency)
+    create_users(agency)
 
 
 
