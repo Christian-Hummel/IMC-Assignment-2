@@ -168,13 +168,15 @@ def test_add_agent(client,agency):
 
     user = db.session.query(User).filter_by(id=13).first()
 
+    supervisor_id = user.manager_id
+
     access_token = create_access_token(user)
 
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
 
-    agent_response = client.post(f"/supervisor/{user.manager_id}/employee", headers=headers, json={
+    agent_response = client.post(f"/supervisor/{supervisor_id}/employee", headers=headers, json={
         "name":"Keanu Reeves",
         "address": "Runaway Street 24, 3829 Minnesota",
         "salary": 3000,
@@ -196,3 +198,44 @@ def test_add_agent(client,agency):
 
 
     assert TravelAgent.query.count() == before + 1
+
+
+def test_add_agent_errors(client,agency):
+
+    user = db.session.query(User).filter_by(id=15).first()
+
+    supervisor_id = user.manager_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response1 = client.post(f"/supervisor/{supervisor_id}/employee", headers=headers, json={
+        "name": "Franz",
+        "address":"Baumgartenweg 23, 4728 Kottingbrunn",
+        "salary": 2900,
+        "nationality": "Austria"
+    })
+
+    assert response1.status_code == 400
+
+    parsed_response1= response1.get_json()
+    error1 = parsed_response1["message"]
+
+    assert error1 == "Please insert your first and last name seperated by a space"
+
+    response2 = client.post(f"/supervisor/{supervisor_id}/employee", headers=headers, json={
+        "name": "Franz",
+        "address":"Baumgartenweg 23, 4728 Kottingbrunn",
+        "salary": 5000,
+        "nationality": "Austria"
+    })
+
+    assert response2.status_code == 400
+
+    parsed_response2 = response2.get_json()
+    error2 = parsed_response2["message"]
+
+    assert error2 == "Please enter a salary amount in Euro from 2000 to 4000"
