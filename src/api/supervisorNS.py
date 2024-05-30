@@ -45,6 +45,24 @@ supervisor_model = supervisor_ns.model("SupervisorModel", {
                                   help="The nationality of a supervisor, e.g. Spain")
 })
 
+
+supervisor_info_model = supervisor_ns.model("SupervisorInfoModel", {
+    "employee_id" : fields.Integer(required=True,
+                                   help="The unique identifier of a supervisor"),
+    "name" : fields.String(required=True,
+                           help="The name of a supervisor, e.g. Charlie Brown"),
+    "address" : fields.String(required=True,
+                              help="The address of a supervisor, e.g. King's Street 4, 2910 London"),
+    "email" : fields.String(required=True,
+                            help="The email address of a supervisor, e.g. Charlie.Brown@hammertrips.com"),
+    "salary" : fields.Integer(required=False,
+                              help="The monthly salary of a supervisor, e.g. 10000"),
+    "nationality" : fields.String(required=True,
+                                  help="The nationality of a supervisor, e.g. Spain"),
+    "nr_of_teammembers" : fields.Integer(required=True,
+                                         help="The number of people under his or her supervision")
+})
+
 login_model = supervisor_ns.model("LoginModel",{
     "username": fields.String(required=True,
                               help="username of a supervisor, e.g. Clark Kent"),
@@ -217,3 +235,18 @@ class EmployAgent(Resource):
 
         # return the supervisor
         return new_agent
+
+@supervisor_ns.route("/info")
+class SupervisorInfo(Resource):
+    method_decorators = [jwt_required()]
+
+    @supervisor_ns.doc(description="Information about a supervisor", security="authorizationToken")
+    @supervisor_ns.marshal_with(supervisor_info_model,envelope="supervisor")
+    def get(self):
+
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=current_user.manager_id).first()
+
+        supervisor.nr_of_teammembers = len(supervisor.teammembers)
+
+        return supervisor
