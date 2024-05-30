@@ -48,13 +48,13 @@ def test_add_supervisor_error(client, agency):
 
 def test_register_supervisor(client,agency):
 
-    supervisor = db.session.query(Supervisor).filter_by(employee_id=135).first()
+    supervisor = db.session.query(Supervisor).filter_by(employee_id=201).first()
 
     supervisor_id = supervisor.employee_id
 
     response = client.post(f"/supervisor/{supervisor_id}/register",json={
-        "username":"Mark",
-        "password":"Hulk"
+        "username":"Tommy",
+        "password":"Loki"
     })
 
     assert response.status_code == 200
@@ -62,8 +62,8 @@ def test_register_supervisor(client,agency):
     parsed = response.get_json()
     user_response = parsed["user"]
 
-    assert user_response["id"] == 1
-    assert user_response["username"] == "Mark"
+    assert user_response["id"] == 19
+    assert user_response["username"] == "Tommy"
 
 
 def test_register_supervisor_errors(client,agency):
@@ -71,7 +71,10 @@ def test_register_supervisor_errors(client,agency):
 
     supervisor = db.session.query(Supervisor).filter_by(employee_id=13).first()
 
+
     supervisor_id = supervisor.employee_id
+
+
 
     response = client.post(f"/supervisor/{supervisor_id}/register", json={
         "username": "Harry",
@@ -83,6 +86,7 @@ def test_register_supervisor_errors(client,agency):
         "username": "Harry",
         "password": "Music"
     })
+
 
     assert response1.status_code == 400
 
@@ -103,3 +107,31 @@ def test_register_supervisor_errors(client,agency):
 
     assert error_response2 == "Supervisor not found"
 
+
+def test_supervisor_login(client, agency):
+
+    supervisor = db.session.query(Supervisor).filter_by(employee_id=212).first()
+    supervisor_id = supervisor.employee_id
+
+    register_response = client.post(f"/supervisor/{supervisor_id}/register", json={
+        "username":"Karen",
+        "password":"asdfalhsdf"
+    })
+
+    register_parsed = register_response.get_json()
+    response_register = register_parsed["user"]
+    username = response_register["username"]
+
+
+    login_response = client.post("/supervisor/login", json={
+        "username": username,
+        "password": "asdfalhsdf"
+    })
+
+    assert login_response.status_code == 200
+
+
+
+
+def test_supervisor_login_errors(client,agency):
+    pass
