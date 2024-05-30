@@ -239,3 +239,22 @@ def test_add_agent_errors(client,agency):
     error2 = parsed_response2["message"]
 
     assert error2 == "Please enter a salary amount in Euro from 2000 to 4000"
+
+
+def test_get_supervisor_info(client,agency):
+
+    user = db.session.query(User).filter_by(id=14).first()
+
+    supervisor_id = user.manager_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+
+    supervisor_response = client.get("/supervisor/info", headers=headers)
+
+
+    assert supervisor_response.status_code == 200
