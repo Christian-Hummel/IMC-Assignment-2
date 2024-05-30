@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_tok
 from werkzeug.security import generate_password_hash,check_password_hash
 
 from ..model.agency import Agency
-from ..database import Supervisor, User, db
+from ..database import Supervisor, TravelAgent, User, db
 
 authorizations = {
     "authorizationToken":{
@@ -59,10 +59,37 @@ user_model = supervisor_ns.model("UserModel", {
                               help="username of a supervisor account")
 })
 
+employee_model = supervisor_ns.model("EmployeeModel", {
+    "name": fields.String(required=True,
+                          help="name of a travel agent e.g. Jonathan Franks"),
+    "address": fields.String(required=True,
+                             help="address of a travel agent e.g. Mysterious Road 44, 3829 Los Angeles"),
+    "salary": fields.Integer(required=False,
+                             help="monthly salary of a travel agent, e.g. 20000"),
+    "nationality": fields.String(required=True,
+                                 help="nationality of a travel Agent e.g. Ecuador")
+})
+
+employee_output_model = supervisor_ns.model("EmployeeOutputModel", {
+    "employee_id": fields.Integer(required=False,
+                                  help="the unique identifier of a travel agent"),
+    "name": fields.String(required=True,
+                          help="name of a travel agent e.g. Jonathan Franks"),
+    "address": fields.String(required=True,
+                             help="address of a travel agent e.g. Mysterious Road 44, 3829 Los Angeles"),
+    "email": fields.String(required=False,
+                           help="email address of a travel agent e.g. Jonathan.Frank@hammertrips.com"),
+    "salary": fields.Integer(required=False,
+                             help="monthly salary of a travel agent, e.g. 20000"),
+    "nationality": fields.String(required=True,
+                                 help="nationality of a travel Agent e.g. Ecuador"),
+    "supervisor_id": fields.Integer(required=False,
+                                    help="unique identifier of the supervisor of this agent")
+})
 
 @supervisor_ns.route("/")
 class SupervisorAPI(Resource):
-    #method_decorators = [jwt_required()]
+
 
     @supervisor_ns.doc(supervisor_input_model, description="Add a new supervisor")
     @supervisor_ns.expect(supervisor_input_model,validate=True)
@@ -139,8 +166,54 @@ class UserLogin(Resource):
         if not user:
             return abort(400, message="User does not exist")
         elif not check_password_hash(user.password_hash, supervisor_ns.payload["password"]):
-            return abort(400, message="Incorrect password")
+            return abort(400, message="Incorrect Password")
         else:
             return {"access_token": create_access_token(user)}
 
 
+@supervisor_ns.route("/<int:supervisor_id>/employee")
+class EmployAgent(Resource):
+    method_decorators = [jwt_required()]
+
+
+    @supervisor_ns.doc(employee_model,description="Add a new travelAgent",security="authorizationToken")
+    @supervisor_ns.expect(employee_model, validate=True)
+    @supervisor_ns.marshal_with(employee_output_model, envelope="travelAgent")
+    def post(self, supervisor_id):
+
+
+        new_agent = TravelAgent(employee_id=id(self),
+                                name=supervisor_ns.payload["name"],
+                                address=supervisor_ns.payload["address"],
+                                salary=supervisor_ns.payload["salary"],
+                                nationality=supervisor_ns.payload["nationality"])
+
+
+        # throw an error if the supervisor_id does not exist
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
+
+
+        # set salary to a minimum if not set to a higher amount
+        if new_agent.salary < 2000:
+            new_agent.salary = 2000
+        # throw an error if the salary is too high
+        elif new_agent.salary > 4000:
+            return abort(400, message="Please enter a salary amount in Euro from 2000 to 4000")
+        # throw an error if the format of the name is not right
+        if " " in new_agent.name:
+            first, last = new_agent.name.split(" ")
+            new_agent.email = f"{first}.{last}@hammertrips.com"
+        else:
+            return abort(400, message="Please insert your first and last name seperated by a space")
+        # set role to supervisor
+        new_agent.role = "travelAgent"
+
+        # assign supervisor_id
+
+        new_agent.supervisor_id = current_user.manager_id
+
+        # transfer new supervisor to the agency
+        Agency.get_instance().add_supervisor(new_agent)
+
+        # return the supervisor
+        return new_agent
