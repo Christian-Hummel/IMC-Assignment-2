@@ -48,7 +48,7 @@ book_trip() - accepting the offer from the agent, a booked trip will be counted 
 
 cancel_trip() - reject an offer from the travel agent
 
-request_expert() - require an travel agent with expert status for country specified in preferences
+request_expert() - require a travel agent with expert status for country specified in preferences
 
 get_customer_by_id() - display attributes from customer: customer_id, name, email, address, budget
 
