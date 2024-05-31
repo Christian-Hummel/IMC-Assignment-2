@@ -60,8 +60,24 @@ class Agency(object):
 
         if countries:
             return countries
+        elif len(countries) == 0:
+            raise Exception("There are no countries registered")
 
-        else:
+
+    def get_country_by_id(self, country_id:int):
+
+        country = db.session.query(Country).filter_by(country_id=country_id).first()
+
+        country_json = {
+            "country_id": country.country_id,
+            "name": country.name,
+            "activities": country.activity
+        }
+
+        if country:
+            return country_json
+        elif not country:
             return None
+
 
 # Activity

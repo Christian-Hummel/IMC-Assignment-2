@@ -51,3 +51,17 @@ class CountryAPI(Resource):
             return countries
         elif not countries:
             return jsonify("There are no countries registered in the database")
+
+
+@country_ns.route("/<int:country_id>/")
+class CountryInfo(Resource):
+
+    @country_ns.doc(description="Get information about a single country")
+    def get(self,country_id):
+
+        targeted_country = Agency.get_instance().get_country_by_id(country_id)
+
+        if targeted_country:
+            return targeted_country
+        else:
+            return abort(400, message="country not found")
