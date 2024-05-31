@@ -246,7 +246,24 @@ class SupervisorInfo(Resource):
 
 
         supervisor = db.session.query(Supervisor).filter_by(employee_id=current_user.manager_id).first()
-
+        # add number of people working in your team
         supervisor.nr_of_teammembers = len(supervisor.teammembers)
-
+        # return the supervisor
         return supervisor
+
+@supervisor_ns.route("/team")
+class SupervisorAgents(Resource):
+    method_decorators = [jwt_required()]
+
+    @supervisor_ns.doc(employee_output_model, description="Get all agents under your supervision", security="authorizationToken")
+    @supervisor_ns.marshal_list_with(employee_output_model, envelope="travelagents")
+    def get(self):
+
+        supervisor_id = current_user.manager_id
+        # get team members
+        team = Agency.get_instance().show_all_agents(supervisor_id)
+
+        if team: # if there are travel agents in your team display them
+            return team
+        elif not team: # if there are no travel agents under your supervision yet throw an error
+            return abort(400, message="There are no travel agents under your supervision yet")

@@ -39,6 +39,18 @@ class Agency(object):
         db.session.commit()
 
 
+    def show_all_agents(self,supervisor_id):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
+
+        if hasattr(supervisor, "teammembers"):
+            team = supervisor.teammembers
+
+            return team
+        else:
+            return None
+
+
 
 # TravelAgent
 
@@ -68,13 +80,15 @@ class Agency(object):
 
         country = db.session.query(Country).filter_by(country_id=country_id).first()
 
-        country_json = {
-            "country_id": country.country_id,
-            "name": country.name,
-            "activities": country.activity
-        }
 
         if country:
+
+            country_json = {
+                "country_id": country.country_id,
+                "name": country.name,
+                "activities": country.activity
+            }
+
             return country_json
         elif not country:
             return None
