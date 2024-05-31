@@ -1,3 +1,5 @@
+from flask import jsonify
+
 from flask_restx import Namespace, Resource, fields, abort
 
 from ..model.agency import Agency
@@ -37,3 +39,15 @@ class CountryAPI(Resource):
         Agency.get_instance().add_country(new_country)
 
         return new_country
+
+    @country_ns.doc(country_output_model, description="Get information about all countries")
+    @country_ns.marshal_list_with(country_output_model, envelope="countries")
+    def get(self):
+
+
+        countries = Agency.get_instance().get_countries()
+
+        if countries:
+            return countries
+        elif not countries:
+            return jsonify("There are no countries registered in the database")
