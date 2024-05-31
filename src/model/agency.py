@@ -19,6 +19,7 @@ class Agency(object):
         return Agency.singleton_instance
 
 
+# Supervisor
 
     def add_supervisor(self, new_supervisor:Supervisor):
 
@@ -39,3 +40,17 @@ class Agency(object):
 
 
 
+# TravelAgent
+
+
+# Customer
+
+
+# Country
+
+    def add_country(self, new_country:Country):
+
+        db.session.add(new_country)
+        db.session.commit()
+
+# Activity
