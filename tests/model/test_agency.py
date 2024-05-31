@@ -8,7 +8,7 @@ from src.database import Supervisor, TravelAgent, Customer, Country, Activity, U
 
 from tests.fixtures import app, client, agency
 
-
+# Supervisor
 def test_add_supervisor(agency):
         before = Supervisor.query.count()
 
@@ -60,5 +60,38 @@ def test_add_agent(agency):
         assert TravelAgent.query.count() == before + 1
 
         assert agent.name == "Sky DuMont"
+        assert agent.address == "Alvaro 20,8573 Buenos Aires"
+        assert agent.email == "Sky.DuMont@hammertrips.com"
+        assert agent.salary == 3500
+        assert agent.role == "travelAgent"
+        assert agent.nationality == "Germany"
+        assert agent.supervisor_id == 135
 
 
+# TravelAgent
+
+
+# Customer
+
+
+# Country
+
+def test_add_country(agency):
+
+        before = Country.query.count()
+
+        new_country = Country(country_id=976, name="Trinidad and Tobago")
+
+        agency.add_country(new_country)
+
+        country = db.session.query(Country).filter_by(country_id=976).first()
+
+        assert Country.query.count() == before + 1
+
+        assert country.name == "Trinidad and Tobago"
+
+
+
+
+
+# Activity
