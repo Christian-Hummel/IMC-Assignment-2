@@ -122,20 +122,28 @@ class SupervisorAPI(Resource):
                                   salary=supervisor_ns.payload["salary"],
                                   nationality=supervisor_ns.payload["nationality"])
 
-        # set salary to a minimum if not set to a higher amount
-        if new_supervisor.salary < 8000:
-            new_supervisor.salary = 8000
-        # throw an error if the format of the name is not right
-        if " " in new_supervisor.name:
-            first,last = new_supervisor.name.split(" ")
-            new_supervisor.email = f"{first}.{last}@hammertrips.com"
-        else:
-            return abort(400, message="Please insert your first and last name seperated by a space")
-        # set role to supervisor
-        new_supervisor.role = "supervisor"
 
-        # transfer new supervisor to the agency
-        Agency.get_instance().add_supervisor(new_supervisor)
+        # check for duplicates
+        same_supervisor = db.session.query(Supervisor).filter_by(name=new_supervisor.name).first()
+        if not same_supervisor:
+
+            # set salary to a minimum if not set to a higher amount
+            if new_supervisor.salary < 8000:
+                new_supervisor.salary = 8000
+            # throw an error if the format of the name is not right
+            if " " in new_supervisor.name:
+                first,last = new_supervisor.name.split(" ")
+                new_supervisor.email = f"{first}.{last}@hammertrips.com"
+            else:
+                return abort(400, message="Please insert your first and last name seperated by a space")
+            # set role to supervisor
+            new_supervisor.role = "supervisor"
+
+            # transfer new supervisor to the agency
+            Agency.get_instance().add_supervisor(new_supervisor)
+
+        elif same_supervisor:
+            return abort(400, message="Supervisor already registered")
 
         #return the supervisor
         return new_supervisor
