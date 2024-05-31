@@ -32,7 +32,7 @@ def test_add_supervisor(client,agency):
 
 def test_add_supervisor_error(client, agency):
 
-    response = client.post("/supervisor/", json={
+    response1 = client.post("/supervisor/", json={
         "name":"JasonBourne",
         "address":"Unknown Street 55, 2234 Dallas",
         "salary": 10000,
@@ -40,12 +40,29 @@ def test_add_supervisor_error(client, agency):
     })
 
 
-    assert response.status_code == 400
+    assert response1.status_code == 400
 
-    parsed = response.get_json()
-    error = parsed["message"]
+    parsed1 = response1.get_json()
+    error1 = parsed1["message"]
 
-    assert error == "Please insert your first and last name seperated by a space"
+    assert error1 == "Please insert your first and last name seperated by a space"
+
+    response2 = client.post("/supervisor/", json={
+        "name": "Harry Styles",
+        "address": "123 Elm Street, Springfield",
+        "salary": 8000,
+        "nationality": "USA"
+    })
+
+    assert response2.status_code == 400
+
+    parsed2 = response2.get_json()
+
+    error2 = parsed2["message"]
+
+    assert error2 == "Supervisor already registered"
+
+
 
 
 def test_register_supervisor(client,agency):
