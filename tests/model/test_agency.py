@@ -110,6 +110,12 @@ def test_get_all_countries_error(agency):
 
 
 
+def test_get_country_by_id(agency):
 
+        country = agency.get_country_by_id(919)
+
+        assert country["country_id"] == 919
+        assert country["name"] == "Netherlands"
+        assert len(country["activities"]) == 0
 
 # Activity

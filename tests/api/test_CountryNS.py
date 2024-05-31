@@ -48,3 +48,31 @@ def test_get_all_countries(client, agency):
 
     assert count == len(countries_response)
 
+
+def test_get_country_by_id(client, agency):
+
+    country = db.session.query(Country).filter_by(country_id=919).first()
+
+    country_id = country.country_id
+
+    response = client.get(f"/country/{country_id}")
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+
+    assert parsed["country_id"] == 919
+    assert parsed["name"] == "Netherlands"
+    assert len(parsed["activities"]) == 0
+
+def test_get_country_by_id_error(client,agency):
+
+    response = client.get("/country/482")
+
+    assert response.status_code == 400
+
+    parsed = response.get_json()
+
+    error = parsed["message"]
+
+    assert error == "country not found"
