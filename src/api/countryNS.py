@@ -45,7 +45,7 @@ class CountryAPI(Resource):
     def get(self):
 
 
-        countries = Agency.get_instance().get_countries()
+        countries = Agency.get_instance().get_all_countries()
 
         if countries:
             return countries

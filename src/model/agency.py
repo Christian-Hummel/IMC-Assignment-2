@@ -54,7 +54,7 @@ class Agency(object):
         db.session.commit()
 
 
-    def get_countries(self):
+    def get_all_countries(self):
 
         countries = db.session.query(Country).order_by(Country.name).all()
 
