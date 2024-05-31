@@ -91,6 +91,24 @@ def test_add_country(agency):
         assert country.name == "Trinidad and Tobago"
 
 
+def test_get_all_countries(agency):
+
+        count = Country.query.count()
+
+        countries = agency.get_all_countries()
+
+        assert len(countries) == count
+
+def test_get_all_countries_error(agency):
+
+        empty = db.session.query(Country).delete()
+        db.session.commit()
+
+
+        with pytest.raises(Exception,match="There are no countries registered"):
+                agency.get_all_countries()
+
+
 
 
 

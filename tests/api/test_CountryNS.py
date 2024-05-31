@@ -33,3 +33,18 @@ def test_add_country_error(client,agency):
     error = parsed["message"]
 
     assert error == "This country is already registered"
+
+
+def test_get_all_countries(client, agency):
+
+    count = Country.query.count()
+
+    response = client.get("/country/")
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+    countries_response = parsed["countries"]
+
+    assert count == len(countries_response)
+
