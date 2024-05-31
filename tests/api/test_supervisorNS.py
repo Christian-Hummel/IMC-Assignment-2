@@ -258,3 +258,48 @@ def test_get_supervisor_info(client,agency):
 
 
     assert supervisor_response.status_code == 200
+
+
+def test_get_supervisor_agents(client,agency):
+
+    user = db.session.query(User).filter_by(id=17).first()
+
+    supervisor_id = user.manager_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.get("/supervisor/team", headers=headers)
+
+    assert response.status_code == 200
+
+
+    parsed_team = response.get_json()
+    team_response = parsed_team["travelagents"]
+
+    assert len(team_response) == 1
+
+
+def test_get_supervisor_agents_error(client,agency):
+
+    user = db.session.query(User).filter_by(id=1).first()
+
+    supervisor_id = user.manager_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.get("/supervisor/team", headers=headers)
+
+    assert response.status_code == 400
+
+    parsed = response.get_json()
+    error = parsed["message"]
+
+    assert error == "There are no travel agents under your supervision yet"

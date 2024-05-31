@@ -68,6 +68,29 @@ def test_add_agent(agency):
         assert agent.supervisor_id == 135
 
 
+
+def test_get_supervisor_agents(agency):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=135).first()
+
+        supervisor_id = supervisor.employee_id
+
+        team = agency.show_all_agents(supervisor_id)
+
+        assert len(team) == 1
+
+def test_get_supervisor_agents_no_teammembers(agency):
+
+        supervisor = db.session.query(User).filter_by(id=1).first()
+
+
+        supervisor_id = supervisor.manager_id
+
+        team = agency.show_all_agents(supervisor_id)
+
+        assert not team
+
+
 # TravelAgent
 
 
