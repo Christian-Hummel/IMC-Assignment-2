@@ -143,10 +143,42 @@ def create_agents(agency: Agency):
 
     db.session.add_all(travel_agents)
     db.session.commit()
+
+
+
+def create_countries(agency: Agency):
+    countries = [
+        Country(country_id=901,name="Germany"),
+        Country(country_id=902, name="France"),
+        Country(country_id=903, name="England"),
+        Country(country_id=904, name="Scotland"),
+        Country(country_id=905, name="Poland"),
+        Country(country_id=906, name="Czech Republic"),
+        Country(country_id=907, name="Japan"),
+        Country(country_id=908, name="Kanada"),
+        Country(country_id=909, name="Senegal"),
+        Country(country_id=910, name="Chile"),
+        Country(country_id=911, name="Brazil"),
+        Country(country_id=912, name="Lativa"),
+        Country(country_id=913, name="Spain"),
+        Country(country_id=914, name="Finnland"),
+        Country(country_id=915, name="Denmark"),
+        Country(country_id=916, name="Norway"),
+        Country(country_id=917, name="Sweden"),
+        Country(country_id=918, name="Slovenia"),
+        Country(country_id=919, name="Netherlands"),
+        Country(country_id=9120, name="Simbabwe"),
+    ]
+
+    db.session.add_all(countries)
+    db.session.commit()
+
+
 def populate(agency: Agency):
     create_supervisors(agency)
     create_users(agency)
     create_agents(agency)
+    create_countries(agency)
 
 
 
