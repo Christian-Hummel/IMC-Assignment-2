@@ -145,7 +145,6 @@ def create_agents(agency: Agency):
     db.session.commit()
 
 
-
 def create_countries(agency: Agency):
     countries = [
         Country(country_id=901,name="Germany"),
@@ -174,11 +173,59 @@ def create_countries(agency: Agency):
     db.session.commit()
 
 
+def create_customers(agency: Agency):
+    customers = [
+        Customer(customer_id=701, name="Stephen Hawking", address="Richard's Street 32, 4728 Oxford",
+                 email="Stephen@hawking.co.uk", budget=20000, preference="Austria", expert=False, agent_id=240),
+        Customer(customer_id=702, name="Nuri Sahin", address="Borsingplatz 4, 2732 Dortmund", email="Nuri.Sahin@bvb.de",
+                 budget=15000, preference="None", expert=False, agent_id=245),
+        Customer(customer_id=703, name="Ada Lovelace", address="Ada Street 42, 1878 London",
+                 email="Ada.Lovelace@maths.com", budget=25000, preference="UK", expert=True, agent_id=250),
+        Customer(customer_id=704, name="Nikola Tesla", address="Electric Avenue 8, 1130 New York",
+                 email="Nikola.Tesla@genius.com", budget=18000, preference="USA", expert=True, agent_id=255),
+        Customer(customer_id=705, name="Marie Curie", address="Science Road 23, 7516 Paris",
+                 email="Marie.Curie@radioactive.fr", budget=22000, preference="France", expert=True, agent_id=260),
+        Customer(customer_id=706, name="Albert Einstein", address="Relativity Blvd 9, 1000 Berlin",
+                 email="Albert.Einstein@theory.de", budget=30000, preference="Germany", expert=True, agent_id=265),
+        Customer(customer_id=707, name="Isaac Newton", address="Gravity Lane 10, 1200 Cambridge",
+                 email="Isaac.Newton@physics.uk", budget=27000, preference="None", expert=True, agent_id=270),
+        Customer(customer_id=708, name="Galileo Galilei", address="Stars Way 14, 6012 Pisa",
+                 email="Galileo.Galilei@astronomy.it", budget=24000, preference="Italy", expert=True, agent_id=275),
+        Customer(customer_id=709, name="Leonardo da Vinci", address="Art Street 55, 5012 Florence",
+                 email="Leonardo.DaVinci@renaissance.it", budget=26000, preference="Italy", expert=True, agent_id=280),
+        Customer(customer_id=710, name="Charles Darwin", address="Evolution Blvd 8, 2099 London",
+                 email="Charles.Darwin@biology.uk", budget=21000, preference="UK", expert=True, agent_id=285),
+        Customer(customer_id=711, name="Michael Faraday", address="Magnetism Street 12, 1871 London",
+                 email="Michael.Faraday@electricity.uk", budget=22000, preference="None", expert=True, agent_id=290),
+        Customer(customer_id=712, name="Thomas Edison", address="Inventor's Alley 19, 7310 New Jersey",
+                 email="Thomas.Edison@invention.us", budget=25000, preference="USA", expert=True, agent_id=295),
+        Customer(customer_id=713, name="Sigmund Freud", address="Mind Way 6, 1010 Vienna",
+                 email="Sigmund.Freud@psychology.at", budget=23000, preference="Austria", expert=True, agent_id=300),
+        Customer(customer_id=714, name="Gregor Mendel", address="Genetics Blvd 22, 6120 Brno",
+                 email="Gregor.Mendel@biology.cz", budget=28000, preference="None", expert=True, agent_id=305),
+        Customer(customer_id=715, name="Louis Pasteur", address="Bacteriology Street 17, 7505 Paris",
+                 email="Louis.Pasteur@microbiology.fr", budget=29000, preference="France", expert=True, agent_id=310),
+        Customer(customer_id=716, name="Jane Goodall", address="Primate Alley 21, 9012 Nairobi",
+                 email="Jane.Goodall@anthropology.ke", budget=20000, preference="None", expert=True, agent_id=315),
+        Customer(customer_id=717, name="Rosalind Franklin", address="DNA Lane 33, 1012 London",
+                 email="Rosalind.Franklin@genetics.uk", budget=26000, preference="None", expert=True, agent_id=320),
+        Customer(customer_id=718, name="James Watt", address="Steam Road 9, 8015 Glasgow",
+                 email="James.Watt@engineering.uk", budget=22000, preference="UK", expert=True, agent_id=325),
+        Customer(customer_id=719, name="Alfred Nobel", address="Dynamite Drive 5, 1120 Stockholm",
+                 email="Alfred.Nobel@chemistry.se", budget=27000, preference="Sweden", expert=True, agent_id=330),
+        Customer(customer_id=720, name="Marie Tharp", address="Ocean Avenue 4, 1001 New York",
+                 email="Marie.Tharp@geology.us", budget=21000, preference="USA", expert=True, agent_id=335)
+    ]
+
+    db.session.add_all(customers)
+    db.session.commit()
+
 def populate(agency: Agency):
     create_supervisors(agency)
     create_users(agency)
     create_agents(agency)
     create_countries(agency)
+    create_customers(agency)
 
 
 
