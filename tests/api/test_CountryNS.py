@@ -4,7 +4,7 @@ from src.database import Supervisor, TravelAgent, Customer, Country, Activity, U
 
 from tests.fixtures import app, client, agency
 
-
+# Country
 def test_add_country(client,agency):
 
     response = client.post("/country/",json={
@@ -76,3 +76,40 @@ def test_get_country_by_id_error(client,agency):
     error = parsed["message"]
 
     assert error == "country not found"
+
+# Activity
+
+def test_add_activity(client,agency):
+
+
+    country = db.session.query(Country).filter_by(country_id=915).first()
+
+    country_id = country.country_id
+
+    response = client.post(f"/country/{country_id}/activity", json={
+        "name":"zoo",
+        "price":40
+    })
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+    activity_response = parsed["activity"]
+
+    assert activity_response["name"] == "zoo"
+    assert activity_response["price"] == 40
+
+
+def test_add_activity_error(client,agency):
+
+    response = client.post("/country/914/activity", json={
+        "name":"city tour",
+        "price": 0,
+    })
+
+    assert response.status_code == 400
+
+    parsed = response.get_json()
+    error = parsed["message"]
+
+    assert error == "Please enter a valid price for this activity"

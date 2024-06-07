@@ -116,10 +116,6 @@ def test_register_customer(agency):
         assert customer.agent_id == 0
 
 
-
-
-
-
 # Country
 
 def test_add_country(agency):
@@ -165,3 +161,26 @@ def test_get_country_by_id(agency):
         assert len(country["activities"]) == 0
 
 # Activity
+
+def test_add_activity(agency):
+
+        country = db.session.query(Country).filter_by(name="Germany").first()
+
+        country_id = country.country_id
+
+        before = len(country.activity)
+
+        new_activity = Activity(activity_id=934,name="Jetski",price=100)
+
+
+        agency.add_activity(new_activity,country_id)
+
+        assert len(country.activity) == before + 1
+
+
+def test_add_activity_error(agency):
+
+        new_activity = Activity(activity_id=333, name="Miniatur Wunderland", price=20)
+
+        with pytest.raises(Exception, match="This activity is already registered for this country"):
+                agency.add_activity(new_activity,901)
