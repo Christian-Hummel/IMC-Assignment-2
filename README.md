@@ -42,7 +42,7 @@ A country represents the desired destination of a Customer. Each country is conn
 
 **Customer**
 
-register() - adds a customer to the agency
+register() - adds a customer to the agency - c
 
 book_trip() - accepting the offer from the agent, a booked trip will be counted as visited for stats
 
@@ -69,11 +69,11 @@ update_agent() - allows to update following attributes: name, email, address
 
 **Country**
 
-add_country() - registers a country to be used for trip plans by the agents
+add_country() - registers a country to be used for trip plans by the agents - c
 
-get_country_by_id() - displays country attributes: country_ID, name and all current activities
+get_country_by_id() - displays country attributes: country_ID, name and all current activities - c
 
-get_all_countries() - shows a list of all countries
+get_all_countries() - shows a list of all countries - c
 
 get_country_stats() - displays the number of total visits, the most popular activity and the total revenue it generated
 
@@ -94,7 +94,7 @@ get_activity_by_id() - displays attributes of an activity: activity_id, name, pr
 
 assign_agent() - assigns an agent to counsel a customer
 
-add_agent() - introduces a new travel agent to the agency under his supervision - adds the supervisor attribute to this class
+add_agent() - introduces a new travel agent to the agency under his supervision - adds the supervisor attribute to this class - c
 
 raise_salary() - increases the salary for a specific travel agent
 
@@ -102,9 +102,9 @@ delete_agent() - removes an agent from the agency, all his customers will be tra
 
 set_discount() - lowers the price for the total price of an offer by a set percentage 
 
-show_all_agents() - displays information about all agents he or she supervises: employer_ID, name, email, address, salary, nationality,
+show_all_agents() - displays information about all agents he or she supervises: employer_ID, name, email, address, salary, nationality, - c
 
-get_supervisor_by_id() - displays supervisor attributes: employer_ID, name, email, address, salary, nationality and number of travel agents under his supervision
+get_supervisor_by_id() - displays supervisor attributes: employer_ID, name, email, address, salary, nationality and number of travel agents under his supervision - c
 
 
 #### Notes
