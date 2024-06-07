@@ -1,6 +1,7 @@
 flask~=3.0.3
 flask-restx
 flask-sqlalchemy
+flask-migrate
 flask-jwt-extended
 thread6
 SQLAlchemy~=2.0.30
