@@ -166,7 +166,7 @@ def create_countries(agency: Agency):
         Country(country_id=917, name="Sweden"),
         Country(country_id=918, name="Slovenia"),
         Country(country_id=919, name="Netherlands"),
-        Country(country_id=9120, name="Simbabwe"),
+        Country(country_id=920, name="Simbabwe"),
     ]
 
     db.session.add_all(countries)
@@ -220,13 +220,78 @@ def create_customers(agency: Agency):
     db.session.add_all(customers)
     db.session.commit()
 
+
+
+def create_activities(agency: Agency):
+    activity1 = Activity(activity_id=601, name="Miniatur Wunderland", price=20)
+    country1 = db.session.query(Country).filter_by(country_id=901).first()
+    country1.activity.append(activity1)
+
+    activity2 = Activity(activity_id=602, name="Chateau des ducs de Bretagne", price="30")
+    country2 = db.session.query(Country).filter_by(country_id=902).first()
+    country2.activity.append(activity2)
+
+    activity3 = Activity(activity_id=603, name="London Eye", price="50")
+    country3 = db.session.query(Country).filter_by(country_id=903).first()
+    country3.activity.append(activity3)
+
+    activity4 = Activity(activity_id=604, name="Edingburgh Castle", price="25")
+    country4 = db.session.query(Country).filter_by(country_id=904).first()
+    country4.activity.append(activity4)
+
+    activity5 = Activity(activity_id=605, name="Malbork Castle", price="22")
+    country5 = db.session.query(Country).filter_by(country_id=905).first()
+    country5.activity.append(activity5)
+
+    activity6 = Activity(activity_id=606, name="Pub Crawl", price="50")
+    country6 = db.session.query(Country).filter_by(country_id=906).first()
+    country6.activity.append(activity6)
+
+    activity7 = Activity(activity_id=607, name="Baseball Game", price="60")
+    country7 = db.session.query(Country).filter_by(country_id=907).first()
+    country7.activity.append(activity7)
+
+    activity8 = Activity(activity_id=608, name="Calgary Stampede", price="40")
+    country8 = db.session.query(Country).filter_by(country_id=908).first()
+    country8.activity.append(activity8)
+
+    activity9 = Activity(activity_id=609, name="Safari", price="100")
+    country9 = db.session.query(Country).filter_by(country_id=909).first()
+    country9.activity.append(activity9)
+
+    activity10 = Activity(activity_id=610, name="Rapa Nui", price="50")
+    country10 = db.session.query(Country).filter_by(country_id=910).first()
+    country10.activity.append(activity10)
+
+    activity11 = Activity(activity_id=611, name="Stadion Tour", price="70")
+    country11 = db.session.query(Country).filter_by(country_id=911).first()
+    country11.activity.append(activity11)
+
+    activity12 = Activity(activity_id=612, name="Ruandales pils", price="20")
+    country12 = db.session.query(Country).filter_by(country_id=912).first()
+    country12.activity.append(activity12)
+
+    activity13 = Activity(activity_id=613, name="Sagrada Familia", price="26")
+    country13 = db.session.query(Country).filter_by(country_id=913).first()
+    country13.activity.append(activity13)
+
+    activity14 = Activity(activity_id=614, name="City Tour", price="50")
+    country14 = db.session.query(Country).filter_by(country_id=914).first()
+    country14.activity.append(activity14)
+
+    country1.activity.append(activity11)
+    country2.activity.append(activity11)
+
+    db.session.add_all([country1,country2,country3,country4,country5,country6,country7,country8,country9,country10,country11,country12,country13,country14])
+    db.session.commit()
+
 def populate(agency: Agency):
     create_supervisors(agency)
     create_users(agency)
     create_agents(agency)
     create_countries(agency)
     create_customers(agency)
-
+    create_activities(agency)
 
 
 
