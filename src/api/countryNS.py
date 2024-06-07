@@ -3,7 +3,7 @@ from flask import jsonify
 from flask_restx import Namespace, Resource, fields, abort
 
 from ..model.agency import Agency
-from ..database import Country, db
+from ..database import Country,Activity, db
 
 country_ns = Namespace("country", description="Country related operations")
 
@@ -21,6 +21,24 @@ country_output_model = country_ns.model("CountryOutputModel", {
 })
 
 
+activity_input_model = country_ns.model("ActivityInputModel", {
+    "name": fields.String(required=True,
+                          help="name of an activity e.g. Wakeboarding"),
+    "price": fields.Integer(required=True,
+                            help="price of an activity")
+})
+
+activity_output_model = country_ns.model("ActivityOutputModel",{
+    "activity_id": fields.Integer(required=False,
+                                  help="the unique identifier of an activity"),
+    "name": fields.String(required=True,
+                          help="name of an activity e.g. Wakeboarding"),
+    "price": fields.Integer(required=True,
+                            help="price of an activity")
+})
+
+# Country
+
 @country_ns.route("/")
 class CountryAPI(Resource):
 
@@ -28,12 +46,12 @@ class CountryAPI(Resource):
     @country_ns.expect(country_input_model,validate=True)
     @country_ns.marshal_with(country_output_model, envelope="country")
     def post(self):
-
+        # Create new Country object
         new_country = Country(country_id=id(self), name=country_ns.payload["name"])
-
+        # Check for duplicates
         same_country = db.session.query(Country).filter_by(name=new_country.name).first()
 
-        if same_country:
+        if same_country: # throw an error if the same country is already in the database
             return abort(400, message="This country is already registered")
 
         Agency.get_instance().add_country(new_country)
@@ -65,3 +83,28 @@ class CountryInfo(Resource):
             return targeted_country
         else:
             return abort(400, message="country not found")
+
+
+# Activity
+
+@country_ns.route("/<int:country_id>/activity")
+class ActivityAPI(Resource):
+
+
+    @country_ns.doc(activity_input_model,description="Add an activity to a specific country")
+    @country_ns.expect(activity_input_model,validate=True)
+    @country_ns.marshal_with(activity_output_model,envelope="activity")
+    def post(self,country_id):
+
+        new_activity = Activity(activity_id=id(self),
+                                name=country_ns.payload["name"],
+                                price=country_ns.payload["price"])
+
+
+
+        if new_activity.price <= 0:
+            return abort(message="Please enter a valid price for this activity")
+
+        Agency.get_instance().add_activity(new_activity, country_id)
+
+        return new_activity
