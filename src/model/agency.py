@@ -90,7 +90,7 @@ class Agency(object):
             country_json = {
                 "country_id": country.country_id,
                 "name": country.name,
-                "activities": country.activity
+                "activities": [activity.name for activity in country.activity]
             }
 
             return country_json
@@ -99,3 +99,17 @@ class Agency(object):
 
 
 # Activity
+
+
+    def add_activity(self, new_activity: Activity,country_id):
+
+
+        country = db.session.query(Country).filter_by(country_id=country_id).first()
+        for activity in country.activity:
+            if activity.name == new_activity.name:
+                raise Exception("This activity is already registered for this country")
+            else:
+                country.activity.append(new_activity)
+
+        db.session.add(new_activity)
+        db.session.commit()
