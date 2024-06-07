@@ -27,3 +27,35 @@ def test_register_customer(client,agency):
     assert customer_response["budget"] == 25000
     assert customer_response["preference"] == "Germany"
 
+
+def test_register_customer_errors(client,agency):
+
+    response1 = client.post("/customer/", json={
+        "name":"Mark Zuckerberg",
+        "address": "8th Avenue 5, 3728 Manhattan",
+        "email":"Mark@meta.com",
+        "budget": 0,
+        "preference": "String"
+    })
+
+    assert response1.status_code == 400
+
+    parsed1 = response1.get_json()
+    error1 = parsed1["message"]
+
+    assert error1 == "Please enter a valid budget"
+
+    response2 = client.post("/customer/", json={
+        "name": "Stephen Hawking",
+        "address": "Richard's Street 32, 4728 Oxford",
+        "email": "Stephen@hawking.co.uk",
+        "budget": 20000,
+        "preference": "String"
+    })
+
+    assert response2.status_code == 400
+
+    parsed2 = response2.get_json()
+    error2 = parsed2["message"]
+
+    assert error2 == "Customer already registered"
