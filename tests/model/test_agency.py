@@ -96,6 +96,29 @@ def test_get_supervisor_agents_no_teammembers(agency):
 
 # Customer
 
+def test_register_customer(agency):
+
+        before = Customer.query.count()
+
+        new_customer = Customer(customer_id=695, name="Steve Backshall", address="Rocky road 4, 3627 Sidney", email="Steve@bbc.co.uk", budget=17000, preference="Japan",agent_id=0)
+
+        agency.register_customer(new_customer)
+
+        customer = db.session.query(Customer).filter_by(customer_id=695).first()
+
+        assert Customer.query.count() == before + 1
+
+        assert customer.name == "Steve Backshall"
+        assert customer.address == "Rocky road 4, 3627 Sidney"
+        assert customer.email == "Steve@bbc.co.uk"
+        assert customer.preference == "Japan"
+        assert customer.budget == 17000
+        assert customer.agent_id == 0
+
+
+
+
+
 
 # Country
 
