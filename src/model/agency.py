@@ -57,6 +57,10 @@ class Agency(object):
 
 # Customer
 
+    def register_customer(self, new_customer:Customer):
+
+        db.session.add(new_customer)
+        db.session.commit()
 
 # Country
 

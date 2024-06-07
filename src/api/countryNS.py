@@ -53,7 +53,7 @@ class CountryAPI(Resource):
             return jsonify("There are no countries registered in the database")
 
 
-@country_ns.route("/<int:country_id>/")
+@country_ns.route("/<int:country_id>")
 class CountryInfo(Resource):
 
     @country_ns.doc(description="Get information about a single country")
