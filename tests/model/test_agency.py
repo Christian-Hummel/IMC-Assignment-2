@@ -151,7 +151,6 @@ def test_get_all_countries_error(agency):
                 agency.get_all_countries()
 
 
-
 def test_get_country_by_id(agency):
 
         country = agency.get_country_by_id(919)
@@ -168,14 +167,13 @@ def test_add_activity(agency):
 
         country_id = country.country_id
 
-        before = len(country.activity)
+        before = len(country.activities)
 
         new_activity = Activity(activity_id=934,name="Jetski",price=100)
 
-
         agency.add_activity(new_activity,country_id)
 
-        assert len(country.activity) == before + 1
+        assert len(country.activities) == before + 1
 
 
 def test_add_activity_error(agency):
@@ -184,3 +182,36 @@ def test_add_activity_error(agency):
 
         with pytest.raises(Exception, match="This activity is already registered for this country"):
                 agency.add_activity(new_activity,901)
+
+
+def test_update_activity(agency):
+
+
+        new_activity = Activity(activity_id=899, name="Mountain Tour", price=60)
+
+        agency.add_activity(new_activity, 901)
+
+        country = db.session.query(Country).filter_by(country_id=901).first()
+
+        activity_match = [activity for activity in country.activities if activity.activity_id == 899]
+        activity = activity_match[0]
+
+        assert activity.name == "Mountain Tour"
+        assert activity.price == 60
+
+        update_activity = Activity(activity_id=899, name="Alps Expedition", price=130)
+
+        agency.update_activity(update_activity,901)
+
+        assert activity.name == "Alps Expedition"
+        assert activity.price == 130
+
+
+
+def test_update_activity_errors(agency):
+
+
+        invalid_price = Activity(activity_id=609, name="Safar", price=0)
+
+        with pytest.raises(ValueError,match="Invalid Price"):
+                agency.update_activity(invalid_price,909)

@@ -113,3 +113,92 @@ def test_add_activity_error(client,agency):
     error = parsed["message"]
 
     assert error == "Please enter a valid price for this activity"
+
+
+def test_update_activity(client,agency):
+
+    country = db.session.query(Country).filter_by(name="Brazil").first()
+    country_id = country.country_id
+
+    activity_response = client.post(f"/country/{country_id}/activity", json={
+        "name": "Bus Tour",
+        "price": 45
+    })
+
+    parsed_activity = activity_response.get_json()
+    response_activity = parsed_activity["activity"]
+
+    activity_id = response_activity["activity_id"]
+
+    update_response = client.post(f"/country/{country_id}/activity/update", json={
+        "activity_id": activity_id,
+        "name": "City Tour",
+        "price": 50
+    })
+
+    assert update_response.status_code == 200
+
+    parsed_update = update_response.get_json()
+    response_update = parsed_update["activity"]
+
+    # this activity already exists for another country, so check for updated id
+    assert response_update["activity_id"] == 614
+
+    assert response_update["name"] == "City Tour"
+    assert response_update["price"] == 50
+
+
+def test_update_activity_errors(client,agency):
+
+    response_country = client.post(f"/country/423/activity/update", json={
+        "activity_id": 603,
+        "name": "London Leg",
+        "price": 50
+    })
+
+    assert response_country.status_code == 400
+
+    parsed_country = response_country.get_json()
+    country_error = parsed_country["message"]
+
+    assert country_error == "Country not found"
+
+    response_activity = client.post(f"country/903/activity/update",json={
+        "activity_id": 502,
+        "name": "London Alley",
+        "price": 70
+    })
+
+    assert response_activity.status_code == 400
+
+    parsed_activity = response_activity.get_json()
+    activity_error = parsed_activity["message"]
+
+    assert activity_error == "Activity not found"
+
+    response_default1 = client.post(f"country/903/activity/update",json={
+        "activity_id": 603,
+        "name": "London Eye",
+        "price": 50
+    })
+
+    assert response_default1.status_code == 400
+
+    parsed_default1 = response_default1.get_json()
+    default_error1 = parsed_default1["message"]
+
+    assert default_error1 == "Please insert values to be updated"
+
+    response_default2 = client.post(f"country/903/activity/update",json={
+        "activity_id": 603,
+        "name": "string",
+        "price": 50
+    })
+
+    assert response_default1.status_code == 400
+
+    parsed_default2 = response_default2.get_json()
+    default_error2 = parsed_default2["message"]
+
+    assert default_error2 == "Please insert values to be updated"
+
