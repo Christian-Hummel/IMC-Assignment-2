@@ -29,7 +29,7 @@ activity_input_model = country_ns.model("ActivityInputModel", {
 })
 
 activity_output_model = country_ns.model("ActivityOutputModel",{
-    "activity_id": fields.Integer(required=False,
+    "activity_id": fields.Integer(required=True,
                                   help="the unique identifier of an activity"),
     "name": fields.String(required=True,
                           help="name of an activity e.g. Wakeboarding"),
@@ -103,8 +103,39 @@ class ActivityAPI(Resource):
 
 
         if new_activity.price <= 0:
-            return abort(message="Please enter a valid price for this activity")
+            return abort(400,message="Please enter a valid price for this activity")
 
         Agency.get_instance().add_activity(new_activity, country_id)
 
         return new_activity
+
+
+@country_ns.route("/<int:country_id>/update")
+class ActivityUpdate(Resource):
+
+    @country_ns.doc(activity_output_model, description="Update an activity")
+    @country_ns.expect(activity_output_model,validate=True)
+    @country_ns.marshal_with(activity_output_model,envelope="activity")
+    def post(self,country_id):
+
+
+        activity_id = country_ns.payload["activity_id"]
+        # check if this activity exists
+        targeted_activity = db.session.query(Activity).filter_by(activity_id=activity_id).one_or_none()
+
+        if not targeted_activity: # throw an error if it is not registered
+            return abort(400, message="Activity not found")
+
+        elif targeted_activity:
+            activity_id = targeted_activity.activity_id
+            updated_activity = Activity(activity_id=activity_id,
+                                        name=country_ns.payload["name"],
+                                        price=country_ns.payload["price"])
+
+            if updated_activity.name not in ["string",targeted_activity.name] or updated_activity.price != targeted_activity.price:
+                Agency.get_instance().update_activity(updated_activity, country_id)
+                return updated_activity
+            else:
+                return abort(400, message="Please insert values to be updated")
+
+
