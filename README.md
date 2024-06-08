@@ -82,7 +82,7 @@ get_country_stats() - displays the number of total visits, the most popular acti
 
 add_activity() - connects an activity to a country - c
 
-update_activity() - enables to change the name and the price of an activity
+update_activity() - enables to change the name and the price of an activity - c
 
 delete_activity() - removes an activity from the agency
 
