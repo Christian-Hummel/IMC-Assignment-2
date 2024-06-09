@@ -51,6 +51,48 @@ class Agency(object):
             return None
 
 
+    def assign_agent(self, customer_id, agent_id, supervisor_id):
+
+        customer = db.session.query(Customer).filter_by(customer_id=customer_id).first()
+        agent = db.session.query(TravelAgent).filter_by(employee_id=agent_id).first()
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
+
+
+        employee_id = agent.employee_id
+
+        if agent not in supervisor.teammembers:
+            raise Exception("This agent is not a member of your team")
+
+        if customer.agent_id == 0:
+            # customer requires an expert for a specific country
+            if customer.expert and customer.preference == agent.nationality:
+                for agent in supervisor.teammembers:
+                    if agent.employee_id == employee_id:
+                        customer.agent_id = employee_id
+                        db.session.commit()
+                        return [agent,customer]
+            elif customer.expert and agent.nationality != customer.preference:
+                raise Exception("This TravelAgent does not have the required expert status")
+            # customer does not require an expert and does not have any preferences
+            elif not customer.expert and customer.preference == "None":
+                for agent in supervisor.teammembers:
+                    if agent.employee_id == employee_id:
+                        customer.agent_id = employee_id
+                        db.session.commit()
+                        return [agent,customer]
+            # customer does not require an expert but has got a preference
+            elif not customer.expert and customer.preference != "None":
+                for agent in supervisor.teammembers:
+                    if agent.employee_id == employee_id and customer.preference in [country.name for country in agent.countries]:
+                        customer.agent_id = employee_id
+                        db.session.commit()
+                        return [agent,customer]
+                    elif customer.preference not in [country.name for country in agent.countries]:
+                        raise Exception("This TravelAgent is not assigned to the preferred country")
+        # if there is already a TravelAgent assigned to this person throw an error
+        elif customer.agent_id != 0:
+            return None
+
 
 # TravelAgent
 
@@ -131,6 +173,11 @@ class Agency(object):
 
         if updated_activity.price <= 0:
             raise ValueError("Invalid Price")
+
+        # if this activity is already in the Activity table by this name, update the activity id
+        same_name = db.session.query(Activity).filter_by(name=updated_activity.name).first()
+        if same_name:
+            updated_activity.activity_id = same_name.activity_id
 
         country = db.session.query(Country).filter_by(country_id=country_id).first()
 

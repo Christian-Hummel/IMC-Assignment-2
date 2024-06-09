@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_tok
 from werkzeug.security import generate_password_hash,check_password_hash
 
 from ..model.agency import Agency
-from ..database import Supervisor, TravelAgent, User, db
+from ..database import Supervisor, TravelAgent, Customer,  User, db
 
 authorizations = {
     "authorizationToken":{
@@ -103,6 +103,12 @@ employee_output_model = supervisor_ns.model("EmployeeOutputModel", {
                                  help="nationality of a travel Agent e.g. Ecuador"),
     "supervisor_id": fields.Integer(required=False,
                                     help="unique identifier of the supervisor of this agent")
+})
+
+
+agent_assign_model = supervisor_ns.model("AgentAssignModel",{
+    "customer_id": fields.Integer(required=True,
+                                  help="unique identifier of a registered customer")
 })
 
 @supervisor_ns.route("/")
@@ -275,3 +281,38 @@ class SupervisorAgents(Resource):
             return team
         elif not team: # if there are no travel agents under your supervision yet throw an error
             return abort(400, message="There are no travel agents under your supervision yet")
+
+
+@supervisor_ns.route("/<int:employee_id>/assign")
+class SupervisorAssignments(Resource):
+    method_decorators = [jwt_required()]
+
+
+    @supervisor_ns.doc(agent_assign_model, description="Assign a TravelAgent to a Customer", security="authorizationToken")
+    @supervisor_ns.expect(agent_assign_model,validate=True)
+    def post(self, employee_id):
+
+        customer_id = supervisor_ns.payload["customer_id"]
+        supervisor_id = current_user.manager_id
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+        customer = db.session.query(Customer).filter_by(customer_id=customer_id).first()
+
+
+
+
+        if not agent: # throw an error if this agent is not registered in the agency
+            return abort(400, message="TravelAgent not found")
+
+        if not customer: # throw an error if this customer is not registered in the agency
+            return abort(400, message="Customer not found")
+
+        agent_id = agent.employee_id
+        assignment = Agency.get_instance().assign_agent(customer_id,agent_id, supervisor_id)
+
+        if assignment:
+            return jsonify(f"TravelAgent {assignment[0].name} has been assigned to {assignment[1].name}")
+
+        if not assignment:
+            return abort(400,"This customer has already been assigned to a TravelAgent")
+
