@@ -90,6 +90,122 @@ def test_get_supervisor_agents_no_teammembers(agency):
 
         assert not team
 
+def test_assign_agent_nexpertpreference(agency):
+
+        supervisor = db.session.query(User).filter_by(id=5).first()
+
+        supervisor_id = supervisor.manager_id
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=255).first()
+
+        before = len(agent.customers)
+
+        employee_id = agent.employee_id
+
+        customer = db.session.query(Customer).filter_by(customer_id=719).first()
+
+        customer_id = customer.customer_id
+
+        assignment = agency.assign_agent(customer_id,employee_id,supervisor_id)
+
+        ragent,rcustomer = assignment
+
+        assert len(ragent.customers) == before + 1
+
+        assert ragent.name == "Jane Smith"
+
+        assert rcustomer.name == "Alfred Nobel"
+        assert rcustomer.agent_id == 255
+
+
+def test_assign_agent_expert(agency):
+
+        supervisor = db.session.query(User).filter_by(id=3).first()
+
+        supervisor_id = supervisor.manager_id
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=245).first()
+
+        before = len(agent.customers)
+
+        employee_id = agent.employee_id
+
+        customer = db.session.query(Customer).filter_by(customer_id=720).first()
+
+        customer_id = customer.customer_id
+
+        assignment = agency.assign_agent(customer_id,employee_id,supervisor_id)
+
+        ragent,rcustomer = assignment
+
+        assert len(ragent.customers) == before + 1
+
+        assert ragent.name == "Philipp Lienhart"
+
+        assert rcustomer.name == "Marie Tharp"
+        assert rcustomer.agent_id == 245
+
+
+def test_assign_agent_nexpertnpreference(agency):
+
+        supervisor = db.session.query(User).filter_by(id=2).first()
+
+        supervisor_id = supervisor.manager_id
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=240).first()
+
+        before = len(agent.customers)
+
+        employee_id = agent.employee_id
+
+        customer = db.session.query(Customer).filter_by(customer_id=717).first()
+
+        customer_id = customer.customer_id
+
+        assignment = agency.assign_agent(customer_id,employee_id,supervisor_id)
+
+        ragent,rcustomer = assignment
+
+        assert len(ragent.customers) == before + 1
+
+        assert ragent.name == "Christopher Lee"
+
+        assert rcustomer.name == "Rosalind Franklin"
+        assert rcustomer.agent_id == 240
+
+
+def test_assign_agent_errors(agency):
+
+        supervisor = db.session.query(User).filter_by(id=3).first()
+
+        supervisor_id = supervisor.manager_id
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=245).first()
+
+        before = len(agent.customers)
+
+        employee_id = agent.employee_id
+
+        customer = db.session.query(Customer).filter_by(customer_id=718).first()
+
+        customer_id = customer.customer_id
+
+        already_assigned = agency.assign_agent(customer_id,employee_id,supervisor_id)
+
+        # check return value of function call - None in this case
+        assert not already_assigned
+
+        with pytest.raises(Exception,match="This agent is not a member of your team"):
+                agency.assign_agent(716,255,102)
+
+        with pytest.raises(Exception,match="This TravelAgent does not have the required expert status"):
+                agency.assign_agent(720,280,102)
+
+        with pytest.raises(Exception,match="This TravelAgent is not assigned to the preferred country"):
+                agency.assign_agent(719,315,179)
+
+
+
 
 # TravelAgent
 
