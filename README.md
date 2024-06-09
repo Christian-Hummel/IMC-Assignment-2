@@ -92,7 +92,7 @@ get_activity_by_id() - displays attributes of an activity: activity_id, name, pr
 
 **Supervisor**
 
-assign_agent() - assigns an agent to counsel a customer
+assign_agent() - assigns an agent to counsel a customer - c
 
 add_agent() - introduces a new travel agent to the agency under his supervision - adds the supervisor attribute to this class - c
 
