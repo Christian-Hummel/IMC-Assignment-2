@@ -320,3 +320,157 @@ def test_get_supervisor_agents_error(client,agency):
     error = parsed["message"]
 
     assert error == "There are no travel agents under your supervision yet"
+
+def test_assign_agent_nexpertnpreference(client,agency):
+
+    response_customer = client.post("/customer/",json={
+        "name": "Tom Brady",
+        "address": "Champion Road 23, 2340 Tampa Bay",
+        "email": "No199@nflpatriots.us",
+        "budget": 25000,
+        "preference": "string"
+    })
+
+    parsed_customer = response_customer.get_json()
+    customer_response = parsed_customer["customer"]
+    customer_id = customer_response["customer_id"]
+
+
+    user = db.session.query(User).filter_by(id=2).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=240).first()
+
+    employee_id = agent.employee_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+
+
+    response = client.post(f"/supervisor/{employee_id}/assign", headers=headers, json={
+        "customer_id": customer_id
+    })
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+
+    assert parsed == "TravelAgent Christopher Lee has been assigned to Tom Brady"
+
+
+def test_assign_agent_expert(client,agency):
+
+    customer = db.session.query(Customer).filter_by(customer_id=720).first()
+
+    customer_id = customer.customer_id
+
+    customer.expert = True
+
+    user = db.session.query(User).filter_by(id=3).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=245).first()
+
+    employee_id = agent.employee_id
+
+
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.post(f"/supervisor/{employee_id}/assign", headers=headers, json={
+        "customer_id": customer_id
+    })
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+
+    assert parsed == "TravelAgent Philipp Lienhart has been assigned to Marie Tharp"
+
+
+
+def test_assign_agent_nexpertpreference(client,agency):
+
+    customer = db.session.query(Customer).filter_by(customer_id=719).first()
+
+    customer_id = customer.customer_id
+
+    user = db.session.query(User).filter_by(id=5).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=255).first()
+
+    employee_id = agent.employee_id
+
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.post(f"/supervisor/{employee_id}/assign", headers=headers, json={
+        "customer_id": customer_id
+    })
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+
+    assert parsed == "TravelAgent Jane Smith has been assigned to Alfred Nobel"
+
+
+def test_assign_agent_errors(client,agency):
+
+    customer = db.session.query(Customer).filter_by(customer_id=701).first()
+
+    customer_id = customer.customer_id
+
+    user = db.session.query(User).filter_by(id=6).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=260).first()
+
+    employee_id = agent.employee_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    # customer is already connected to a TravelAgent
+
+    response_assigned = client.post(f"/supervisor/{employee_id}/assign",headers=headers,json={
+        "customer_id": customer_id
+    })
+
+    assert response_assigned.status_code == 400
+
+    parsed_assigned = response_assigned.get_json()
+    error_assigned = parsed_assigned["message"]
+
+    assert error_assigned == "This customer has already been assigned to a TravelAgent"
+
+    # TravelAgent not registered in the agency
+
+    response_agent = client.post("supervisor/594/assign", headers=headers, json={
+        "customer_id": customer_id
+    })
+
+    assert response_agent.status_code == 400
+
+    parsed_agent = response_agent.get_json()
+    error_agent = parsed_agent["message"]
+
+    assert error_agent == "TravelAgent not found"
+
+    # Customer not registered in the agency
+
+    response_customer = client.post(f"supervisor/{employee_id}/assign", headers=headers, json={
+        "customer_id": 493
+    })
