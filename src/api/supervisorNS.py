@@ -151,6 +151,11 @@ customer_output_model = supervisor_ns.model("CustomerModel", {
                                       help="The unique identifier of a TravelAgent this customer is assigned to")
 })
 
+increase_model = supervisor_ns.model("TravelAgentSalaryRaiseModel", {
+    "percentage_increase": fields.Integer(required=True,
+                                          help="Increase of salary in percent, e.g. 3")
+})
+
 @supervisor_ns.route("/")
 class SupervisorAPI(Resource):
 
@@ -397,3 +402,55 @@ class AgencyCustomer(Resource):
             return customer
         elif not customer:
             return abort(400, message="Customer not found")
+
+    """
+    
+    waiting for offer table and functionality
+    
+    @supervisor_ns.route("/agent/<int:employee_id>/delete")
+    class SupervisorReleaseAgent(Resource):
+        method_decorators = [jwt_required()]
+
+        @supervisor_ns.doc(description="Release a travelAgent from the Agency", security="authorizationToken")
+        def delete(self, employee_id):
+
+            targeted_agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+
+            if not targeted_agent:
+                return abort(400, message="TravelAgent not found")
+
+            removed_agent = Agency.get_instance().remove_agent(employee_id)
+            
+            if removed_agent:
+                return jsonify(f"TravelAgent {removed_agent.name} with ID {removed_agent.employee_id} has been removed from the agency")
+            
+            elif not removed_agent:
+                return jsonify(f"This TravelAgent cannot be removed, customers cannot be transferred to other teammembers")
+                
+                """
+
+@supervisor_ns.route("/agent/<int:employee_id>/raise")
+class SupervisorRaise(Resource):
+    method_decorators = [jwt_required()]
+
+    @supervisor_ns.doc(increase_model,description="Increase the salary of a teammember", security="authorizationToken")
+    @supervisor_ns.expect(increase_model, validate=True)
+    def post(self, employee_id):
+
+        increase = supervisor_ns.payload["percentage_increase"] / 100
+
+        supervisor_id = current_user.manager_id
+
+        if increase <= 0:
+            return abort(400, message="Please insert a real number from 1 to 100")
+
+        result = Agency.get_instance().increase_agent_salary(supervisor_id,employee_id,increase)
+
+        if result:
+
+            return jsonify(f"TravelAgent {result.name} updated salary is {result.salary}")
+
+        elif not result:
+
+            return abort(400, message="This TravelAgent is not a member of your team")
+

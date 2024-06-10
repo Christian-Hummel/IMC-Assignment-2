@@ -149,6 +149,24 @@ class Agency(object):
             return customer
         elif not customer:
             return None
+
+
+    def increase_agent_salary(self,supervisor_id,employee_id,increase):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).first()
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
+
+        if agent not in supervisor.teammembers:
+            return None
+
+        elif agent in supervisor.teammembers:
+
+            agent.salary = agent.salary * (1 + increase)
+            db.session.commit()
+
+            return agent
+
 # TravelAgent
 
 
