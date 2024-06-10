@@ -50,9 +50,6 @@ cancel_trip() - reject an offer from the travel agent
 
 request_expert() - require an travel agent with expert status for country specified in preferences - c
 
-get_customer_by_id() - display attributes from customer: customer_id, name, email, address, budget
-
-get_all_customers() - show a list of all customers
 
 **TravelAgent**
 
@@ -91,6 +88,10 @@ get_activity_by_id() - displays attributes of an activity: activity_id, name, pr
 
 
 **Supervisor**
+
+get_customer_by_id() - display attributes from customer: customer_id, name, email, address, budget
+
+get_all_customers() - show a list of all customers
 
 assign_agent() - assigns an agent to counsel a customer - c
 
