@@ -69,6 +69,10 @@ class Customer(db.Model):
 
     agent_id = db.Column(db.Integer, db.ForeignKey('travel_agent.employee_id'), nullable=False)
 
+
+    def __str__(self):
+        return self.name
+
 # joined table country and activity
 country_activity = db.Table(
     'country_activity',
@@ -83,6 +87,9 @@ class Country(db.Model):
 
     activities = db.relationship('Activity', secondary='country_activity', back_populates='countries')
     agents = db.relationship('TravelAgent', secondary='agent_country', back_populates='countries')
+
+    def __str__(self):
+        return self.name
 
 class Activity(db.Model):
     __tablename__ = "activity"
