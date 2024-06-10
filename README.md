@@ -93,7 +93,7 @@ assign_agent() - assigns an agent to counsel a customer - c
 
 add_agent() - introduces a new travel agent to the agency under his supervision - adds the supervisor attribute to this class - c
 
-raise_salary() - increases the salary for a specific travel agent
+raise_salary() - increases the salary for a specific travel agent - c
 
 delete_agent() - removes an agent from the agency, all his customers will be transferred to one of his colleagues, if he is the only one left, he cannot be fired.
 
