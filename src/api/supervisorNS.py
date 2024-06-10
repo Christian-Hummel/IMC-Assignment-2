@@ -111,6 +111,21 @@ agent_assign_model = supervisor_ns.model("AgentAssignModel",{
                                   help="unique identifier of a registered customer")
 })
 
+customer_output_model = supervisor_ns.model("CustomerModel", {
+    "customer_id": fields.Integer(required=True,
+                                  help="unique identifier of a registered customer"),
+    "name": fields.String(required=True,
+                          help="The name of a customer, e.g. Harrison Ford"),
+    "address": fields.String(required=True,
+                             help="The address of a customer, e.g. Palm Beach 34, 2472 Miami"),
+    "email": fields.String(required=True,
+                           help="The email address of a customer"),
+    "budget": fields.Integer(required=True,
+                             help="The amount of money a customer is willing to spend for a trip"),
+    "travel_agent_id": fields.Integer(required=True,
+                                      help="The unique identifier of a TravelAgent this customer is assigned to")
+})
+
 @supervisor_ns.route("/")
 class SupervisorAPI(Resource):
 
@@ -316,3 +331,18 @@ class SupervisorAssignments(Resource):
         if not assignment:
             return abort(400,"This customer has already been assigned to a TravelAgent")
 
+@supervisor_ns.route("/customers")
+class AgencyCustomers(Resource):
+    method_decorators = [jwt_required()]
+
+    @supervisor_ns.doc(customer_output_model, description="Get information about all customers",security="authorizationToken")
+    @supervisor_ns.marshal_list_with(customer_output_model, envelope="customers")
+    def get(self):
+
+        customers = Agency.get_instance().get_all_customers()
+
+        if customers:
+            return customers
+
+        if not customers:
+            return abort(400, message="There are no customers currently registered")

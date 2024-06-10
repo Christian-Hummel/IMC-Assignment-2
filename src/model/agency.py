@@ -93,6 +93,14 @@ class Agency(object):
         elif customer.agent_id != 0:
             return None
 
+    def get_all_customers(self):
+
+        customers = db.session.query(Customer).all()
+
+        if len(customers):
+            return customers
+        elif not len(customers):
+            return None
 
 # TravelAgent
 
@@ -130,10 +138,10 @@ class Agency(object):
 
         countries = db.session.query(Country).order_by(Country.name).all()
 
-        if countries:
+        if len(countries):
             return countries
-        elif len(countries) == 0:
-            raise Exception("There are no countries registered")
+        elif not len(countries):
+            return None
 
 
     def get_country_by_id(self, country_id:int):
