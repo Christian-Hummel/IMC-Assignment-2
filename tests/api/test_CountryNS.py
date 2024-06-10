@@ -65,6 +65,21 @@ def test_get_country_by_id(client, agency):
     assert parsed["name"] == "Netherlands"
     assert len(parsed["activities"]) == 0
 
+
+def test_get_all_countries_error(client,agency):
+
+    empty = db.session.query(Country).delete()
+    db.session.commit()
+
+    response_countries = client.get("/country/")
+
+    assert response_countries.status_code == 400
+
+    parsed_countries = response_countries.get_json()
+    countries_error = parsed_countries["message"]
+
+    assert countries_error == "There are no countries registered in the agency"
+
 def test_get_country_by_id_error(client,agency):
 
     response = client.get("/country/482")
