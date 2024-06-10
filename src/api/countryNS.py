@@ -37,6 +37,11 @@ activity_output_model = country_ns.model("ActivityOutputModel",{
                             help="price of an activity")
 })
 
+delete_model = country_ns.model("ActivityDeleteModel", {
+    "activity_id": fields.Integer(required=True,
+                                 help="unique identifier of activity to be removed from this country")
+})
+
 # Country
 
 @country_ns.route("/")
@@ -143,3 +148,29 @@ class ActivityUpdate(Resource):
                 return abort(400, message="Please insert values to be updated")
 
 
+@country_ns.route("/<int:country_id>/activity/delete")
+class ActivityDelete(Resource):
+
+    @country_ns.doc(delete_model,description="Delete an Activity")
+    @country_ns.expect(delete_model, validate=True)
+    def delete(self,country_id):
+
+        activity_id = country_ns.payload["activity_id"]
+        # check if activity is registered
+        r_activity = db.session.query(Activity).filter_by(activity_id=activity_id).one_or_none()
+        # check if country is registered
+        country = db.session.query(Country).filter_by(country_id=country_id).one_or_none()
+
+        if not r_activity:
+            return abort(400, message="Activity not found")
+
+        if not country:
+            return abort(400, message="Country not found")
+
+        updated_country = Agency.get_instance().remove_activity(country,r_activity)
+
+        if updated_country:
+            return jsonify(f"Activity {r_activity.name} has been removed from {updated_country.name}")
+
+        elif not updated_country:
+            return abort(400, message="This activity does not belong to the specified country")

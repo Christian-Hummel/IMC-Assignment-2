@@ -273,3 +273,14 @@ class Agency(object):
                 activity.name = updated_activity.name
                 activity.price = updated_activity.price
                 db.session.commit()
+
+
+    def remove_activity(self, country:Country, r_activity:Activity):
+
+        for activity in country.activities:
+            if activity.activity_id == r_activity.activity_id:
+                country.activities.remove(activity)
+                db.session.commit()
+                return country
+        return None
+
