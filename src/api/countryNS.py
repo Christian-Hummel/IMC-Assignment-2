@@ -68,7 +68,7 @@ class CountryAPI(Resource):
         if countries:
             return countries
         elif not countries:
-            return jsonify("There are no countries registered in the database")
+            return abort(400,message="There are no countries registered in the agency")
 
 
 @country_ns.route("/<int:country_id>")
