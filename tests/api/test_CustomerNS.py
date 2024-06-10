@@ -59,3 +59,44 @@ def test_register_customer_errors(client,agency):
     error2 = parsed2["message"]
 
     assert error2 == "Customer already registered"
+
+
+def test_request_expert(client,agency):
+
+    customer = db.session.query(Customer).filter_by(customer_id=713).first()
+
+    customer_id = customer.customer_id
+
+    response = client.post(f"/customer/{customer_id}/expert")
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+
+    assert parsed == "You have requested to be assisted by an expert of Austria"
+
+
+def test_request_expert_errors(client,agency):
+
+    response_unregistered = client.post("/customer/524/expert")
+
+    assert response_unregistered.status_code == 400
+
+    parsed_unregistered = response_unregistered.get_json()
+    unregistered_error = parsed_unregistered["message"]
+
+    assert unregistered_error == "Customer not found"
+
+    customer = db.session.query(Customer).filter_by(customer_id=706).first()
+
+    customer_id = customer.customer_id
+
+    response_expert = client.post(f"/customer/{customer_id}/expert")
+
+    assert response_expert.status_code == 400
+
+    parsed_expert = response_expert.get_json()
+    expert_error = parsed_expert["message"]
+
+    assert expert_error == "You have already requested an expert"
+

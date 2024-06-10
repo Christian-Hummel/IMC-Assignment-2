@@ -232,6 +232,32 @@ def test_register_customer(agency):
         assert customer.agent_id == 0
 
 
+def test_request_expert(agency):
+
+        customer = db.session.query(Customer).filter_by(customer_id=712).first()
+
+        assert not customer.expert
+
+        expert_request = agency.request_expert(customer)
+
+        assert expert_request.name == "Thomas Edison"
+        assert expert_request.expert
+
+
+
+def test_request_expert_errors(agency):
+
+        customer1 = db.session.query(Customer).filter_by(customer_id=715).first()
+
+        expert_result = agency.request_expert(customer1)
+
+        assert not expert_result
+
+        customer2 = db.session.query(Customer).filter_by(customer_id=716).first()
+
+        with pytest.raises(ValueError,match="No country registered as a preference"):
+                agency.request_expert(customer2)
+
 # Country
 
 def test_add_country(agency):
