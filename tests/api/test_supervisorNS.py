@@ -185,15 +185,13 @@ def test_add_agent(client,agency):
 
     user = db.session.query(User).filter_by(id=13).first()
 
-    supervisor_id = user.manager_id
-
     access_token = create_access_token(user)
 
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
 
-    agent_response = client.post(f"/supervisor/{supervisor_id}/employee", headers=headers, json={
+    agent_response = client.post("/supervisor/employee", headers=headers, json={
         "name":"Keanu Reeves",
         "address": "Runaway Street 24, 3829 Minnesota",
         "salary": 3000,
@@ -221,15 +219,13 @@ def test_add_agent_errors(client,agency):
 
     user = db.session.query(User).filter_by(id=15).first()
 
-    supervisor_id = user.manager_id
-
     access_token = create_access_token(user)
 
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
 
-    response1 = client.post(f"/supervisor/{supervisor_id}/employee", headers=headers, json={
+    response1 = client.post(f"/supervisor/employee", headers=headers, json={
         "name": "Franz",
         "address":"Baumgartenweg 23, 4728 Kottingbrunn",
         "salary": 2900,
@@ -243,7 +239,7 @@ def test_add_agent_errors(client,agency):
 
     assert error1 == "Please insert your first and last name seperated by a space"
 
-    response2 = client.post(f"/supervisor/{supervisor_id}/employee", headers=headers, json={
+    response2 = client.post(f"/supervisor/employee", headers=headers, json={
         "name": "Franz",
         "address":"Baumgartenweg 23, 4728 Kottingbrunn",
         "salary": 5000,
@@ -260,9 +256,7 @@ def test_add_agent_errors(client,agency):
 
 def test_get_supervisor_info(client,agency):
 
-    user = db.session.query(User).filter_by(id=14).first()
-
-    supervisor_id = user.manager_id
+    user = db.session.query(User).filter_by(id=4).first()
 
     access_token = create_access_token(user)
 
@@ -270,12 +264,42 @@ def test_get_supervisor_info(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
+    supervisor_id = user.manager_id
 
-    supervisor_response = client.get("/supervisor/info", headers=headers)
+
+    response_supervisor = client.get(f"/supervisor/{supervisor_id}/info", headers=headers)
 
 
-    assert supervisor_response.status_code == 200
+    assert response_supervisor.status_code == 200
 
+    parsed_supervisor = response_supervisor.get_json()
+    supervisor_response = parsed_supervisor["supervisor"]
+
+    assert supervisor_response["name"] == "Scarlett Johansson"
+    assert supervisor_response["address"] == "101 Maple Road, Smallville"
+    assert supervisor_response["email"] == "Scarlett.Johansson@hammertrips.com"
+    assert supervisor_response["salary"] == 18234
+    assert supervisor_response["nationality"] == "USA"
+
+
+def test_get_supervisor_info_error(client,agency):
+
+    user = db.session.query(User).filter_by(id=4).first()
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.get("/supervisor/382/info", headers=headers)
+
+    assert response.status_code == 400
+
+    parsed = response.get_json()
+    error = parsed["message"]
+
+    assert error == "Supervisor not found"
 
 def test_get_supervisor_agents(client,agency):
 
@@ -350,7 +374,7 @@ def test_assign_agent_nexpertnpreference(client,agency):
 
 
 
-    response = client.post(f"/supervisor/{employee_id}/assign", headers=headers, json={
+    response = client.post(f"/supervisor/assign/{employee_id}", headers=headers, json={
         "customer_id": customer_id
     })
 
@@ -383,7 +407,7 @@ def test_assign_agent_expert(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
-    response = client.post(f"/supervisor/{employee_id}/assign", headers=headers, json={
+    response = client.post(f"/supervisor/assign/{employee_id}", headers=headers, json={
         "customer_id": customer_id
     })
 
@@ -414,7 +438,7 @@ def test_assign_agent_nexpertpreference(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
-    response = client.post(f"/supervisor/{employee_id}/assign", headers=headers, json={
+    response = client.post(f"/supervisor/assign/{employee_id}", headers=headers, json={
         "customer_id": customer_id
     })
 
@@ -445,7 +469,7 @@ def test_assign_agent_errors(client,agency):
 
     # customer is already connected to a TravelAgent
 
-    response_assigned = client.post(f"/supervisor/{employee_id}/assign",headers=headers,json={
+    response_assigned = client.post(f"/supervisor/assign/{employee_id}",headers=headers,json={
         "customer_id": customer_id
     })
 
@@ -458,7 +482,7 @@ def test_assign_agent_errors(client,agency):
 
     # TravelAgent not registered in the agency
 
-    response_agent = client.post("supervisor/594/assign", headers=headers, json={
+    response_agent = client.post("supervisor/assign/594", headers=headers, json={
         "customer_id": customer_id
     })
 
@@ -471,9 +495,16 @@ def test_assign_agent_errors(client,agency):
 
     # Customer not registered in the agency
 
-    response_customer = client.post(f"supervisor/{employee_id}/assign", headers=headers, json={
+    response_customer = client.post(f"supervisor/assign/{employee_id}", headers=headers, json={
         "customer_id": 493
     })
+
+    assert response_customer.status_code == 400
+
+    parsed_customer = response_customer.get_json()
+    error_customer = parsed_customer["message"]
+
+    assert error_customer == "Customer not found"
 
 def test_get_all_customers(client,agency):
 
@@ -530,7 +561,7 @@ def test_get_customer_by_id(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
-    response = client.get("supervisor/719/customer", headers=headers)
+    response = client.get("supervisor/customer/719", headers=headers)
 
     assert response.status_code == 200
 
@@ -556,7 +587,7 @@ def test_get_customer_by_id_error(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
-    response = client.get("supervisor/345/customer", headers=headers)
+    response = client.get("supervisor/customer/345", headers=headers)
 
     assert response.status_code == 400
 
