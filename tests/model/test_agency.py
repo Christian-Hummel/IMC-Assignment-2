@@ -221,6 +221,24 @@ def test_get_all_customers_error(agency):
 
         assert not customers
 
+def test_get_customer_by_id(agency):
+
+        customer = agency.get_customer_by_id(720)
+
+        assert customer.name == "Marie Tharp"
+        assert customer.address == "Ocean Avenue 4, 1001 New York"
+        assert customer.email == "Marie.Tharp@geology.us"
+        assert customer.budget == 21000
+        assert customer.preference == "Austria"
+        assert customer.expert
+        assert customer.agent_id == 0
+
+def test_get_customer_by_id_error(agency):
+
+        customer = agency.get_customer_by_id(493)
+
+        assert not customer
+
 # TravelAgent
 
 

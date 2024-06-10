@@ -518,3 +518,49 @@ def test_get_all_customers_error(client,agency):
     customers_error = parsed_customers["message"]
 
     assert customers_error == "There are no customers currently registered"
+
+
+def test_get_customer_by_id(client,agency):
+
+    user = db.session.query(User).filter_by(id=2).first()
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.get("supervisor/719/customer", headers=headers)
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+    customer_response = parsed["customer"]
+
+    assert customer_response["name"] == "Alfred Nobel"
+    assert customer_response["address"] == "Mining Road 5, 1120 Stockholm"
+    assert customer_response["email"] == "Alfred.Nobel@chemistry.se"
+    assert customer_response["budget"] == 27000
+    assert customer_response["preference"] == "France"
+    assert not customer_response["expert"]
+    assert not customer_response["travel_agent_id"]
+
+
+def test_get_customer_by_id_error(client,agency):
+
+    user = db.session.query(User).filter_by(id=2).first()
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.get("supervisor/345/customer", headers=headers)
+
+    assert response.status_code == 400
+
+    parsed = response.get_json()
+    error = parsed["message"]
+
+    assert error == "Customer not found"
