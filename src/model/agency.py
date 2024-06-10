@@ -104,6 +104,20 @@ class Agency(object):
         db.session.add(new_customer)
         db.session.commit()
 
+
+    def request_expert(self, customer:Customer):
+
+        if customer.preference == "None":
+            raise ValueError("No country registered as a preference")
+
+        elif customer.preference != "None" and not customer.expert:
+            customer.expert = True
+            db.session.commit()
+            return customer
+
+        else:
+            return None
+
 # Country
 
     def add_country(self, new_country:Country):

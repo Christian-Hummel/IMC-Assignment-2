@@ -57,9 +57,9 @@ class CustomerAPI(Resource):
         same_customer = db.session.query(Customer).filter_by(name=new_customer.name).first()
 
         if not same_customer:
-            if customer_ns.payload["preference"] != "String":
+            if customer_ns.payload["preference"] != "string":
                 new_customer.preference = customer_ns.payload["preference"]
-            elif customer_ns.payload["preference"] == "String":
+            elif customer_ns.payload["preference"] == "string":
                 new_customer.preference = "None"
 
             if new_customer.budget <= 0:
@@ -72,3 +72,24 @@ class CustomerAPI(Resource):
 
         elif same_customer:
             return abort(400, message="Customer already registered")
+
+@customer_ns.route("/<int:customer_id>/expert")
+class CustomerExpert(Resource):
+
+    @customer_ns.doc(description="Request an expert for the desired preference")
+    def post(self, customer_id):
+
+        customer = db.session.query(Customer).filter_by(customer_id=customer_id).one_or_none()
+
+        if not customer:
+            return abort(400, message="Customer not found")
+
+        if customer:
+
+            requested_customer = Agency.get_instance().request_expert(customer)
+
+            if requested_customer:
+                return jsonify(f"You have requested to be assisted by an expert of {requested_customer.preference}")
+            elif not requested_customer:
+                return abort(400, message="You have already requested an expert")
+
