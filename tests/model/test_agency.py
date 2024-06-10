@@ -206,6 +206,20 @@ def test_assign_agent_errors(agency):
 
 
 
+def test_get_all_customers(agency):
+
+        count = Customer.query.count()
+
+        customers = agency.get_all_customers()
+
+        assert count == len(customers)
+
+def test_get_all_customers_error(agency):
+        empty = db.session.query(Customer).delete()
+
+        customers = agency.get_all_customers()
+
+        assert not customers
 
 # TravelAgent
 
@@ -281,7 +295,7 @@ def test_get_all_countries(agency):
 
         countries = agency.get_all_countries()
 
-        assert len(countries) == count
+        assert count == len(countries)
 
 def test_get_all_countries_error(agency):
 
@@ -289,8 +303,9 @@ def test_get_all_countries_error(agency):
         db.session.commit()
 
 
-        with pytest.raises(Exception,match="There are no countries registered"):
-                agency.get_all_countries()
+        result = agency.get_all_countries()
+
+        assert not result
 
 
 def test_get_country_by_id(agency):

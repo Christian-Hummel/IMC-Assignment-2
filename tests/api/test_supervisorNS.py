@@ -474,3 +474,47 @@ def test_assign_agent_errors(client,agency):
     response_customer = client.post(f"supervisor/{employee_id}/assign", headers=headers, json={
         "customer_id": 493
     })
+
+def test_get_all_customers(client,agency):
+
+    user = db.session.query(User).filter_by(id=2).first()
+
+    count = Customer.query.count()
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response_customers = client.get("/supervisor/customers", headers=headers)
+
+    assert response_customers.status_code == 200
+
+    parsed_customers = response_customers.get_json()
+
+    customers_response = parsed_customers["customers"]
+
+    assert count == len(customers_response)
+
+
+def test_get_all_customers_error(client,agency):
+
+    empty = db.session.query(Customer).delete()
+
+    user = db.session.query(User).filter_by(id=2).first()
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response_customers = client.get("/supervisor/customers", headers=headers)
+
+    assert response_customers.status_code == 400
+
+    parsed_customers = response_customers.get_json()
+    customers_error = parsed_customers["message"]
+
+    assert customers_error == "There are no customers currently registered"
