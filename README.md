@@ -62,8 +62,6 @@ request_raise() - send a request to the respective supervisor to get an increase
 
 get_agent_stats() - shows the number of customers, the total revenue he produced and the amount of trips he sold
 
-get_agent_by_id() - displays travel agent attributes: employer_ID, name, email, address, salary, nationality,
-
 update_agent() - allows to update following attributes: name, email, address
 
 
@@ -102,7 +100,9 @@ delete_agent() - removes an agent from the agency, all his customers will be tra
 
 set_discount() - lowers the price for the total price of an offer by a set percentage 
 
-show_all_agents() - displays information about all agents he or she supervises: employer_ID, name, email, address, salary, nationality,
+show_all_agents() - displays information about all agents he or she supervises: employer_ID, name, email, address, salary, nationality, countries, customers, supervisor_id
+
+get_agent_by_id() - displays travel agent attributes: employer_ID, name, email, address, salary, nationality, countries, customers, supervisor_id
 
 get_supervisor_by_id() - displays supervisor attributes: employer_ID, name, email, address, salary, nationality and number of travel agents under his supervision
 
