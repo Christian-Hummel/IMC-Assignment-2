@@ -1,7 +1,7 @@
 from typing import List, Union, Optional
 
 
-from ..database import Supervisor, TravelAgent, Customer, Country, Activity, User, db
+from ..database import Supervisor, TravelAgent, Customer, Country, Activity, User, agent_country, db
 
 
 
@@ -35,9 +35,36 @@ class Agency(object):
 
     def add_travelagent(self, new_agent: TravelAgent):
 
+        expert = new_agent.nationality
+        # check if the country of the expert status already exists
+        expert_country = db.session.query(Country).filter_by(name=expert).one_or_none()
+
+        # register expert country if it is already in the agency
+        if expert_country:
+            new_agent.countries.append(expert_country)
+
+        # register country if it does not exist
+        elif not expert_country:
+            new_country = Country(country_id=id(self),name=expert)
+            db.session.add(new_country)
+            new_agent.countries.append(new_country)
+
         db.session.add(new_agent)
         db.session.commit()
 
+
+    def get_supervisor_by_id(self, supervisor_id):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).one_or_none()
+
+        if supervisor:
+            # add number of people working in the team
+            supervisor.nr_of_teammembers = len(supervisor.teammembers)
+            # return the supervisor
+            return supervisor
+
+        elif not supervisor:
+            return None
 
     def show_all_agents(self,supervisor_id):
 
@@ -49,6 +76,18 @@ class Agency(object):
             return team
         else:
             return None
+
+    def get_agent_by_id(self, employee_id):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+
+        if agent:
+            return agent
+
+        elif not agent:
+            return None
+
+
 
 
     def assign_agent(self, customer_id, agent_id, supervisor_id):
