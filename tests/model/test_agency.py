@@ -67,7 +67,30 @@ def test_add_agent(agency):
         assert agent.nationality == "Germany"
         assert agent.supervisor_id == 135
 
+        print(agent.countries)
+        print(agent.nationality)
 
+
+def test_get_supervisor_info(agency):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=78).first()
+
+        supervisor_id = supervisor.employee_id
+
+        supervisor_info = agency.get_supervisor_by_id(supervisor_id)
+
+        assert supervisor_info.name == "Robert Downey Jr."
+        assert supervisor_info.address == "404 Willow Way, Coast City"
+        assert supervisor_info.email == "Robert.Downey@hammertrips.com"
+        assert supervisor_info.salary == 28945
+        assert supervisor_info.nationality == "USA"
+        assert supervisor_info.nr_of_teammembers == 1
+
+def test_get_supervisor_info_error(agency):
+
+        result_supervisor = agency.get_supervisor_by_id(439)
+
+        assert not result_supervisor
 
 def test_get_supervisor_agents(agency):
 
