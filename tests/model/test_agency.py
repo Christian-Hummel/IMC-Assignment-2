@@ -67,8 +67,6 @@ def test_add_agent(agency):
         assert agent.nationality == "Germany"
         assert agent.supervisor_id == 135
 
-        print(agent.countries)
-        print(agent.nationality)
 
 
 def test_get_supervisor_info(agency):
@@ -261,6 +259,32 @@ def test_get_customer_by_id_error(agency):
         customer = agency.get_customer_by_id(493)
 
         assert not customer
+
+
+def test_get_agent_by_id(agency):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=255).first()
+
+        employee_id = agent.employee_id
+
+        agent_info = agency.get_agent_by_id(employee_id)
+
+        assert agent_info.name == "Jane Smith"
+        assert agent_info.address == "Elm Street 12, 5678 Gotham"
+        assert agent.email == "Jane.Smith@hammertrips.com"
+        assert agent.salary == 3200
+        assert agent.nationality == "Canada"
+        assert len(agent.countries) == 3
+        assert len(agent.customers) == 1
+        assert agent.supervisor_id == 56
+
+
+def test_get_agent_by_id_error(agency):
+
+
+        agent_result = agency.get_agent_by_id(463)
+
+        assert not agent_result
 
 # TravelAgent
 
