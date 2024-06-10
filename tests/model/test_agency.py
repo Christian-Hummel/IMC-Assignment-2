@@ -286,6 +286,41 @@ def test_get_agent_by_id_error(agency):
 
         assert not agent_result
 
+def test_increase_agent_salary(agency):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=91).first()
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=275).first()
+
+        supervisor_id = supervisor.employee_id
+
+        employee_id = agent.employee_id
+
+        increase = 0.05
+
+        assert agent.salary == 3200
+
+        result = agency.increase_agent_salary(supervisor_id,employee_id,increase)
+
+        assert result.name == "Sarah Wilson"
+        assert result.salary == 3360
+
+def test_increase_agent_salary_error(agency):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=91).first()
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=250).first()
+
+        supervisor_id = supervisor.employee_id
+
+        employee_id = agent.employee_id
+
+        increase = 0.05
+
+        result = agency.increase_agent_salary(supervisor_id,employee_id,increase)
+
+        assert not result
+
 # TravelAgent
 
 

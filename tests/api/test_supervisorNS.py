@@ -634,8 +634,6 @@ def test_get_agent_by_id_error(client,agency):
 
     agent = db.session.query(TravelAgent).filter_by(employee_id=255).first()
 
-    employee_id = agent.employee_id
-
     access_token = create_access_token(user)
 
     headers = {
@@ -650,3 +648,66 @@ def test_get_agent_by_id_error(client,agency):
     error = parsed["message"]
 
     assert error == "TravelAgent not found"
+
+
+def test_increase_agent_salary(client,agency):
+
+    user = db.session.query(User).filter_by(id=7).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=265).first()
+
+    employee_id = agent.employee_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    assert agent.salary == 3300
+
+    response_raise = client.post(f"/supervisor/agent/{employee_id}/raise", headers=headers, json={
+        "percentage_increase": 5
+    })
+
+    assert response_raise.status_code == 200
+
+    parsed_raise = response_raise.get_json()
+
+    assert parsed_raise == "TravelAgent Emily Davis updated salary is 3465"
+
+def test_increase_agent_salary_errors(client,agency):
+
+    user = db.session.query(User).filter_by(id=7).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=265).first()
+
+    employee_id = agent.employee_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response_invalid = client.post(f"/supervisor/agent/{employee_id}/raise", headers=headers,json={
+        "percentage_increase": 0
+    })
+
+    assert response_invalid.status_code == 400
+
+    parsed_invalid = response_invalid.get_json()
+    error1 = parsed_invalid["message"]
+
+    assert error1 == "Please insert a real number from 1 to 100"
+
+    response_diffteam = client.post("/supervisor/agent/280/raise", headers=headers, json={
+        "percentage_increase": 40
+    })
+
+    assert response_diffteam.status_code == 400
+
+    parsed_diffteam = response_diffteam.get_json()
+    error2 = parsed_diffteam["message"]
+
+    assert error2 == "This TravelAgent is not a member of your team"
