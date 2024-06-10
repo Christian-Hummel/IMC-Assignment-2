@@ -57,10 +57,6 @@ present_offer() - sends a possible trip recommendation to the customer, it canno
 
 request_raise() - send a request to the respective supervisor to get an increase in salary
 
-get_agent_stats() - shows the number of customers, the total revenue he produced and the amount of trips he sold
-
-get_agent_by_id() - displays travel agent attributes: employer_ID, name, email, address, salary, nationality,
-
 update_agent() - allows to update following attributes: name, email, address
 
 
@@ -101,7 +97,11 @@ raise_salary() - increases the salary for a specific travel agent
 
 delete_agent() - removes an agent from the agency, all his customers will be transferred to one of his colleagues, if he is the only one left, he cannot be fired.
 
-set_discount() - lowers the price for the total price of an offer by a set percentage 
+set_discount() - lowers the price for the total price of an offer by a set percentage
+
+get_agent_stats() - shows the number of customers, the total revenue he produced and the amount of trips he sold
+
+get_agent_by_id() - displays travel agent attributes: employer_ID, name, email, address, salary, nationality, supervisor_id
 
 show_all_agents() - displays information about all agents he or she supervises: employer_ID, name, email, address, salary, nationality, - c
 
