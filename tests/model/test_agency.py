@@ -472,3 +472,25 @@ def test_update_activity_errors(agency):
 
         with pytest.raises(ValueError,match="Invalid Price"):
                 agency.update_activity(invalid_price,909)
+
+
+def test_remove_activity(agency):
+
+        country = db.session.query(Country).filter_by(country_id=911).first()
+        activity = db.session.query(Activity).filter_by(activity_id=611).first()
+
+
+        assert "Stadion Tour" in [activity.name for activity in country.activities]
+
+        result = agency.remove_activity(country,activity)
+
+        assert not "Stadion Tour" in [activity.name for activity in country.activities]
+
+def test_remove_activity_error(agency):
+
+        country = db.session.query(Country).filter_by(country_id=911).first()
+        activity = db.session.query(Activity).filter_by(activity_id=613).first()
+
+        result = agency.remove_activity(country,activity)
+
+        assert not result

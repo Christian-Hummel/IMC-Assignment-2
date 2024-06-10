@@ -217,3 +217,63 @@ def test_update_activity_errors(client,agency):
 
     assert default_error2 == "Please insert values to be updated"
 
+def test_remove_activity(client,agency):
+
+    country = db.session.query(Country).filter_by(country_id=904).first()
+    activity = db.session.query(Activity).filter_by(activity_id=604).first()
+
+    country_id = country.country_id
+    activity_id = activity.activity_id
+
+    response_delete = client.delete(f"/country/{country_id}/activity/delete",json={
+        "activity_id": activity_id
+    })
+
+
+    assert response_delete.status_code == 200
+
+    parsed = response_delete.get_json()
+
+    assert parsed == "Activity Edingburgh Castle has been removed from Scotland"
+
+def test_remove_activity_errors(client,agency):
+
+
+    country = db.session.query(Country).filter_by(country_id=916).first()
+    activity = db.session.query(Activity).filter_by(activity_id=603).first()
+
+    country_id = country.country_id
+    activity_id = activity.activity_id
+
+    response_inv_country = client.delete("/country/438/activity/delete", json={
+        "activity_id": activity_id
+    })
+
+    assert response_inv_country.status_code == 400
+
+    parsed_country = response_inv_country.get_json()
+    country_error = parsed_country["message"]
+
+    assert country_error == "Country not found"
+
+    response_inv_activity = client.delete(f"/country/{country_id}/activity/delete", json={
+        "activity_id": 593
+    })
+
+    assert response_inv_activity.status_code == 400
+
+    parsed_activity = response_inv_activity.get_json()
+    activity_error = parsed_activity["message"]
+
+    assert activity_error == "Activity not found"
+
+    response_wcountry = client.delete(f"/country/{country_id}/activity/delete", json={
+        "activity_id": 614
+    })
+
+    assert response_wcountry.status_code == 400
+
+    parsed_wcountry = response_wcountry.get_json()
+    wcountry_error = parsed_wcountry["message"]
+
+    assert wcountry_error == "This activity does not belong to the specified country"
