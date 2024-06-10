@@ -122,6 +122,10 @@ customer_output_model = supervisor_ns.model("CustomerModel", {
                            help="The email address of a customer"),
     "budget": fields.Integer(required=True,
                              help="The amount of money a customer is willing to spend for a trip"),
+    "preference": fields.String(required=True,
+                                help="The preferred country of a customer, e.g. Kanada"),
+    "expert": fields.Boolean(required=True,
+                             help="Status for the request of an expert of the preffered country"),
     "travel_agent_id": fields.Integer(required=True,
                                       help="The unique identifier of a TravelAgent this customer is assigned to")
 })
@@ -346,3 +350,20 @@ class AgencyCustomers(Resource):
 
         if not customers:
             return abort(400, message="There are no customers currently registered")
+
+
+@supervisor_ns.route("/<int:customer_id>/customer")
+class AgencyCustomer(Resource):
+    method_decorators = [jwt_required()]
+
+    @supervisor_ns.doc(customer_output_model,description="Get information about a customer", security="authorizationToken")
+    @supervisor_ns.marshal_with(customer_output_model, envelope="customer")
+    def get(self,customer_id):
+
+
+        customer = Agency.get_instance().get_customer_by_id(customer_id)
+
+        if customer:
+            return customer
+        elif not customer:
+            return abort(400, message="Customer not found")

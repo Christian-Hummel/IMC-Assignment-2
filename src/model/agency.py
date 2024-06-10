@@ -102,6 +102,14 @@ class Agency(object):
         elif not len(customers):
             return None
 
+    def get_customer_by_id(self,customer_id):
+
+        customer = db.session.query(Customer).filter_by(customer_id=customer_id).one_or_none()
+
+        if customer:
+            return customer
+        elif not customer:
+            return None
 # TravelAgent
 
 
