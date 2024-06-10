@@ -110,7 +110,7 @@ class ActivityAPI(Resource):
         return new_activity
 
 
-@country_ns.route("/<int:country_id>/update")
+@country_ns.route("/<int:country_id>/activity/update")
 class ActivityUpdate(Resource):
 
     @country_ns.doc(activity_output_model, description="Update an activity")
@@ -122,9 +122,13 @@ class ActivityUpdate(Resource):
         activity_id = country_ns.payload["activity_id"]
         # check if this activity exists
         targeted_activity = db.session.query(Activity).filter_by(activity_id=activity_id).one_or_none()
+        targeted_country = db.session.query(Country).filter_by(country_id=country_id).one_or_none()
 
         if not targeted_activity: # throw an error if it is not registered
             return abort(400, message="Activity not found")
+
+        if not targeted_country: # throw an error if country is not registered
+            return abort(400, message="Country not found")
 
         elif targeted_activity:
             activity_id = targeted_activity.activity_id
