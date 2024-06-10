@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_tok
 from werkzeug.security import generate_password_hash,check_password_hash
 
 from ..model.agency import Agency
-from ..database import Supervisor, TravelAgent, Customer,  User, db
+from ..database import Supervisor, TravelAgent, Customer, User, agent_country, db
 
 authorizations = {
     "authorizationToken":{
@@ -101,6 +101,27 @@ employee_output_model = supervisor_ns.model("EmployeeOutputModel", {
                              help="monthly salary of a travel agent, e.g. 20000"),
     "nationality": fields.String(required=True,
                                  help="nationality of a travel Agent e.g. Ecuador"),
+    "supervisor_id": fields.Integer(required=False,
+                                    help="unique identifier of the supervisor of this agent")
+})
+
+agent_info_model = supervisor_ns.model("TravelAgentDetailsModel", {
+    "employee_id": fields.Integer(required=False,
+                                  help="the unique identifier of a travel agent"),
+    "name": fields.String(required=True,
+                          help="name of a travel agent e.g. Jonathan Franks"),
+    "address": fields.String(required=True,
+                             help="address of a travel agent e.g. Mysterious Road 44, 3829 Los Angeles"),
+    "email": fields.String(required=False,
+                           help="email address of a travel agent e.g. Jonathan.Frank@hammertrips.com"),
+    "salary": fields.Integer(required=False,
+                             help="monthly salary of a travel agent, e.g. 20000"),
+    "nationality": fields.String(required=True,
+                                 help="nationality of a travel Agent e.g. Ecuador"),
+    "customers": fields.List(fields.String(),required=True,
+                             help="Customers of this agent"),
+    "countries": fields.List(fields.String(),required=True,
+                             help="Countries this agent is registered for"),
     "supervisor_id": fields.Integer(required=False,
                                     help="unique identifier of the supervisor of this agent")
 })
@@ -222,7 +243,7 @@ class UserLogin(Resource):
             return {"access_token": create_access_token(user)}
 
 
-@supervisor_ns.route("/<int:supervisor_id>/employee")
+@supervisor_ns.route("/employee")
 class EmployAgent(Resource):
     method_decorators = [jwt_required()]
 
@@ -230,7 +251,7 @@ class EmployAgent(Resource):
     @supervisor_ns.doc(employee_model,description="Add a new travelAgent",security="authorizationToken")
     @supervisor_ns.expect(employee_model, validate=True)
     @supervisor_ns.marshal_with(employee_output_model, envelope="travelAgent")
-    def post(self, supervisor_id):
+    def post(self):
 
 
         new_agent = TravelAgent(employee_id=id(self),
@@ -238,11 +259,6 @@ class EmployAgent(Resource):
                                 address=supervisor_ns.payload["address"],
                                 salary=supervisor_ns.payload["salary"],
                                 nationality=supervisor_ns.payload["nationality"])
-
-
-        # throw an error if the supervisor_id does not exist
-        supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
-
 
         # set salary to a minimum if not set to a higher amount
         if new_agent.salary < 2000:
@@ -258,9 +274,7 @@ class EmployAgent(Resource):
             return abort(400, message="Please insert your first and last name seperated by a space")
         # set role to supervisor
         new_agent.role = "travelAgent"
-
         # assign supervisor_id
-
         new_agent.supervisor_id = current_user.manager_id
 
         # transfer new supervisor to the agency
@@ -269,20 +283,21 @@ class EmployAgent(Resource):
         # return the supervisor
         return new_agent
 
-@supervisor_ns.route("/info")
+@supervisor_ns.route("/<int:supervisor_id>/info")
 class SupervisorInfo(Resource):
     method_decorators = [jwt_required()]
 
     @supervisor_ns.doc(description="Information about a supervisor", security="authorizationToken")
     @supervisor_ns.marshal_with(supervisor_info_model,envelope="supervisor")
-    def get(self):
+    def get(self,supervisor_id):
 
 
-        supervisor = db.session.query(Supervisor).filter_by(employee_id=current_user.manager_id).first()
-        # add number of people working in your team
-        supervisor.nr_of_teammembers = len(supervisor.teammembers)
-        # return the supervisor
-        return supervisor
+        targeted_supervisor = Agency.get_instance().get_supervisor_by_id(supervisor_id)
+
+        if targeted_supervisor:
+            return targeted_supervisor
+        elif not targeted_supervisor:
+            return abort(400, message="Supervisor not found")
 
 @supervisor_ns.route("/team")
 class SupervisorAgents(Resource):
@@ -301,8 +316,23 @@ class SupervisorAgents(Resource):
         elif not team: # if there are no travel agents under your supervision yet throw an error
             return abort(400, message="There are no travel agents under your supervision yet")
 
+@supervisor_ns.route("/agent/<int:employee_id>")
+class AgentInfo(Resource):
+    method_decorators = [jwt_required()]
 
-@supervisor_ns.route("/<int:employee_id>/assign")
+    @supervisor_ns.doc("Get Information about a TravelAgent",security="authorizationToken")
+    @supervisor_ns.marshal_with(agent_info_model, envelope="travelAgent")
+    def get(self, employee_id):
+
+        agent_info = Agency.get_instance().get_agent_by_id(employee_id)
+
+        if agent_info:
+            return agent_info
+        elif not agent_info:
+            return abort(400, message="TravelAgent not found")
+
+
+@supervisor_ns.route("/assign/<int:employee_id>")
 class SupervisorAssignments(Resource):
     method_decorators = [jwt_required()]
 
@@ -352,7 +382,7 @@ class AgencyCustomers(Resource):
             return abort(400, message="There are no customers currently registered")
 
 
-@supervisor_ns.route("/<int:customer_id>/customer")
+@supervisor_ns.route("/customer/<int:customer_id>")
 class AgencyCustomer(Resource):
     method_decorators = [jwt_required()]
 
