@@ -85,7 +85,7 @@ get_activity_by_id() - displays attributes of an activity: activity_id, name, pr
 
 **Supervisor**
 
-get_customer_by_id() - display attributes from customer: customer_id, name, email, address, budget
+get_customer_by_id() - display attributes from customer: customer_id, name, email, address, budget, preference, expert, TravelAgent_id - c
 
 get_all_customers() - show a list of all customers - c
 
