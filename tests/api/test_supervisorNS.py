@@ -595,3 +595,58 @@ def test_get_customer_by_id_error(client,agency):
     error = parsed["message"]
 
     assert error == "Customer not found"
+
+
+def test_get_agent_by_id(client,agency):
+
+    user = db.session.query(User).filter_by(id=2).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=255).first()
+
+    employee_id = agent.employee_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.get(f"/supervisor/agent/{employee_id}", headers=headers)
+
+    assert response.status_code == 200
+
+    parsed_agent = response.get_json()
+
+    agent_response = parsed_agent["travelAgent"]
+
+    assert agent_response["name"] == "Jane Smith"
+    assert agent_response["address"] =="Elm Street 12, 5678 Gotham"
+    assert agent_response["email"] == "Jane.Smith@hammertrips.com"
+    assert agent_response["salary"] == 3200
+    assert agent_response["nationality"] == "Canada"
+    assert len(agent_response["customers"]) == 1
+    assert len(agent_response["countries"]) == 3
+    assert agent_response["supervisor_id"] == 56
+
+
+def test_get_agent_by_id_error(client,agency):
+    user = db.session.query(User).filter_by(id=2).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=255).first()
+
+    employee_id = agent.employee_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.get("/supervisor/agent/483", headers=headers)
+
+    assert response.status_code == 400
+
+    parsed = response.get_json()
+    error = parsed["message"]
+
+    assert error == "TravelAgent not found"
