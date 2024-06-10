@@ -91,7 +91,7 @@ get_activity_by_id() - displays attributes of an activity: activity_id, name, pr
 
 get_customer_by_id() - display attributes from customer: customer_id, name, email, address, budget
 
-get_all_customers() - show a list of all customers
+get_all_customers() - show a list of all customers - c
 
 assign_agent() - assigns an agent to counsel a customer - c
 
