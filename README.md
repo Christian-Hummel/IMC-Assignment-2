@@ -101,7 +101,7 @@ set_discount() - lowers the price for the total price of an offer by a set perce
 
 get_agent_stats() - shows the number of customers, the total revenue he produced and the amount of trips he sold
 
-get_agent_by_id() - displays travel agent attributes: employer_ID, name, email, address, salary, nationality, supervisor_id
+get_agent_by_id() - displays travel agent attributes: employer_ID, name, email, address, salary, nationality, supervisor_id - c
 
 show_all_agents() - displays information about all agents he or she supervises: employer_ID, name, email, address, salary, nationality, - c
 
