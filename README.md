@@ -77,7 +77,7 @@ add_activity() - connects an activity to a country - c
 
 update_activity() - enables to change the name and the price of an activity - c
 
-delete_activity() - removes an activity from the agency
+delete_activity() - removes an activity from the agency - c
 
 get_activity_by_id() - displays attributes of an activity: activity_id, name, price
 
