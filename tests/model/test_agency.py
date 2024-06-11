@@ -321,6 +321,33 @@ def test_increase_agent_salary_error(agency):
 
         assert not result
 
+def test_assign_country(agency):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=113).first()
+        agent = db.session.query(TravelAgent).filter_by(employee_id=285).first()
+        country = db.session.query(Country).filter_by(country_id=909).first()
+
+        before = len(agent.countries)
+
+        result = agency.assign_country(country,agent,supervisor)
+
+        assert result.name == "Emma Taylor"
+        assert len(agent.countries) == before + 1
+
+def test_assign_country_errors(agency):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=135).first()
+        assigned_agent = db.session.query(TravelAgent).filter_by(employee_id=295).first()
+        assigned_country = db.session.query(Country).filter_by(country_id=901).first()
+        diff_agent = db.session.query(TravelAgent).filter_by(employee_id= 270).first()
+
+        with pytest.raises(Exception, match="This country is already registered for this TravelAgent"):
+                agency.assign_country(assigned_country,assigned_agent,supervisor)
+
+        result = agency.assign_country(assigned_country,diff_agent,supervisor)
+
+        assert not result
+
 # TravelAgent
 
 
@@ -494,3 +521,4 @@ def test_remove_activity_error(agency):
         result = agency.remove_activity(country,activity)
 
         assert not result
+

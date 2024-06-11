@@ -711,3 +711,80 @@ def test_increase_agent_salary_errors(client,agency):
     error2 = parsed_diffteam["message"]
 
     assert error2 == "This TravelAgent is not a member of your team"
+
+
+def test_assign_country(client,agency):
+
+    user = db.session.query(User).filter_by(id=10).first()
+
+    country = db.session.query(Country).filter_by(country_id=910).first()
+    agent = db.session.query(TravelAgent).filter_by(employee_id=280).first()
+
+    employee_id = agent.employee_id
+    country_id = country.country_id
+
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response_country = client.post(f"/supervisor/agent/{employee_id}/country", headers=headers, json={
+        "country_id": country_id
+    })
+
+    assert response_country.status_code == 200
+
+    parsed = response_country.get_json()
+
+    assert parsed == "Chile has been added to the registered countries of David Miller"
+
+def test_assign_country_errors(client,agency):
+
+    user = db.session.query(User).filter_by(id=10).first()
+
+    country = db.session.query(Country).filter_by(country_id=910).first()
+    agent = db.session.query(TravelAgent).filter_by(employee_id=270).first()
+
+    employee_id = agent.employee_id
+    country_id = country.country_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response_diffteam = client.post(f"/supervisor/agent/{employee_id}/country", headers=headers, json={
+        "country_id": country_id
+    })
+
+    assert response_diffteam.status_code == 400
+
+    parsed_diffteam = response_diffteam.get_json()
+    diffteam_error = parsed_diffteam["message"]
+
+    assert diffteam_error == "This TravelAgent is not a member of your team"
+
+    response_ncountry = client.post(f"supervisor/agent/{employee_id}/country", headers=headers, json={
+        "country_id": 702
+    })
+
+    assert response_ncountry.status_code == 400
+
+    parsed_ncountry = response_ncountry.get_json()
+    ncountry_error = parsed_ncountry["message"]
+
+    assert ncountry_error == "Country not found"
+
+    response_nagent = client.post(f"supervisor/agent/583/country", headers=headers, json={
+        "country_id": country_id
+    })
+
+    assert response_nagent.status_code == 400
+
+    parsed_nagent = response_nagent.get_json()
+    nagent_error = parsed_nagent["message"]
+
+    assert nagent_error == "TravelAgent not found"
