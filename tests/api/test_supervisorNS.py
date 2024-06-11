@@ -214,19 +214,7 @@ def test_add_agent(client,agency):
 
     assert TravelAgent.query.count() == before + 1
 
-    response_sagent = client.post("/supervisor/employee",headers=headers, json={
-        "name": "Keanu Reeves",
-        "address": "Biker Road 32, 3829 Plymouth",
-        "salary": 3500,
-        "nationality": "USA"
-    })
 
-    assert response_sagent.status_code == 400
-
-    parsed_sagent = response_sagent.get_json()
-    sagent_error = parsed_sagent["message"]
-
-    assert sagent_error == "This travelAgent is already registered in the agency"
 
 
 def test_add_agent_errors(client,agency):
@@ -266,6 +254,20 @@ def test_add_agent_errors(client,agency):
     error2 = parsed_response2["message"]
 
     assert error2 == "Please enter a salary amount in Euro from 2000 to 4000"
+
+    response_sagent = client.post("/supervisor/employee", headers=headers, json={
+        "name": "Benjamin Harris",
+        "address": "Biker Road 43, 1724 Oslo",
+        "salary": 3500,
+        "nationality": "Sweden"
+    })
+
+    assert response_sagent.status_code == 400
+
+    parsed_sagent = response_sagent.get_json()
+    sagent_error = parsed_sagent["message"]
+
+    assert sagent_error == "This travelAgent is already registered in the agency"
 
 
 def test_get_supervisor_info(client,agency):
