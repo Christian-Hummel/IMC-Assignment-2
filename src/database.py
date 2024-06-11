@@ -51,9 +51,12 @@ class TravelAgent(db.Model):
     nationality = db.Column(db.String(20),nullable=False)
     role = db.Column(db.String(20),nullable=False, default='travelAgent')
 
+
+
     supervisor_id = db.Column(db.Integer, db.ForeignKey('supervisor.employee_id'), nullable=False)
     countries = db.relationship('Country', secondary='agent_country', back_populates='agents')
     customers = db.relationship('Customer', backref='TravelAgent')
+    offers = db.relationship('Offer', backref='TravelAgent')
 
 
 
@@ -68,7 +71,7 @@ class Customer(db.Model):
     expert = db.Column(db.Boolean, unique=False, default=False)
 
     agent_id = db.Column(db.Integer, db.ForeignKey('travel_agent.employee_id'), nullable=False)
-
+    offers = db.relationship('Offer', backref='Customer')
 
     def __str__(self):
         return self.name
@@ -77,6 +80,13 @@ class Customer(db.Model):
 country_activity = db.Table(
     'country_activity',
     db.Column('country_id', db.Integer, db.ForeignKey('country.country_id')),
+    db.Column('activity_id', db.Integer, db.ForeignKey('activity.activity_id'))
+)
+
+# joined table offer and activity
+offer_activity = db.Table(
+    'offer_activity',
+    db.Column('offer_id', db.Integer, db.ForeignKey('offer.offer_id')),
     db.Column('activity_id', db.Integer, db.ForeignKey('activity.activity_id'))
 )
 
@@ -91,6 +101,8 @@ class Country(db.Model):
     def __str__(self):
         return self.name
 
+
+
 class Activity(db.Model):
     __tablename__ = "activity"
     activity_id = db.Column(db.Integer, primary_key=True)
@@ -98,5 +110,23 @@ class Activity(db.Model):
     price = db.Column(db.Integer,nullable=False)
 
     countries = db.relationship('Country', secondary='country_activity', back_populates='activities')
+    offers = db.relationship('Offer', secondary='offer_activity', back_populates='activities')
+
+class Offer(db.Model):
+    __tablename__ = "offer"
+    offer_id = db.Column(db.Integer, primary_key=True)
+    country = db.Column(db.String(50), nullable=False)
+    total_price = db.Column(db.Integer, nullable=False, default=0)
+    status = db.Column(db.String, nullable=False)
+
+    agent_id = db.Column(db.Integer, db.ForeignKey('travel_agent.employee_id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.customer_id'), nullable=False)
+    activities = db.relationship('Activity', secondary='offer_activity', back_populates='offers')
 
 
+    # Relations
+    # many to many with Activities : activities can be used for many different offers - c
+    # one to many with Customer : a Customer can receive many offers -
+                                ## an offer is created for one customer - c
+    # one to many with TravelAgent : an agent can create many offers -
+                                ## one offer is created by one agent - c
