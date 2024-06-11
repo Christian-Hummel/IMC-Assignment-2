@@ -57,7 +57,7 @@ present_offer() - sends a possible trip recommendation to the customer, it canno
 
 request_raise() - send a request to the respective supervisor to get an increase in salary
 
-update_agent() - allows to update following attributes: name, email, address
+update_agent() - allows to update following attributes: name, email, address - c
 
 
 **Country**
