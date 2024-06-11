@@ -182,6 +182,15 @@ class Agency(object):
 
 # TravelAgent
 
+    def update_agent(self,employee_id,updated_agent:TravelAgent):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).first()
+
+        agent.name = updated_agent.name
+        agent.address = updated_agent.address
+        db.session.commit()
+
+
 
 # Customer
 
