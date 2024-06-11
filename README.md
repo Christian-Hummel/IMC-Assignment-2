@@ -107,6 +107,8 @@ show_all_agents() - displays information about all agents he or she supervises: 
 
 get_supervisor_by_id() - displays supervisor attributes: employer_ID, name, email, address, salary, nationality and number of travel agents under his supervision - c
 
+assign_country() - registers a travel agent to a specific country, such that he can make offers for it - c
+
 
 #### Notes
 
