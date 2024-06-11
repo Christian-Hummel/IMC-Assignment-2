@@ -1,13 +1,18 @@
 import os
 from flask import Flask
 from flask_restx import Api
+from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 
 from .model.agency import Agency
 from .database import User,db
 from .api.supervisorNS import supervisor_ns
+from .api.countryNS import country_ns
+from .api.customerNS import customer_ns
+from .api.travelAgentNS import travelAgent_ns
 
 agency = Agency()
+migrate = Migrate()
 
 def create_app(database_uri="sqlite:///travelbase.db"):
 
@@ -18,6 +23,7 @@ def create_app(database_uri="sqlite:///travelbase.db"):
 
     # Initialize database on app
     db.init_app(travelroute_app)
+    migrate.init_app(travelroute_app, db)
 
 
     # create db in current directory if not already present
@@ -32,14 +38,14 @@ def create_app(database_uri="sqlite:///travelbase.db"):
     jwt.init_app(travelroute_app)
 
 
-    # need to extend this class for custom objects, so that they can be jsonified
+
     travelroute_api = Api(travelroute_app, title="Hammertrips: An App for booking journeys that you will not forget")
 
     # add individual namespaces
     travelroute_api.add_namespace(supervisor_ns)
-    #travelroute_api.add_namespace(travelagent_ns)
-    #travelroute_api.add_namespace(customer_ns)
-    #travelroute_api.add_namespace(country_ns)
+    travelroute_api.add_namespace(travelAgent_ns)
+    travelroute_api.add_namespace(customer_ns)
+    travelroute_api.add_namespace(country_ns)
 
 
     @jwt.user_identity_loader
