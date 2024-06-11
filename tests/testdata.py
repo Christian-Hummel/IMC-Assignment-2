@@ -236,7 +236,7 @@ def create_agents(agency: Agency):
     agent1.countries.append(country1)
     agent2.countries.extend([country1,country2])
     agent3.countries.extend([country1,country3])
-    agent4.countries.extend([country1,country4])
+    agent4.countries.extend([country1,country2,country4])
     agent5.countries.extend([country1,country5])
     agent6.countries.extend([country1,country6])
     agent7.countries.extend([country1,country7])
@@ -279,9 +279,9 @@ def create_customers(agency: Agency):
         Customer(customer_id=711, name="Michael Faraday", address="Magnetism Street 12, 1871 London",
                  email="Michael.Faraday@electricity.uk", budget=22000, preference="None", expert=True, agent_id=290),
         Customer(customer_id=712, name="Thomas Edison", address="Inventor's Alley 19, 7310 New Jersey",
-                 email="Thomas.Edison@invention.us", budget=25000, preference="USA", expert=True, agent_id=295),
+                 email="Thomas.Edison@invention.us", budget=25000, preference="USA", expert=False, agent_id=295),
         Customer(customer_id=713, name="Sigmund Freud", address="Mind Way 6, 1010 Vienna",
-                 email="Sigmund.Freud@psychology.at", budget=23000, preference="Austria", expert=True, agent_id=300),
+                 email="Sigmund.Freud@psychology.at", budget=23000, preference="Austria", expert=False, agent_id=300),
         Customer(customer_id=714, name="Gregor Mendel", address="Genetics Blvd 22, 6120 Brno",
                  email="Gregor.Mendel@biology.cz", budget=28000, preference="None", expert=True, agent_id=305),
         Customer(customer_id=715, name="Louis Pasteur", address="Bacteriology Street 17, 7505 Paris",
@@ -289,13 +289,13 @@ def create_customers(agency: Agency):
         Customer(customer_id=716, name="Jane Goodall", address="Primate Alley 21, 9012 Nairobi",
                  email="Jane.Goodall@anthropology.ke", budget=20000, preference="None", expert=True, agent_id=315),
         Customer(customer_id=717, name="Rosalind Franklin", address="DNA Lane 33, 1012 London",
-                 email="Rosalind.Franklin@genetics.uk", budget=26000, preference="None", expert=True, agent_id=320),
+                 email="Rosalind.Franklin@genetics.uk", budget=26000, preference="None", expert=False, agent_id=0),
         Customer(customer_id=718, name="James Watt", address="Steam Road 9, 8015 Glasgow",
                  email="James.Watt@engineering.uk", budget=22000, preference="UK", expert=True, agent_id=325),
-        Customer(customer_id=719, name="Alfred Nobel", address="Dynamite Drive 5, 1120 Stockholm",
-                 email="Alfred.Nobel@chemistry.se", budget=27000, preference="Sweden", expert=True, agent_id=330),
+        Customer(customer_id=719, name="Alfred Nobel", address="Mining Road 5, 1120 Stockholm",
+                 email="Alfred.Nobel@chemistry.se", budget=27000, preference="France", expert=False, agent_id=0),
         Customer(customer_id=720, name="Marie Tharp", address="Ocean Avenue 4, 1001 New York",
-                 email="Marie.Tharp@geology.us", budget=21000, preference="USA", expert=True, agent_id=335)
+                 email="Marie.Tharp@geology.us", budget=21000, preference="Austria", expert=True, agent_id=0)
     ]
 
     db.session.add_all(customers)
