@@ -277,3 +277,56 @@ def test_remove_activity_errors(client,agency):
     wcountry_error = parsed_wcountry["message"]
 
     assert wcountry_error == "This activity does not belong to the specified country"
+
+
+def test_get_activity_by_id(client,agency):
+
+    country = db.session.query(Country).filter_by(country_id=901).first()
+    activity = db.session.query(Activity).filter_by(activity_id=601).first()
+
+    country_id = country.country_id
+    activity_id = activity.activity_id
+
+    response = client.get(f"/country/{country_id}/activity", json={
+        "activity_id": activity_id
+    })
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+    activity_response = parsed["activity"]
+
+    assert activity_response["activity_id"] == 601
+    assert activity_response["name"] == "Miniatur Wunderland"
+    assert activity_response["price"] == 20
+
+
+def test_get_activity_by_id_errors(client,agency):
+
+    country = db.session.query(Country).filter_by(country_id=911).first()
+    activity = db.session.query(Activity).filter_by(activity_id=612).first()
+
+    country_id = country.country_id
+    activity_id = activity.activity_id
+
+    response_diffcountry = client.get(f"/country/{country_id}/activity", json={
+        "activity_id": activity_id
+    })
+
+    assert response_diffcountry.status_code == 400
+
+    parsed_diffcountry = response_diffcountry.get_json()
+    diffcountry_error = parsed_diffcountry["message"]
+
+    assert diffcountry_error == "This activity is not registered for Brazil"
+
+    response_ncountry = client.get("/country/349/activity", json={
+        "activity_id": activity_id
+    })
+
+    assert response_ncountry.status_code == 400
+
+    parsed_ncountry = response_ncountry.get_json()
+    ncountry_error = parsed_ncountry["message"]
+
+    assert ncountry_error == "Country not found"

@@ -490,8 +490,6 @@ def test_update_activity(agency):
         assert activity.name == "Alps Expedition"
         assert activity.price == 130
 
-
-
 def test_update_activity_errors(agency):
 
 
@@ -522,3 +520,31 @@ def test_remove_activity_error(agency):
 
         assert not result
 
+def test_get_activity_by_id(agency):
+
+        country = db.session.query(Country).filter_by(country_id=911).first()
+        activity = db.session.query(Activity).filter_by(activity_id=611).first()
+
+        country_id = country.country_id
+        activity_id = activity.activity_id
+
+        result = agency.get_activity_by_id(activity_id,country_id)
+
+        assert result.activity_id == 611
+        assert result.name == "Stadion Tour"
+        assert result.price == 70
+
+def test_get_activity_by_id_errors(agency):
+
+        country = db.session.query(Country).filter_by(country_id=904).first()
+        activity = db.session.query(Activity).filter_by(activity_id=612).first()
+
+        country_id = country.country_id
+        activity_id = activity.activity_id
+
+        with pytest.raises(Exception, match="Activity not found"):
+                agency.get_activity_by_id(823,country_id)
+
+        result = agency.get_activity_by_id(activity_id, country_id)
+
+        assert not result
