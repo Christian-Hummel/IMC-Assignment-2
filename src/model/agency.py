@@ -1,7 +1,7 @@
 from typing import List, Union, Optional
 
 
-from ..database import Supervisor, TravelAgent, Customer, Country, Activity, User, agent_country, db
+from ..database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, db
 
 
 
@@ -189,6 +189,47 @@ class Agency(object):
         agent.name = updated_agent.name
         agent.address = updated_agent.address
         db.session.commit()
+
+
+    def present_offer(self, new_offer:Offer, agent:TravelAgent, customer:Customer, country:Country):
+
+        total_price = 0
+        activities = []
+
+        if customer not in agent.customers:
+            raise Exception("This customer is not assigned to you")
+
+        if country not in agent.countries:
+            raise Exception("This country is not assigned to you")
+
+        for id in new_offer.activities:
+            for activity in country.activities:
+                if id in [activ.activity_id for activ in country.activities]:
+                    activities.append(activity)
+                    total_price += activity.price
+                elif id not in [activ.activity_id for activ in country.activities]:
+                    raise Exception(f"Activity {activity.name} is not registered for this country")
+
+        new_offer.total_price = total_price
+        new_offer.activities = activities
+
+        # check if the trip is affordable for the customer
+        if new_offer.total_price <= customer.budget and new_offer.status == "pending":
+            db.session.add(new_offer)
+            db.session.commit()
+            return new_offer
+        elif new_offer.total_price <= customer.budget and new_offer.status == "changed":
+            db.session.commit()
+            return new_offer
+        else:
+            return None
+
+
+
+
+
+
+
 
 
 

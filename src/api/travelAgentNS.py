@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_restx import Namespace, Resource, fields, abort
 
 from ..model.agency import Agency
-from ..database import Supervisor, TravelAgent, Customer, Country, User, db
+from ..database import Supervisor, TravelAgent, Offer, Customer, Country, User, db
 
 
 travelAgent_ns = Namespace("travelAgent", description="TravelAgent related operations")
@@ -30,6 +30,30 @@ agent_output_model = travelAgent_ns.model("AgentOutputModel", {
     "supervisor_id": fields.Integer(required=False,
                                     help="The unique identifier of the supervisor of this TravelAgent")
 
+})
+
+offer_input_model = travelAgent_ns.model("OfferInputModel", {
+    "offer_id": fields.Integer(required=False,
+                               help="the unique identifier of an offer"),
+    "customer_id": fields.Integer(required=True,
+                                  help="the unique identifier of the customer"),
+    "country": fields.String(required=True,
+                             help="The name of the destination for the trip, e.g. Denmark"),
+    "activities": fields.List(fields.Integer(),required=True,
+                              help="Activities offered by the travelAgent for this country")
+})
+
+offer_output_model = travelAgent_ns.model("OfferOutputModel", {
+    "offer_id": fields.Integer(required=False,
+                               help="the unique identifier of an offer"),
+    "country": fields.String(required=True,
+                             help="The name of the destination for the trip, e.g. Denmark"),
+    "activities": fields.List(fields.Integer, required=True,
+                              help="Activities offered by the travelAgent for this country"),
+    "customer_id": fields.Integer(required=False,
+                                  help="the unique identifier of the recipiant"),
+    "agent_id": fields.Integer(required=False,
+                               help="the unique identifier of the sender of this offer")
 })
 
 
@@ -75,3 +99,78 @@ class AgentUpdate(Resource):
                 return updated_agent
             else:
                 return abort(400, message="Please insert values to be updated")
+
+
+@travelAgent_ns.route("/<int:employee_id>/offer")
+class TravelAgentAPI(Resource):
+
+    @travelAgent_ns.doc(offer_input_model, description="Send an offer to a customer")
+    @travelAgent_ns.expect(offer_input_model, validate=True)
+    @travelAgent_ns.marshal_with(offer_output_model, envelope="offer")
+    def post(self, employee_id):
+
+        offer_id = travelAgent_ns.payload["offer_id"]
+        customer_id = travelAgent_ns.payload["customer_id"]
+        country_id = travelAgent_ns.payload["country"]
+
+        # existance checks
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+
+        if not agent:
+            return abort(400, message="TravelAgent not found")
+
+        customer = db.session.query(Customer).filter_by(customer_id=customer_id).one_or_none()
+
+        if not customer:
+            return abort(400, message="Customer not found")
+
+        country = db.session.query(Country).filter_by(country_id=country_id).one_or_none()
+
+        if not country:
+            return abort(400, message="Country not found")
+
+        if offer_id == 0:
+
+            new_offer = Offer(offer_id=id(self),
+                              country=travelAgent_ns.payload["country"],
+                              customer_id=customer_id,
+                              activities=travelAgent_ns.payload["activities"],
+                              agent_id=employee_id,
+                              status="pending")
+
+            if new_offer.country != customer.preference:
+                return abort(400, message="This country does not match with the preference of your customer")
+
+        elif offer_id != 0:
+
+            offer = db.session.query(Offer).filter_by(offer_id=offer_id).one_or_none()
+
+            if not offer:
+                return abort(400, message="Offer not found")
+
+            elif offer.agent_id != agent.agent_id:
+                return abort(400, message="This offer was created by another TravelAgent")
+
+            if offer.status != "declined":
+                # country could be another, the travelAgent could offer a different country
+                # with different activities to convince the customer
+                new_offer = Offer(offer_id=offer_id,
+                                  country=travelAgent_ns.payload["country"],
+                                  customer_id=customer_id,
+                                  activities=travelAgent_ns.payload["activities"],
+                                  agent_id=employee_id,
+                                  status="changed")
+
+                if new_offer.country == "string" or new_offer.activities[0] == 0:
+                    return abort(400, message="Invalid offer assignment")
+
+
+        offer_result = Agency.get_instance().present_offer(new_offer, agent, customer, country)
+
+        if offer_result:
+            return offer_result
+        elif not offer_result:
+            return abort(400, message="This offer exceeds the budget of the customer")
+
+
