@@ -167,6 +167,19 @@ class Agency(object):
 
             return agent
 
+    def assign_country(self, country:Country, agent:TravelAgent, supervisor:Supervisor):
+
+        if agent not in supervisor.teammembers:
+            return None
+
+        if country not in agent.countries:
+            agent.countries.append(country)
+            db.session.commit()
+            return agent
+
+        elif country in agent.countries:
+            raise Exception("This country is already registered for this TravelAgent")
+
 # TravelAgent
 
 

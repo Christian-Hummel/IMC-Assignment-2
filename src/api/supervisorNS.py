@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_tok
 from werkzeug.security import generate_password_hash,check_password_hash
 
 from ..model.agency import Agency
-from ..database import Supervisor, TravelAgent, Customer, User, agent_country, db
+from ..database import Supervisor, TravelAgent, Customer, Country, User, db
 
 authorizations = {
     "authorizationToken":{
@@ -154,6 +154,11 @@ customer_output_model = supervisor_ns.model("CustomerModel", {
 increase_model = supervisor_ns.model("TravelAgentSalaryRaiseModel", {
     "percentage_increase": fields.Integer(required=True,
                                           help="Increase of salary in percent, e.g. 3")
+})
+
+country_assign_model = supervisor_ns.model("AgentCountryModel", {
+    "country_id": fields.Integer(required=True,
+                                 help="unique identifier of a country to be assigned to this agent")
 })
 
 @supervisor_ns.route("/")
@@ -454,3 +459,31 @@ class SupervisorRaise(Resource):
 
             return abort(400, message="This TravelAgent is not a member of your team")
 
+@supervisor_ns.route("/agent/<int:employee_id>/country")
+class AgentCountry(Resource):
+    method_decorators = [jwt_required()]
+
+    @supervisor_ns.doc(country_assign_model, description="Assign a country to a travelAgent", security="authorizationToken")
+    @supervisor_ns.expect(country_assign_model, validate=True)
+    def post(self,employee_id):
+
+        country_id = supervisor_ns.payload["country_id"]
+        supervisor_id = current_user.manager_id
+
+        country = db.session.query(Country).filter_by(country_id=country_id).one_or_none()
+        agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
+
+        if not country:
+            return abort(400, message="Country not found")
+
+        if not agent:
+            return abort(400, message="TravelAgent not found")
+
+        updated_agent = Agency.get_instance().assign_country(country,agent,supervisor)
+
+        if updated_agent:
+            return jsonify(f"{country.name} has been added to the registered countries of {updated_agent.name}")
+
+        if not updated_agent:
+            return abort(400,message="This TravelAgent is not a member of your team")
