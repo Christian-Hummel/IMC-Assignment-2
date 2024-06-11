@@ -270,6 +270,12 @@ class EmployAgent(Resource):
                                 salary=supervisor_ns.payload["salary"],
                                 nationality=supervisor_ns.payload["nationality"])
 
+        # check if the travelAgent already exists
+        same_agent = db.session.query(TravelAgent).filter_by(name=new_agent.name).one_or_none()
+
+        if same_agent:
+            return abort(400, message="This travelAgent is already registered in the agency")
+
         # set salary to a minimum if not set to a higher amount
         if new_agent.salary < 2000:
             new_agent.salary = 2000
