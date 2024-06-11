@@ -191,21 +191,21 @@ def test_add_agent(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
-    agent_response = client.post("/supervisor/employee", headers=headers, json={
+    response_agent = client.post("/supervisor/employee", headers=headers, json={
         "name":"Keanu Reeves",
-        "address": "Runaway Street 24, 3829 Minnesota",
+        "address": "Runaway Street 24, 3829 Plymouth",
         "salary": 3000,
         "nationality": "USA"
     })
 
 
-    assert agent_response.status_code == 200
+    assert response_agent.status_code == 200
 
-    parsed_agent = agent_response.get_json()
+    parsed_agent = response_agent.get_json()
     agent_response = parsed_agent["travelAgent"]
 
     assert agent_response["name"] == "Keanu Reeves"
-    assert agent_response["address"] == "Runaway Street 24, 3829 Minnesota"
+    assert agent_response["address"] == "Runaway Street 24, 3829 Plymouth"
     assert agent_response["email"] == "Keanu.Reeves@hammertrips.com"
     assert agent_response["salary"] == 3000
     assert agent_response["nationality"] == "USA"
@@ -213,6 +213,20 @@ def test_add_agent(client,agency):
 
 
     assert TravelAgent.query.count() == before + 1
+
+    response_sagent = client.post("/supervisor/employee",headers=headers, json={
+        "name": "Keanu Reeves",
+        "address": "Biker Road 32, 3829 Plymouth",
+        "salary": 3500,
+        "nationality": "USA"
+    })
+
+    assert response_sagent.status_code == 400
+
+    parsed_sagent = response_sagent.get_json()
+    sagent_error = parsed_sagent["message"]
+
+    assert sagent_error == "This travelAgent is already registered in the agency"
 
 
 def test_add_agent_errors(client,agency):
