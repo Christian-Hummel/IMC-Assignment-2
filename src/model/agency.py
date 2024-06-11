@@ -297,3 +297,17 @@ class Agency(object):
                 return country
         return None
 
+    def get_activity_by_id(self, activity_id, country_id):
+
+        country = db.session.query(Country).filter_by(country_id=country_id).first()
+
+        activity = db.session.query(Activity).filter_by(activity_id=activity_id).one_or_none()
+
+        if not activity:
+            raise Exception("Activity not found")
+
+        if activity in country.activities:
+            return activity
+
+        if activity not in country.activities:
+            return None

@@ -37,10 +37,12 @@ activity_output_model = country_ns.model("ActivityOutputModel",{
                             help="price of an activity")
 })
 
-delete_model = country_ns.model("ActivityDeleteModel", {
+activityID_model = country_ns.model("ActivityDeleteModel", {
     "activity_id": fields.Integer(required=True,
                                  help="unique identifier of activity to be removed from this country")
 })
+
+
 
 # Country
 
@@ -114,6 +116,26 @@ class ActivityAPI(Resource):
 
         return new_activity
 
+    @country_ns.doc(activityID_model, description="Get information about an activity")
+    @country_ns.expect(activityID_model, validate=True)
+    @country_ns.marshal_with(activity_output_model, envelope="activity")
+    def get(self, country_id):
+
+        activity_id = country_ns.payload["activity_id"]
+
+        country = db.session.query(Country).filter_by(country_id=country_id).first()
+
+        if not country:
+            return abort(400, message="Country not found")
+
+        activity = Agency.get_instance().get_activity_by_id(activity_id,country_id)
+
+        if activity:
+            return activity
+
+        elif not activity:
+            return abort(400, message=f"This activity is not registered for {country.name}")
+
 
 @country_ns.route("/<int:country_id>/activity/update")
 class ActivityUpdate(Resource):
@@ -151,8 +173,8 @@ class ActivityUpdate(Resource):
 @country_ns.route("/<int:country_id>/activity/delete")
 class ActivityDelete(Resource):
 
-    @country_ns.doc(delete_model,description="Delete an Activity")
-    @country_ns.expect(delete_model, validate=True)
+    @country_ns.doc(activityID_model,description="Delete an Activity")
+    @country_ns.expect(activityID_model, validate=True)
     def delete(self,country_id):
 
         activity_id = country_ns.payload["activity_id"]
