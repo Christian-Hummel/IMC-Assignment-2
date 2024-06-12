@@ -147,7 +147,8 @@ class TravelAgentAPI(Resource):
 
             for idx in activ_ids:
                 if idx in [activ.activity_id for activ in country.activities]:
-                        activity = [activity for activity in country.activities if activity.activity_id == idx]
+                        activity = [activity for activity in country.activities
+                                    if activity.activity_id == idx]
                         new_offer.activities.append(activity[0])
                         new_offer.total_price += activity[0].price
                 elif idx not in [activ.activity_id for activ in country.activities]:
