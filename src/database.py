@@ -116,7 +116,7 @@ class Offer(db.Model):
     __tablename__ = "offer"
     offer_id = db.Column(db.Integer, primary_key=True)
     country = db.Column(db.String(50), nullable=False)
-    total_price = db.Column(db.Integer, nullable=False, default=0)
+    total_price = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String, nullable=False)
 
     agent_id = db.Column(db.Integer, db.ForeignKey('travel_agent.employee_id'), nullable=False)
