@@ -87,7 +87,9 @@ def test_update_agent_errors(client,agency):
     assert response_nagent.status_code == 400
 
     parsed_nagent = response_nagent.get_json()
-    nagent_error2 = parsed_nagent["message"]
+    nagent_error = parsed_nagent["message"]
+
+    assert nagent_error == "TravelAgent not found"
 
 
 def test_present_new_offer(client,agency):
@@ -137,6 +139,9 @@ def test_present_changed_offer(client,agency):
     customer_id = customer.customer_id
     country_name = country.name
 
+    price_before = offer.total_price
+    activities_before = len(offer.activities)
+
     response_resend = client.post(f"/travelAgent/{employee_id}/offer", json={
         "offer_id": offer_id,
         "customer_id": customer_id,
@@ -148,12 +153,13 @@ def test_present_changed_offer(client,agency):
 
     assert response_resend.status_code == 200
 
-    print(response_resend.get_json())
+    parsed_resend = response_resend.get_json()
+    resend_response = parsed_resend["offer"]
 
-    offer = db.session.query(Offer).filter_by(offer_id=805).first()
-
-    print(offer.status)
-    print(offer.total_price)
-
-
-
+    assert resend_response["status"] == "changed"
+    assert resend_response["offer_id"] == 805  # check if the id did not get changed/ lost in the process
+    assert resend_response["total_price"] == 30 + price_before # 30 is the cost the added activity
+    assert resend_response["country"] == "Poland"
+    assert len(resend_response["activities"]) == activities_before + 1
+    assert resend_response["customer_id"] == 705
+    assert resend_response["agent_id"] == 260
