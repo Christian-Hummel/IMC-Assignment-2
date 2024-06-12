@@ -105,25 +105,55 @@ def test_present_new_offer(client,agency):
         "customer_id": customer_id,
         "country": country_name,
         "activities": [
-            601
+            601, 611
         ]
     })
 
     assert response_offer.status_code == 200
 
+
     parsed_offer = response_offer.get_json()
     offer_response = parsed_offer["offer"]
 
-    #print(offer_response)
 
     assert offer_response["offer_id"] != 0
     assert offer_response["customer_id"] == 714
     assert offer_response["agent_id"] == 305
     assert offer_response["country"] == "Germany"
-    assert len(offer_response["activities"]) == 1
-    assert offer_response["total_price"] == 20
+    assert len(offer_response["activities"]) == 2
+    assert offer_response["total_price"] == 90
     assert offer_response["status"] == "pending"
 
+def test_present_changed_offer(client,agency):
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=260).first()
+    customer = db.session.query(Customer).filter_by(customer_id=705).first()
+    country = db.session.query(Country).filter_by(country_id=905).first()
+
+    offer = db.session.query(Offer).filter_by(offer_id=805).first()
+    offer_id = offer.offer_id
+
+    employee_id = agent.employee_id
+    customer_id = customer.customer_id
+    country_name = country.name
+
+    response_resend = client.post(f"/travelAgent/{employee_id}/offer", json={
+        "offer_id": offer_id,
+        "customer_id": customer_id,
+        "country": country_name,
+        "activities": [
+            605, 615
+        ]
+    })
+
+    assert response_resend.status_code == 200
+
+    print(response_resend.get_json())
+
+    offer = db.session.query(Offer).filter_by(offer_id=805).first()
+
+    print(offer.status)
+    print(offer.total_price)
 
 
 
