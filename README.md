@@ -1,3 +1,6 @@
+
+# Add instructions how to run the program in the final README and check requirements.txt 
+
 # API for a travelling agency
 
 I want to program an Application for customers and Employers of a travelling agency, in order to be able to book a trip to a certain country with a set of activities. Once a customer registers, he will be forwarded to a travel agent, who makes recommendation and is in charge of managing the trip. Every travel agent has got a agent supervisor on his side, who can be seen as a manager.
