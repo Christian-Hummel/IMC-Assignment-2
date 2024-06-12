@@ -202,16 +202,6 @@ class Agency(object):
         if country not in agent.countries:
             raise Exception("This country is not assigned to you")
 
-        for id in new_offer.activities:
-            for activity in country.activities:
-                if id in [activ.activity_id for activ in country.activities]:
-                    activities.append(activity)
-                    total_price += activity.price
-                elif id not in [activ.activity_id for activ in country.activities]:
-                    raise Exception(f"Activity {activity.name} is not registered for this country")
-
-        new_offer.total_price = total_price
-        new_offer.activities = activities
 
         # check if the trip is affordable for the customer
         if new_offer.total_price <= customer.budget and new_offer.status == "pending":
