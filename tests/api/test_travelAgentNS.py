@@ -1,6 +1,6 @@
 import pytest
 
-from src.database import Supervisor, TravelAgent, Customer, Country, Activity, User, db
+from src.database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, db
 
 from tests.fixtures import app, client, agency
 
@@ -88,6 +88,49 @@ def test_update_agent_errors(client,agency):
 
     parsed_nagent = response_nagent.get_json()
     nagent_error2 = parsed_nagent["message"]
+
+
+def test_present_new_offer(client,agency):
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=305).first()
+    customer = db.session.query(Customer).filter_by(customer_id=714).first()
+    country = db.session.query(Country).filter_by(country_id=901).first()
+
+    employee_id = agent.employee_id
+    customer_id = customer.customer_id
+    country_name = country.name
+
+
+
+    response_offer = client.post(f"/travelAgent/{employee_id}/offer", json={
+        "offer_id": 0,
+        "customer_id": customer_id,
+        "country": country_name,
+        "activities": [
+            601
+        ]
+    })
+
+
+    assert response_offer.status_code == 200
+
+    #print(response_offer.get_json())
+
+
+
+    offer = db.session.query(Offer).filter_by(offer_id=801).first()
+
+    print(agent.employee_id)
+    print([activity.name for activity in offer.activities])
+    print(offer.total_price)
+    print(offer.customer_id)
+
+    assert offer.offer_id != 0
+    assert offer.customer_id == 714
+    assert offer.country == "Germany"
+    assert offer.agent_id == 305
+    assert offer.status == "pending"
+    assert offer.total_price == 6000
 
 
 
