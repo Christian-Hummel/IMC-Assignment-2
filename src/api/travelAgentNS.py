@@ -116,6 +116,7 @@ class TravelAgentAPI(Resource):
         offer_id = travelAgent_ns.payload["offer_id"]
         customer_id = travelAgent_ns.payload["customer_id"]
         country_name = travelAgent_ns.payload["country"]
+        activ_ids = travelAgent_ns.payload["activities"]
 
         # existance checks
 
@@ -144,13 +145,13 @@ class TravelAgentAPI(Resource):
                               agent_id=employee_id
                               )
 
-            for activity_id in travelAgent_ns.payload["activities"]:
-                for activity in country.activities:
-                    if activity_id in [activ.activity_id for activ in country.activities]:
-                        new_offer.activities.append(activity)
-                        new_offer.total_price += activity.price
-                    elif activity_id not in [activ.activity_id for activ in country.activities]:
-                        return abort(400, message=f"Activity {activity.name} is not registered for this country")
+            for idx in activ_ids:
+                if idx in [activ.activity_id for activ in country.activities]:
+                        activity = [activity for activity in country.activities if activity.activity_id == idx]
+                        new_offer.activities.append(activity[0])
+                        new_offer.total_price += activity[0].price
+                elif idx not in [activ.activity_id for activ in country.activities]:
+                    return abort(400, message=f"Activity not registered for this country")
 
             # fix assignment of activities
 
@@ -168,7 +169,7 @@ class TravelAgentAPI(Resource):
             elif offer.agent_id != agent.agent_id:
                 return abort(400, message="This offer was created by another TravelAgent")
 
-            if offer.status != "declined":
+            if offer.status == "resend":
                 # country could be another, the travelAgent could offer a different country
                 # with different activities to convince the customer
                 new_offer = Offer(offer_id=offer_id,
@@ -177,9 +178,22 @@ class TravelAgentAPI(Resource):
                                   customer_id=customer_id,
                                   agent_id=employee_id,
                                   status="changed")
+                # empty existing activities list
 
+                new_offer.activities = []
 
                 # fix assignment of activities
+
+                # fill it with the same or new activities -
+                # allowed to be the same because the price could be lowered in the meantime
+
+                for idx in activ_ids:
+                    if idx in [activ.activity_id for activ in country.activities]:
+                        activity = [activity for activity in country.activities if activity.activity_id == idx]
+                        new_offer.activities.append(activity[0])
+                        new_offer.total_price += activity[0].price
+                    elif idx not in [activ.activity_id for activ in country.activities]:
+                        return abort(400, message=f"Activity not registered for this country")
 
                 if new_offer.country == "string" or new_offer.activities[0] == 0:
                     return abort(400, message="Invalid offer assignment")
