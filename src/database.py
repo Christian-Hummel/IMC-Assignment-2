@@ -112,6 +112,9 @@ class Activity(db.Model):
     countries = db.relationship('Country', secondary='country_activity', back_populates='activities')
     offers = db.relationship('Offer', secondary='offer_activity', back_populates='activities')
 
+    def __str__(self):
+        return self.name
+
 class Offer(db.Model):
     __tablename__ = "offer"
     offer_id = db.Column(db.Integer, primary_key=True)
@@ -122,6 +125,8 @@ class Offer(db.Model):
     agent_id = db.Column(db.Integer, db.ForeignKey('travel_agent.employee_id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.customer_id'), nullable=False)
     activities = db.relationship('Activity', secondary='offer_activity', back_populates='offers')
+
+
 
 
     # Relations
