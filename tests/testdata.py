@@ -321,7 +321,7 @@ def create_activities(agency: Agency):
     activity12 = Activity(activity_id=612, name="Ruandales pils", price=20)
     activity13 = Activity(activity_id=613, name="Sagrada Familia", price=26)
     activity14 = Activity(activity_id=614, name="City Tour", price=50)
-    activity15 = Activity(activity_id=615, name="Horseriding", price=40)
+    activity15 = Activity(activity_id=615, name="Horseriding", price=30)
 
 
     country1 = db.session.query(Country).filter_by(country_id=901).first()
@@ -379,17 +379,17 @@ def create_offers(agency: Agency):
 
 
     offer1 = Offer(offer_id=801, country="Germany", total_price=6000, status="pending", agent_id=255, customer_id=704)
-    offer2 = Offer(offer_id=802, country="France", total_price=200, status="improve", agent_id=255, customer_id=704)
-    offer3 = Offer(offer_id=803, country="England", total_price=350, status="changed", agent_id=255, customer_id=704)
-    offer4 = Offer(offer_id=804, country="Scotland", total_price=500, status="pending", agent_id=255, customer_id=704)
-    offer5 = Offer(offer_id=805, country="Poland", total_price=400, status="improve", agent_id=255, customer_id=704)
-    offer6 = Offer(offer_id=806, country="Senegal", total_price=300, status="changed", agent_id=255, customer_id=704)
-    offer7 = Offer(offer_id=807, country="Czech Republic", total_price=350, status="pending", agent_id=255, customer_id=704)
-    offer8 = Offer(offer_id=808, country="Canada", total_price=400, status="pending", agent_id=255, customer_id=704)
-    offer9 = Offer(offer_id=809, country="Lativa", total_price=600, status="pending", agent_id=255, customer_id=704)
-    offer10 = Offer(offer_id=810, country="Spain", total_price=800, status="pending", agent_id=255, customer_id=704)
-    offer11 = Offer(offer_id=811, country="Brazil", total_price=1000, status="budget", agent_id=255, customer_id=704)
-    offer12 = Offer(offer_id=812, country="Finland", total_price=2000, status="declined", agent_id=255, customer_id=704)
+    offer2 = Offer(offer_id=802, country="France", total_price=200, status="resend", agent_id=270, customer_id=707)
+    offer3 = Offer(offer_id=803, country="England", total_price=350, status="changed", agent_id=275, customer_id=708)
+    offer4 = Offer(offer_id=804, country="Scotland", total_price=500, status="pending", agent_id=280, customer_id=709)
+    offer5 = Offer(offer_id=805, country="Poland", total_price=22, status="resend", agent_id=260, customer_id=705)
+    offer6 = Offer(offer_id=806, country="Senegal", total_price=300, status="changed", agent_id=290, customer_id=711)
+    offer7 = Offer(offer_id=807, country="Czech Republic", total_price=350, status="pending", agent_id=295, customer_id=712)
+    offer8 = Offer(offer_id=808, country="Canada", total_price=400, status="pending", agent_id=300, customer_id=713)
+    offer9 = Offer(offer_id=809, country="Lativa", total_price=600, status="pending", agent_id=305, customer_id=714)
+    offer10 = Offer(offer_id=810, country="Spain", total_price=800, status="pending", agent_id=310, customer_id=715)
+    offer11 = Offer(offer_id=811, country="Brazil", total_price=1000, status="budget", agent_id=315, customer_id=716)
+    offer12 = Offer(offer_id=812, country="Finland", total_price=2000, status="declined", agent_id=265, customer_id=706)
 
     offer1.activities.extend([activity1, activity11])
     offer2.activities.extend([activity2, activity15])
