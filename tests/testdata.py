@@ -1,5 +1,5 @@
 from src.model.agency import Agency
-from src.database import Supervisor, TravelAgent, Customer, Country, Activity, User, db
+from src.database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, db
 
 
 def create_supervisors(agency: Agency):
@@ -246,6 +246,7 @@ def create_agents(agency: Agency):
     agent11.countries.extend([country1,country11])
     agent12.countries.extend([country1,country12])
     agent13.countries.extend([country1,country13])
+    agent14.countries.extend([country1,country4,country7])
 
 
 
@@ -263,7 +264,7 @@ def create_customers(agency: Agency):
         Customer(customer_id=703, name="Ada Lovelace", address="Ada Street 42, 1878 London",
                  email="Ada.Lovelace@maths.com", budget=25000, preference="UK", expert=True, agent_id=250),
         Customer(customer_id=704, name="Nikola Tesla", address="Electric Avenue 8, 1130 New York",
-                 email="Nikola.Tesla@genius.com", budget=18000, preference="USA", expert=True, agent_id=255),
+                 email="Nikola.Tesla@genius.com", budget=18000, preference="Germany", expert=True, agent_id=255),
         Customer(customer_id=705, name="Marie Curie", address="Science Road 23, 7516 Paris",
                  email="Marie.Curie@radioactive.fr", budget=22000, preference="France", expert=True, agent_id=260),
         Customer(customer_id=706, name="Albert Einstein", address="Relativity Blvd 9, 1000 Berlin",
@@ -283,7 +284,7 @@ def create_customers(agency: Agency):
         Customer(customer_id=713, name="Sigmund Freud", address="Mind Way 6, 1010 Vienna",
                  email="Sigmund.Freud@psychology.at", budget=23000, preference="Austria", expert=False, agent_id=300),
         Customer(customer_id=714, name="Gregor Mendel", address="Genetics Blvd 22, 6120 Brno",
-                 email="Gregor.Mendel@biology.cz", budget=28000, preference="None", expert=True, agent_id=305),
+                 email="Gregor.Mendel@biology.cz", budget=28000, preference="None", expert=False, agent_id=305),
         Customer(customer_id=715, name="Louis Pasteur", address="Bacteriology Street 17, 7505 Paris",
                  email="Louis.Pasteur@microbiology.fr", budget=29000, preference="France", expert=True, agent_id=310),
         Customer(customer_id=716, name="Jane Goodall", address="Primate Alley 21, 9012 Nairobi",
@@ -366,6 +367,14 @@ def create_activities(agency: Agency):
     db.session.add_all([country1,country2,country3,country4,country5,country6,country7,country8,country9,country10,country11,country12,country13,country14])
     db.session.commit()
 
+def create_offers(agency: Agency):
+
+    offer1 = Offer(offer_id=801, country="Germany", total_price=6000, status="pending", agent_id=255, customer_id=704)
+    activity1 = db.session.query(Activity).filter_by(activity_id=601).first()
+    offer1.activities.extend([activity1])
+
+    db.session.add(offer1)
+    db.session.commit()
 
 
 def populate(agency: Agency):
@@ -375,6 +384,7 @@ def populate(agency: Agency):
     create_agents(agency)
     create_customers(agency)
     create_activities(agency)
+    create_offers(agency)
 
 
 
