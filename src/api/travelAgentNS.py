@@ -45,15 +45,19 @@ offer_input_model = travelAgent_ns.model("OfferInputModel", {
 
 offer_output_model = travelAgent_ns.model("OfferOutputModel", {
     "offer_id": fields.Integer(required=False,
-                               help="the unique identifier of an offer"),
+                               help="The unique identifier of an offer"),
+    "total_price": fields.Integer(required=True,
+                                  help="Total price of this trip offer"),
     "country": fields.String(required=True,
                              help="The name of the destination for the trip, e.g. Denmark"),
-    "activities": fields.List(fields.Integer, required=True,
+    "activities": fields.List(fields.String(), required=True,
                               help="Activities offered by the travelAgent for this country"),
     "customer_id": fields.Integer(required=False,
-                                  help="the unique identifier of the recipiant"),
+                                  help="The unique identifier of the recipiant"),
     "agent_id": fields.Integer(required=False,
-                               help="the unique identifier of the sender of this offer")
+                               help="The unique identifier of the sender of this offer"),
+    "status": fields.String(required=False,
+                            help="Status code of an offer, e.g. pending")
 })
 
 
@@ -111,7 +115,7 @@ class TravelAgentAPI(Resource):
 
         offer_id = travelAgent_ns.payload["offer_id"]
         customer_id = travelAgent_ns.payload["customer_id"]
-        country_id = travelAgent_ns.payload["country"]
+        country_name = travelAgent_ns.payload["country"]
 
         # existance checks
 
@@ -125,7 +129,7 @@ class TravelAgentAPI(Resource):
         if not customer:
             return abort(400, message="Customer not found")
 
-        country = db.session.query(Country).filter_by(country_id=country_id).one_or_none()
+        country = db.session.query(Country).filter_by(name=country_name).one_or_none()
 
         if not country:
             return abort(400, message="Country not found")
@@ -134,13 +138,25 @@ class TravelAgentAPI(Resource):
 
             new_offer = Offer(offer_id=id(self),
                               country=travelAgent_ns.payload["country"],
+                              total_price=0,
+                              status="pending",
                               customer_id=customer_id,
-                              activities=travelAgent_ns.payload["activities"],
-                              agent_id=employee_id,
-                              status="pending")
+                              agent_id=employee_id
+                              )
 
-            if new_offer.country != customer.preference:
-                return abort(400, message="This country does not match with the preference of your customer")
+            for activity_id in travelAgent_ns.payload["activities"]:
+                for activity in country.activities:
+                    if activity_id in [activ.activity_id for activ in country.activities]:
+                        new_offer.activities.append(activity)
+                        new_offer.total_price += activity.price
+                    elif activity_id not in [activ.activity_id for activ in country.activities]:
+                        return abort(400, message=f"Activity {activity.name} is not registered for this country")
+
+            # fix assignment of activities
+
+            if customer.preference != "None":
+                if new_offer.country != customer.preference:
+                    return abort(400, message="This country does not match with the preference of your customer")
 
         elif offer_id != 0:
 
@@ -157,19 +173,26 @@ class TravelAgentAPI(Resource):
                 # with different activities to convince the customer
                 new_offer = Offer(offer_id=offer_id,
                                   country=travelAgent_ns.payload["country"],
+                                  total_price=0,
                                   customer_id=customer_id,
-                                  activities=travelAgent_ns.payload["activities"],
                                   agent_id=employee_id,
                                   status="changed")
 
+
+                # fix assignment of activities
+
                 if new_offer.country == "string" or new_offer.activities[0] == 0:
                     return abort(400, message="Invalid offer assignment")
+
+            elif offer.status == "declined":
+                return abort(400, message="This offer is already declined by the customer")
 
 
         offer_result = Agency.get_instance().present_offer(new_offer, agent, customer, country)
 
         if offer_result:
             return offer_result
+
         elif not offer_result:
             return abort(400, message="This offer exceeds the budget of the customer")
 
