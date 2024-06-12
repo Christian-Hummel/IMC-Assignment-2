@@ -86,13 +86,13 @@ def create_countries(agency: Agency):
         Country(country_id=905, name="Poland"),
         Country(country_id=906, name="Czech Republic"),
         Country(country_id=907, name="Japan"),
-        Country(country_id=908, name="Kanada"),
+        Country(country_id=908, name="Canada"),
         Country(country_id=909, name="Senegal"),
         Country(country_id=910, name="Chile"),
         Country(country_id=911, name="Brazil"),
         Country(country_id=912, name="Lativa"),
         Country(country_id=913, name="Spain"),
-        Country(country_id=914, name="Finnland"),
+        Country(country_id=914, name="Finland"),
         Country(country_id=915, name="Denmark"),
         Country(country_id=916, name="Norway"),
         Country(country_id=917, name="Sweden"),
@@ -189,7 +189,7 @@ def create_agents(agency: Agency):
 
 
     agent16 =  TravelAgent(employee_id=315, name="Sophia Clark", address="Spruce Street 134, 1112 Korugar",
-                    email="Sophia.Clark@hammertrips.com", salary=3700, role="travelAgent", nationality="Russia",
+                    email="Sophia.Clark@hammertrips.com", salary=3700, role="travelAgent", nationality="Finland",
                     supervisor_id=179)
 
 
@@ -305,75 +305,107 @@ def create_customers(agency: Agency):
 
 
 def create_activities(agency: Agency):
+
+
     activity1 = Activity(activity_id=601, name="Miniatur Wunderland", price=20)
+    activity2 = Activity(activity_id=602, name="Chateau des ducs de Bretagne", price=30)
+    activity3 = Activity(activity_id=603, name="London Eye", price=50)
+    activity4 = Activity(activity_id=604, name="Edingburgh Castle", price=25)
+    activity5 = Activity(activity_id=605, name="Malbork Castle", price=22)
+    activity6 = Activity(activity_id=606, name="Pub Crawl", price=50)
+    activity7 = Activity(activity_id=607, name="Baseball Game", price=60)
+    activity8 = Activity(activity_id=608, name="Calgary Stampede", price=40)
+    activity9 = Activity(activity_id=609, name="Safari", price=100)
+    activity10 = Activity(activity_id=610, name="Rapa Nui", price=50)
+    activity11 = Activity(activity_id=611, name="Stadion Tour", price=70)
+    activity12 = Activity(activity_id=612, name="Ruandales pils", price=20)
+    activity13 = Activity(activity_id=613, name="Sagrada Familia", price=26)
+    activity14 = Activity(activity_id=614, name="City Tour", price=50)
+    activity15 = Activity(activity_id=615, name="Horseriding", price=40)
+
+
     country1 = db.session.query(Country).filter_by(country_id=901).first()
-    country1.activities.append(activity1)
-
-    activity2 = Activity(activity_id=602, name="Chateau des ducs de Bretagne", price="30")
     country2 = db.session.query(Country).filter_by(country_id=902).first()
-    country2.activities.append(activity2)
-
-    activity3 = Activity(activity_id=603, name="London Eye", price="50")
     country3 = db.session.query(Country).filter_by(country_id=903).first()
-    country3.activities.append(activity3)
-
-    activity4 = Activity(activity_id=604, name="Edingburgh Castle", price="25")
     country4 = db.session.query(Country).filter_by(country_id=904).first()
-    country4.activities.append(activity4)
-
-    activity5 = Activity(activity_id=605, name="Malbork Castle", price="22")
     country5 = db.session.query(Country).filter_by(country_id=905).first()
-    country5.activities.append(activity5)
-
-    activity6 = Activity(activity_id=606, name="Pub Crawl", price="50")
     country6 = db.session.query(Country).filter_by(country_id=906).first()
-    country6.activities.append(activity6)
-
-    activity7 = Activity(activity_id=607, name="Baseball Game", price="60")
     country7 = db.session.query(Country).filter_by(country_id=907).first()
-    country7.activities.append(activity7)
-
-    activity8 = Activity(activity_id=608, name="Calgary Stampede", price="40")
     country8 = db.session.query(Country).filter_by(country_id=908).first()
-    country8.activities.append(activity8)
-
-    activity9 = Activity(activity_id=609, name="Safari", price="100")
     country9 = db.session.query(Country).filter_by(country_id=909).first()
-    country9.activities.append(activity9)
-
-    activity10 = Activity(activity_id=610, name="Rapa Nui", price="50")
     country10 = db.session.query(Country).filter_by(country_id=910).first()
-    country10.activities.append(activity10)
-
-    activity11 = Activity(activity_id=611, name="Stadion Tour", price="70")
     country11 = db.session.query(Country).filter_by(country_id=911).first()
-    country11.activities.append(activity11)
-
-    activity12 = Activity(activity_id=612, name="Ruandales pils", price="20")
     country12 = db.session.query(Country).filter_by(country_id=912).first()
-    country12.activities.append(activity12)
-
-    activity13 = Activity(activity_id=613, name="Sagrada Familia", price="26")
     country13 = db.session.query(Country).filter_by(country_id=913).first()
-    country13.activities.append(activity13)
-
-    activity14 = Activity(activity_id=614, name="City Tour", price="50")
     country14 = db.session.query(Country).filter_by(country_id=914).first()
-    country14.activities.append(activity14)
 
-    country1.activities.append(activity11)
-    country2.activities.append(activity11)
+    country1.activities.extend([activity1, activity11, activity15])
+    country2.activities.extend([activity2, activity11])
+    country3.activities.extend([activity3, activity15])
+    country4.activities.extend([activity4, activity15])
+    country5.activities.extend([activity5, activity15])
+    country6.activities.extend([activity6, activity15])
+    country7.activities.extend([activity7, activity15])
+    country8.activities.extend([activity8, activity15])
+    country9.activities.extend([activity9, activity15])
+    country10.activities.extend([activity10,activity15])
+    country11.activities.extend([activity11,activity15])
+    country12.activities.extend([activity12, activity15])
+    country13.activities.extend([activity13, activity15])
+    country14.activities.extend([activity14, activity15])
+
+
 
     db.session.add_all([country1,country2,country3,country4,country5,country6,country7,country8,country9,country10,country11,country12,country13,country14])
     db.session.commit()
 
 def create_offers(agency: Agency):
+    activity1 = db.session.query(Activity).filter_by(activity_id=601).first()
+    activity2 = db.session.query(Activity).filter_by(activity_id=602).first()
+    activity3 = db.session.query(Activity).filter_by(activity_id=603).first()
+    activity4 = db.session.query(Activity).filter_by(activity_id=604).first()
+    activity5 = db.session.query(Activity).filter_by(activity_id=605).first()
+    activity6 = db.session.query(Activity).filter_by(activity_id=606).first()
+    activity7 = db.session.query(Activity).filter_by(activity_id=607).first()
+    activity8 = db.session.query(Activity).filter_by(activity_id=608).first()
+    activity9 = db.session.query(Activity).filter_by(activity_id=609).first()
+    activity10 = db.session.query(Activity).filter_by(activity_id=610).first()
+    activity11 = db.session.query(Activity).filter_by(activity_id=611).first()
+    activity12 = db.session.query(Activity).filter_by(activity_id=612).first()
+    activity13 = db.session.query(Activity).filter_by(activity_id=613).first()
+    activity14 = db.session.query(Activity).filter_by(activity_id=614).first()
+    activity15 = db.session.query(Activity).filter_by(activity_id=615).first()
+
+
 
     offer1 = Offer(offer_id=801, country="Germany", total_price=6000, status="pending", agent_id=255, customer_id=704)
-    activity1 = db.session.query(Activity).filter_by(activity_id=601).first()
-    offer1.activities.extend([activity1])
+    offer2 = Offer(offer_id=802, country="France", total_price=200, status="improve", agent_id=255, customer_id=704)
+    offer3 = Offer(offer_id=803, country="England", total_price=350, status="changed", agent_id=255, customer_id=704)
+    offer4 = Offer(offer_id=804, country="Scotland", total_price=500, status="pending", agent_id=255, customer_id=704)
+    offer5 = Offer(offer_id=805, country="Poland", total_price=400, status="improve", agent_id=255, customer_id=704)
+    offer6 = Offer(offer_id=806, country="Senegal", total_price=300, status="changed", agent_id=255, customer_id=704)
+    offer7 = Offer(offer_id=807, country="Czech Republic", total_price=350, status="pending", agent_id=255, customer_id=704)
+    offer8 = Offer(offer_id=808, country="Canada", total_price=400, status="pending", agent_id=255, customer_id=704)
+    offer9 = Offer(offer_id=809, country="Lativa", total_price=600, status="pending", agent_id=255, customer_id=704)
+    offer10 = Offer(offer_id=810, country="Spain", total_price=800, status="pending", agent_id=255, customer_id=704)
+    offer11 = Offer(offer_id=811, country="Brazil", total_price=1000, status="budget", agent_id=255, customer_id=704)
+    offer12 = Offer(offer_id=812, country="Finland", total_price=2000, status="declined", agent_id=255, customer_id=704)
 
-    db.session.add(offer1)
+    offer1.activities.extend([activity1, activity11])
+    offer2.activities.extend([activity2, activity15])
+    offer3.activities.extend([activity3, activity15])
+    offer4.activities.extend([activity4])
+    offer5.activities.extend([activity5])
+    offer6.activities.extend([activity9])
+    offer7.activities.extend([activity6, activity15])
+    offer8.activities.extend([activity8])
+    offer9.activities.extend([activity12])
+    offer10.activities.extend([activity13])
+    offer11.activities.extend([activity11])
+    offer12.activities.extend([activity14])
+
+
+    db.session.add_all([offer1, offer2, offer3, offer4, offer5, offer6, offer7, offer8, offer9, offer10, offer11, offer12])
     db.session.commit()
 
 
