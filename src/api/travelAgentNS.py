@@ -113,6 +113,7 @@ class TravelAgentAPI(Resource):
     @travelAgent_ns.marshal_with(offer_output_model, envelope="offer")
     def post(self, employee_id):
 
+        global offer_result
         offer_id = travelAgent_ns.payload["offer_id"]
         customer_id = travelAgent_ns.payload["customer_id"]
         country_name = travelAgent_ns.payload["country"]
@@ -135,6 +136,14 @@ class TravelAgentAPI(Resource):
         if not country:
             return abort(400, message="Country not found")
 
+        # check if customer is registered for this TravelAgent
+        if customer not in agent.customers:
+            return abort(400, message="This customer is not assigned to you")
+
+        # check if country is registered for this TravelAgent
+        if country not in agent.countries:
+            return abort(400,message="This country is not assigned to you")
+
         if offer_id == 0:
 
             new_offer = Offer(offer_id=id(self),
@@ -145,6 +154,8 @@ class TravelAgentAPI(Resource):
                               agent_id=employee_id
                               )
 
+            # assignment of activities
+
             for idx in activ_ids:
                 if idx in [activ.activity_id for activ in country.activities]:
                         activity = [activity for activity in country.activities
@@ -154,59 +165,57 @@ class TravelAgentAPI(Resource):
                 elif idx not in [activ.activity_id for activ in country.activities]:
                     return abort(400, message=f"Activity not registered for this country")
 
-            # fix assignment of activities
+            if customer.preference != "None" and new_offer.country != customer.preference:
+                return abort(400, message="This country does not match with the preference of your customer")
 
-            if customer.preference != "None":
-                if new_offer.country != customer.preference:
-                    return abort(400, message="This country does not match with the preference of your customer")
+            offer_result = Agency.get_instance().present_offer(new_offer, customer)
 
         elif offer_id != 0:
 
-            offer = db.session.query(Offer).filter_by(offer_id=offer_id).one_or_none()
+            update_offer = db.session.query(Offer).filter_by(offer_id=offer_id).one_or_none()
 
-            if not offer:
+            if not update_offer:
                 return abort(400, message="Offer not found")
 
-            elif offer.agent_id != agent.agent_id:
+            elif update_offer.agent_id != agent.employee_id:
                 return abort(400, message="This offer was created by another TravelAgent")
 
-            if offer.status == "resend":
-                # country could be another, the travelAgent could offer a different country
+            if update_offer.status == "resend":
+                # country could be a different one from the previous offer, the travelAgent could offer a different country
                 # with different activities to convince the customer
-                new_offer = Offer(offer_id=offer_id,
-                                  country=travelAgent_ns.payload["country"],
-                                  total_price=0,
-                                  customer_id=customer_id,
-                                  agent_id=employee_id,
-                                  status="changed")
+
+                update_offer.country = travelAgent_ns.payload["country"]
+                # reset the price so it can be calculated again
+                update_offer.total_price = 0
                 # empty existing activities list
+                update_offer.activities = []
 
-                new_offer.activities = []
-
-                # fix assignment of activities
-
-                # fill it with the same or new activities -
-                # allowed to be the same because the price could be lowered in the meantime
+                # (re)assignment of activities
+                # fill it with the same or new activities
+                # allowed to be the same because the price could have been lowered in the meantime
 
                 for idx in activ_ids:
                     if idx in [activ.activity_id for activ in country.activities]:
                         activity = [activity for activity in country.activities if activity.activity_id == idx]
-                        new_offer.activities.append(activity[0])
-                        new_offer.total_price += activity[0].price
+                        update_offer.activities.append(activity[0])
+                        update_offer.total_price += activity[0].price
                     elif idx not in [activ.activity_id for activ in country.activities]:
                         return abort(400, message=f"Activity not registered for this country")
 
-                if new_offer.country == "string" or new_offer.activities[0] == 0:
+                if update_offer.country == "string" or update_offer.activities[0] == 0:
                     return abort(400, message="Invalid offer assignment")
 
-            elif offer.status == "declined":
+                update_offer.status = "changed"
+
+                offer_result = Agency.get_instance().present_offer(update_offer, customer)
+
+            elif update_offer.status == "declined":
                 return abort(400, message="This offer is already declined by the customer")
 
 
-        offer_result = Agency.get_instance().present_offer(new_offer, agent, customer, country)
-
         if offer_result:
             return offer_result
+
 
         elif not offer_result:
             return abort(400, message="This offer exceeds the budget of the customer")
