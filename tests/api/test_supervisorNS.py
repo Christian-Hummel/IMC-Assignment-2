@@ -81,7 +81,7 @@ def test_register_supervisor(client,agency):
     parsed = response.get_json()
     user_response = parsed["user"]
 
-    assert user_response["id"] == 19
+    assert user_response["id"] == 20
     assert user_response["username"] == "Tommy"
 
 
@@ -874,5 +874,139 @@ def test_get_agent_stats_errors(client, agency):
     assert nstats_error == "This TravelAgent has not been assigned to a customer"
 
 
+def test_remove_agent_no_customers(client,agency):
+
+    before = TravelAgent.query.count()
+
+    user = db.session.query(User).filter_by(id=19).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=385).first()
+    employee_id = agent.employee_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+
+
+    response = client.delete(f"/supervisor/agent/{employee_id}/remove", headers=headers)
+
+    assert response.status_code == 200
+    assert len(db.session.query(TravelAgent).all()) == before - 1
+
+    message = response.get_json()
+
+    assert message == "TravelAgent Olivia Jones with ID 385 has been removed from the agency"
+
+
+
+def test_remove_agent_customers(client,agency):
+
+    before = TravelAgent.query.count()
+
+    user = db.session.query(User).filter_by(id=19).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=375).first()
+    employee_id = agent.employee_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+
+    response_delete = client.delete(f"/supervisor/agent/{employee_id}/remove", headers=headers)
+
+    assert response_delete.status_code == 200
+
+    message = response_delete.get_json()
+
+    assert message == "TravelAgent Emma Brown with ID 375 has been removed from the agency"
+
+    assert len(db.session.query(TravelAgent).all()) == before - 1
+
+
+def test_remove_agent_errors(client,agency):
+    user1 = db.session.query(User).filter_by(id=7).first()
+
+    agent1 = db.session.query(TravelAgent).filter_by(employee_id=265).first()
+    employee_id1 = agent1.employee_id
+
+
+    access_token1 = create_access_token(user1)
+
+    headers1 = {
+        "Authorization": f"Bearer {access_token1}"
+    }
+
+    response_lastone = client.delete(f"/supervisor/agent/{employee_id1}/remove", headers=headers1)
+
+    assert response_lastone.status_code == 400
+
+    parsed_lastone = response_lastone.get_json()
+    lastone_error = parsed_lastone["message"]
+
+    assert lastone_error == "TravelAgent cannot be removed, there are no other TravelAgents in your team for customer transfer"
+
+    user2 = db.session.query(User).filter_by(id=4).first()
+
+    agent2 = db.session.query(TravelAgent).filter_by(employee_id=360).first()
+    employee_id2 = agent2.employee_id
+
+    access_token2 = create_access_token(user2)
+
+    headers2 = {
+        "Authorization": f"Bearer {access_token2}"
+    }
+
+    response_ntransfer1 = client.delete(f"/supervisor/agent/{employee_id2}/remove", headers=headers2)
+
+    assert response_ntransfer1.status_code == 200
+
+    ntransfer_error1 = response_ntransfer1.get_json()
+
+
+    assert ntransfer_error1 == "This TravelAgent cannot be removed, customers cannot be transferred to other teammembers"
+
+
+    user3 = db.session.query(User).filter_by(id=6).first()
+
+    agent3 = db.session.query(TravelAgent).filter_by(employee_id=390).first()
+    employee_id3 = agent3.employee_id
+
+    access_token3 = create_access_token(user3)
+
+    headers3 = {
+        "Authorization": f"Bearer {access_token3}"
+    }
+
+    response_ntransfer2 = client.delete(f"/supervisor/agent/{employee_id3}/remove", headers=headers3)
+
+    assert response_ntransfer2.status_code == 200
+
+    ntransfer_error2 = response_ntransfer2.get_json()
+
+    assert ntransfer_error2 == "This TravelAgent cannot be removed, customers cannot be transferred to other teammembers"
+
+    response_diffteam = client.delete(f"/supervisor/agent/{employee_id2}/remove", headers=headers1)
+
+    assert response_diffteam.status_code == 400
+
+    parsed_diffteam = response_diffteam.get_json()
+    diffteam_error = parsed_diffteam["message"]
+
+    assert diffteam_error == "This TravelAgent is not a member of your team"
+
+    response_nagent = client.delete("/supervisor/agent/438/remove", headers=headers1)
+
+    assert response_nagent.status_code == 400
+
+    parsed_nagent = response_nagent.get_json()
+    nagent_error = parsed_nagent["message"]
+
+    assert nagent_error == "TravelAgent not found"
 
 

@@ -286,6 +286,35 @@ def test_get_agent_by_id_error(agency):
 
         assert not agent_result
 
+def test_remove_agent_no_customers(agency):
+        agent = db.session.query(TravelAgent).filter_by(employee_id=395).first()
+
+        result = agency.remove_agent(agent)
+
+        assert result == "removed"
+
+def test_remove_agent_customers(agency):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=375).first()
+
+        result = agency.remove_agent(agent)
+
+        assert result == "removed"
+
+def test_remove_agent_errors(agency):
+
+        agent1 = db.session.query(TravelAgent).filter_by(employee_id=360).first()
+
+        result1 = agency.remove_agent(agent1)
+
+        assert not result1
+
+        agent2 = db.session.query(TravelAgent).filter_by(employee_id=390).first()
+
+        result2 = agency.remove_agent(agent2)
+
+        assert not result2
+
 def test_increase_agent_salary(agency):
 
         supervisor = db.session.query(Supervisor).filter_by(employee_id=91).first()
