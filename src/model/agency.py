@@ -191,16 +191,7 @@ class Agency(object):
         db.session.commit()
 
 
-    def present_offer(self, new_offer:Offer, agent:TravelAgent, customer:Customer, country:Country):
-
-        total_price = 0
-        activities = []
-
-        if customer not in agent.customers:
-            raise Exception("This customer is not assigned to you")
-
-        if country not in agent.countries:
-            raise Exception("This country is not assigned to you")
+    def present_offer(self, new_offer:Offer, customer:Customer):
 
 
         # check if the trip is affordable for the customer
@@ -209,17 +200,18 @@ class Agency(object):
             db.session.commit()
             return new_offer
         elif new_offer.total_price <= customer.budget and new_offer.status == "changed":
-            db.session.commit()
+            # works even without this
+            # db.session.commit()
             return new_offer
-        else:
+        elif new_offer.total_price > customer.budget and new_offer.status == "pending":
+            new_offer.status = "budget"
+            db.session.add(new_offer)
+            db.session.commit()
             return None
-
-
-
-
-
-
-
+        elif new_offer.total_price > customer.budget and new_offer.status == "changed":
+            new_offer.status = "budget"
+            # db.session.commit()
+            return None
 
 
 
