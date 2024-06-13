@@ -232,9 +232,23 @@ class Agency(object):
             customer.expert = True
             db.session.commit()
             return customer
-
         else:
             return None
+
+    def show_offers(self, customer_id):
+
+        offers = db.session.query(Offer).filter_by(customer_id=customer_id).all()
+
+        if not len(offers):
+            return None
+
+        if len(offers):
+            result = [offer for offer in offers if offer.status in ["pending","changed"]]
+
+            if len(result):
+                return result
+            elif not len(result):
+                return None
 
 # Country
 

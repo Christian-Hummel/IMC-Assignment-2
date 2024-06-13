@@ -2,7 +2,9 @@ from flask import jsonify
 from flask_restx import Namespace, Resource, fields, abort
 
 from ..model.agency import Agency
-from ..database import Customer, db
+from ..database import Customer, Offer, db
+
+from .travelAgentNS import offer_output_model
 
 customer_ns = Namespace("customer", description="Customer related operations")
 
@@ -93,3 +95,24 @@ class CustomerExpert(Resource):
             elif not requested_customer:
                 return abort(400, message="You have already requested an expert")
 
+
+@customer_ns.route("/<int:customer_id>/offers")
+class OfferInfo(Resource):
+
+
+    @customer_ns.doc(descripton="Show all offers valid for this customer")
+    @customer_ns.marshal_list_with(offer_output_model, envelope="offers")
+    def get(self, customer_id):
+
+        customer = db.session.query(Customer).filter_by(customer_id=customer_id).one_or_none()
+
+        if not customer:
+            return abort(400, message="Customer not found")
+
+
+        offers = Agency.get_instance().show_offers(customer_id)
+
+        if offers:
+            return offers
+        elif not offers:
+            return abort(400, message="There are no current offers")
