@@ -498,6 +498,34 @@ def test_request_expert_errors(agency):
         with pytest.raises(ValueError,match="No country registered as a preference"):
                 agency.request_expert(customer2)
 
+def test_show_offers(agency):
+
+        customer = db.session.query(Customer).filter_by(customer_id=713).first()
+        customer_id = customer.customer_id
+
+        assert len(customer.offers) == 4
+
+        result = agency.show_offers(customer_id)
+
+        # only one of them is valid
+        assert len(result) == 1
+
+def test_show_offers_errors(agency):
+
+        customer1 = db.session.query(Customer).filter_by(customer_id=703).first()
+        customer_id1 = customer1.customer_id
+
+        result1 = agency.show_offers(customer_id1)
+
+        assert not result1
+
+        customer2 = db.session.query(Customer).filter_by(customer_id=716).first()
+        customer_id2 = customer2.customer_id
+
+        result2 = agency.show_offers(customer_id2)
+
+        assert not result2
+
 # Country
 
 def test_add_country(agency):

@@ -1,6 +1,6 @@
 import pytest
 
-from src.database import Supervisor, TravelAgent, Customer, Country, Activity, User, db
+from src.database import Supervisor, TravelAgent, Customer, Offer, Country, Activity, User, db
 
 from tests.fixtures import app, client, agency
 
@@ -73,7 +73,7 @@ def test_request_expert(client,agency):
 
     parsed = response.get_json()
 
-    assert parsed == "You have requested to be assisted by an expert of Austria"
+    assert parsed == "You have requested to be assisted by an expert of France"
 
 
 def test_request_expert_errors(client,agency):
@@ -100,3 +100,39 @@ def test_request_expert_errors(client,agency):
 
     assert expert_error == "You have already requested an expert"
 
+def test_show_offers(client,agency):
+
+    customer = db.session.query(Customer).filter_by(customer_id=713).first()
+    customer_id = customer.customer_id
+
+    response = client.get(f"/customer/{customer_id}/offers")
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+    offers_response = parsed["offers"]
+
+    assert len(offers_response) == 1
+
+def test_show_offers_errors(client,agency):
+
+    customer = db.session.query(Customer).filter_by(customer_id=703).first()
+    customer_id = customer.customer_id
+
+    response_noffers = client.get(f"/customer/{customer_id}/offers")
+
+    assert response_noffers.status_code == 400
+
+    parsed_noffer = response_noffers.get_json()
+    noffer_error = parsed_noffer["message"]
+
+    assert noffer_error == "There are no current offers"
+
+    response_ncustomer = client.get(f"/customer/439/offers")
+
+    assert response_ncustomer.status_code == 400
+
+    parsed_ncustomer = response_ncustomer.get_json()
+    ncustomer_error = parsed_ncustomer["message"]
+
+    assert ncustomer_error == "Customer not found"
