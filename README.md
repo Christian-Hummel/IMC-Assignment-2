@@ -53,6 +53,8 @@ cancel_trip() - reject an offer from the travel agent
 
 request_expert() - require an travel agent with expert status for country specified in preferences - c
 
+show_offers() - show all valid offers (status "pending" or "changed") for this customer - c
+
 
 **TravelAgent**
 
