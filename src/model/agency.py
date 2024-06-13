@@ -1,6 +1,3 @@
-from typing import List, Union, Optional
-
-
 from ..database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, AgentStats, db
 
 
@@ -173,6 +170,81 @@ class Agency(object):
             return customer
         elif not customer:
             return None
+
+    def remove_agent(self,targeted_agent):
+
+        employee_id = targeted_agent.employee_id
+
+        if not targeted_agent.customers:
+            db.session.query(TravelAgent).filter_by(employee_id=employee_id).delete()
+            stats = db.session.query(AgentStats).filter_by(agent_id=employee_id).one_or_none()
+            if stats:
+                stats.delete()
+            db.session.commit()
+            return "removed"
+
+        elif targeted_agent.customers:
+            supervisor_id = targeted_agent.supervisor_id
+            supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
+
+            teammembers = [agent for agent in supervisor.teammembers if agent.employee_id != employee_id]
+
+            for customer in targeted_agent.customers:
+                for diffagent in teammembers:
+                    for offer in customer.offers:
+                        if customer.expert and customer.preference == diffagent.nationality:
+                            if offer.country == diffagent.nationality and offer != "declined":
+                                offer.agent_id = diffagent.employee_id
+                            customer.agent_id = diffagent.employee_id
+                            if diffagent.stats is None:
+                                stats = AgentStats(num_customers=1, agent_id=diffagent.employee_id)
+                                db.session.add(stats)
+                            elif diffagent.stats is not None:
+                                diffagent.stats.num_customers += 1
+
+                        elif not customer.expert and customer.preference != "None" and customer.preference in [country.name for country in diffagent.countries]:
+                            if offer.country in [country.name for country in diffagent.countries] and offer != "declined":
+                                offer.agent_id = diffagent.employee_id
+                            customer.agent_id = diffagent.employee_id
+                            if diffagent.stats is None:
+                                stats = AgentStats(num_customers=1, agent_id=diffagent.employee_id)
+                                db.session.add(stats)
+                            elif diffagent.stats is not None:
+                                diffagent.stats.num_customers += 1
+
+                        elif not customer.expert and customer.preference == "None":
+                            if offer.country in [country.name for country in diffagent.countries] and offer != "declined":
+                                offer.agent_id = diffagent.employee_id
+                            customer.agent_id = diffagent.employee_id
+                            if diffagent.stats is None:
+                                stats = AgentStats(num_customers=1, agent_id=diffagent.employee_id)
+                                db.session.add(stats)
+                            elif diffagent.stats is not None:
+                                diffagent.stats.num_customers += 1
+                        else:
+                            continue
+
+
+        # check if there are offers that were not transferred (status declined excluded)
+        offers = db.session.query(Offer).filter(Offer.agent_id==employee_id).filter(Offer.status!="declined").all()
+        customers = db.session.query(Customer).filter_by(agent_id=employee_id).all()
+
+
+        if not len(customers) and not len(offers):
+            db.session.query(TravelAgent).filter_by(employee_id=employee_id).delete()
+            db.session.commit()
+
+            return "removed"
+        else:
+            return None
+
+
+
+
+
+
+
+
 
 
     def increase_agent_salary(self,supervisor_id,employee_id,increase):

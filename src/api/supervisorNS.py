@@ -426,31 +426,44 @@ class AgencyCustomer(Resource):
         elif not customer:
             return abort(400, message="Customer not found")
 
-    """
+
     
-    waiting for offer table and functionality
+
     
-    @supervisor_ns.route("/agent/<int:employee_id>/delete")
-    class SupervisorReleaseAgent(Resource):
-        method_decorators = [jwt_required()]
+@supervisor_ns.route("/agent/<int:employee_id>/remove")
+class SupervisorReleaseAgent(Resource):
+    method_decorators = [jwt_required()]
 
-        @supervisor_ns.doc(description="Release a travelAgent from the Agency", security="authorizationToken")
-        def delete(self, employee_id):
+    # delete travel agent - customers must be transferred
+    # and also the offers, which are not declined
+    # delete agent and AgentStats instance
 
-            targeted_agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+    @supervisor_ns.doc(description="Release a travelAgent from the Agency", security="authorizationToken")
+    def delete(self, employee_id):
 
-            if not targeted_agent:
-                return abort(400, message="TravelAgent not found")
+        supervisor_id = current_user.manager_id
 
-            removed_agent = Agency.get_instance().remove_agent(employee_id)
-            
-            if removed_agent:
-                return jsonify(f"TravelAgent {removed_agent.name} with ID {removed_agent.employee_id} has been removed from the agency")
-            
-            elif not removed_agent:
-                return jsonify(f"This TravelAgent cannot be removed, customers cannot be transferred to other teammembers")
-                
-                """
+        targeted_agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
+
+        if not targeted_agent:
+            return abort(400, message="TravelAgent not found")
+
+        if targeted_agent not in supervisor.teammembers:
+            return abort(400, message="This TravelAgent is not a member of your team")
+
+        if targeted_agent.customers and len(supervisor.teammembers) == 1:
+            return abort(400, message="TravelAgent cannot be removed, there are no other TravelAgents in your team for customer transfer")
+
+        removed_agent = Agency.get_instance().remove_agent(targeted_agent)
+
+        if removed_agent == "removed":
+            return jsonify(f"TravelAgent {targeted_agent.name} with ID {targeted_agent.employee_id} has been removed from the agency")
+
+        elif not removed_agent:
+            return jsonify(f"This TravelAgent cannot be removed, customers cannot be transferred to other teammembers")
+
+
 
 @supervisor_ns.route("/agent/<int:employee_id>/raise")
 class SupervisorRaise(Resource):
