@@ -204,6 +204,16 @@ class Agency(object):
         elif country in agent.countries:
             raise Exception("This country is already registered for this TravelAgent")
 
+    def get_agent_stats(self,employee_id):
+
+        stats = db.session.query(AgentStats).filter_by(agent_id=employee_id).one_or_none()
+
+        if stats:
+            return stats
+
+        elif not stats:
+            return None
+
 # TravelAgent
 
     def update_agent(self,employee_id,updated_agent:TravelAgent):
