@@ -1,6 +1,6 @@
 import pytest
 
-from src.database import Supervisor, TravelAgent, Customer, Country, Activity, User, db
+from src.database import Supervisor, TravelAgent, Customer, Offer, Country, Activity, User,AgentStats, db
 
 from tests.fixtures import app, client, agency
 
@@ -590,7 +590,7 @@ def test_get_customer_by_id(client,agency):
     assert customer_response["budget"] == 27000
     assert customer_response["preference"] == "France"
     assert not customer_response["expert"]
-    assert not customer_response["travel_agent_id"]
+    assert not customer_response["agent_id"]
 
 
 def test_get_customer_by_id_error(client,agency):
@@ -804,3 +804,75 @@ def test_assign_country_errors(client,agency):
     nagent_error = parsed_nagent["message"]
 
     assert nagent_error == "TravelAgent not found"
+
+
+def test_get_agent_stats(client,agency):
+
+    user = db.session.query(User).filter_by(id=4).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=250).first()
+    employee_id = agent.employee_id
+
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = client.get(f"/supervisor/agent/{employee_id}/stats", headers=headers)
+
+    assert response.status_code == 200
+
+    parsed = response.get_json()
+    stats_response = parsed["stats"]
+
+    assert stats_response["agent_id"] == 250
+    assert stats_response["num_customers"] == 8
+    assert stats_response["num_trips"] == 6
+    assert stats_response["total_revenue"] == 7200
+
+
+def test_get_agent_stats_errors(client, agency):
+
+    user = db.session.query(User).filter_by(id=4).first()
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=360).first()
+    employee_id = agent.employee_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response_nagent = client.get("/supervisor/agent/439/stats", headers=headers)
+
+    assert response_nagent.status_code == 400
+
+    parsed_nagent = response_nagent.get_json()
+    nagent_error = parsed_nagent["message"]
+
+    assert nagent_error == "TravelAgent not found"
+
+    response_diffagent = client.get("/supervisor/agent/255/stats", headers=headers)
+
+    assert response_diffagent.status_code == 400
+
+    parsed_diffagent = response_diffagent.get_json()
+    diffagent_error = parsed_diffagent["message"]
+
+    assert diffagent_error == "This TravelAgent is not a member of your team"
+
+    response_nstats = client.get(f"/supervisor/agent/{employee_id}/stats", headers=headers)
+
+    assert response_nstats.status_code == 400
+
+    parsed_nstats = response_nstats.get_json()
+    nstats_error = parsed_nstats["message"]
+
+    assert nstats_error == "This TravelAgent has not been assigned to a customer"
+
+
+
+

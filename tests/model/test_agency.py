@@ -348,6 +348,29 @@ def test_assign_country_errors(agency):
 
         assert not result
 
+def test_get_agent_stats(agency):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=255).first()
+
+        employee_id = agent.employee_id
+
+        result = agency.get_agent_stats(employee_id)
+
+        assert result.stats_id == 33
+        assert result.agent_id == 255
+        assert result.num_customers == 2
+        assert result.num_trips == 0
+        assert result.total_revenue == 0
+
+def test_get_agent_stats_error(agency):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=360).first()
+        employee_id = agent.employee_id
+
+        result = agency.get_agent_stats(employee_id)
+
+        assert not result
+
 # TravelAgent
 
 ## do not need a test for update_agent, because sqlalchemy is already tested
