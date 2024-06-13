@@ -133,7 +133,7 @@ class TravelAgentAPI(Resource):
 
         country = db.session.query(Country).filter_by(name=country_name).one_or_none()
 
-        if not country:
+        if not country or travelAgent_ns.payload["country"] == "string":
             return abort(400, message="Country not found")
 
         # check if customer is registered for this TravelAgent
@@ -146,6 +146,7 @@ class TravelAgentAPI(Resource):
 
         if offer_id == 0:
 
+
             new_offer = Offer(offer_id=id(self),
                               country=travelAgent_ns.payload["country"],
                               total_price=0,
@@ -155,15 +156,17 @@ class TravelAgentAPI(Resource):
                               )
 
             # assignment of activities
-
-            for idx in activ_ids:
-                if idx in [activ.activity_id for activ in country.activities]:
-                        activity = [activity for activity in country.activities
-                                    if activity.activity_id == idx]
-                        new_offer.activities.append(activity[0])
-                        new_offer.total_price += activity[0].price
-                elif idx not in [activ.activity_id for activ in country.activities]:
-                    return abort(400, message=f"Activity not registered for this country")
+            if activ_ids[0] != 0:
+                for idx in activ_ids:
+                    if idx in [activ.activity_id for activ in country.activities]:
+                            activity = [activity for activity in country.activities
+                                        if activity.activity_id == idx]
+                            new_offer.activities.append(activity[0])
+                            new_offer.total_price += activity[0].price
+                    elif idx not in [activ.activity_id for activ in country.activities]:
+                        return abort(400, message=f"Activity with id {idx} not registered for this country")
+            elif activ_ids[0] == 0:
+                return abort(400, message="Please insert activities for your offer")
 
             if customer.preference != "None" and new_offer.country != customer.preference:
                 return abort(400, message="This country does not match with the preference of your customer")
@@ -181,6 +184,7 @@ class TravelAgentAPI(Resource):
                 return abort(400, message="This offer was created by another TravelAgent")
 
             if update_offer.status == "resend":
+
                 # country could be a different one from the previous offer, the travelAgent could offer a different country
                 # with different activities to convince the customer
 
@@ -193,17 +197,17 @@ class TravelAgentAPI(Resource):
                 # (re)assignment of activities
                 # fill it with the same or new activities
                 # allowed to be the same because the price could have been lowered in the meantime
+                if activ_ids[0] != 0:
+                    for idx in activ_ids:
+                        if idx in [activ.activity_id for activ in country.activities]:
+                            activity = [activity for activity in country.activities if activity.activity_id == idx]
+                            update_offer.activities.append(activity[0])
+                            update_offer.total_price += activity[0].price
+                        elif idx not in [activ.activity_id for activ in country.activities]:
+                            return abort(400, message=f"Activity with id {idx} not registered for this country")
+                elif activ_ids[0] == 0:
+                    return abort(400, message="Please insert activities for your offer")
 
-                for idx in activ_ids:
-                    if idx in [activ.activity_id for activ in country.activities]:
-                        activity = [activity for activity in country.activities if activity.activity_id == idx]
-                        update_offer.activities.append(activity[0])
-                        update_offer.total_price += activity[0].price
-                    elif idx not in [activ.activity_id for activ in country.activities]:
-                        return abort(400, message=f"Activity not registered for this country")
-
-                if update_offer.country == "string" or update_offer.activities[0] == 0:
-                    return abort(400, message="Invalid offer assignment")
 
                 update_offer.status = "changed"
 
