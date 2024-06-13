@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_restx import Namespace, Resource, fields, abort
 
 from ..model.agency import Agency
-from ..database import Customer, Offer, db
+from ..database import Customer, Offer, AgentStats, db
 
 from .travelAgentNS import offer_output_model
 
@@ -36,6 +36,11 @@ customer_output_model = customer_ns.model("CustomerOutputModel", {
     "preference": fields.String(required=False,
                                 help="The preferred country the customer wants to visit")
 
+})
+
+customer_offer_model = customer_ns.model("CustomerOfferModel", {
+    "input": fields.String(required=True,
+                           help="The reaction to an offer by the customer")
 })
 
 
@@ -100,7 +105,7 @@ class CustomerExpert(Resource):
 class OfferInfo(Resource):
 
 
-    @customer_ns.doc(descripton="Show all offers valid for this customer")
+    @customer_ns.doc(description="Show all offers valid for this customer")
     @customer_ns.marshal_list_with(offer_output_model, envelope="offers")
     def get(self, customer_id):
 
@@ -116,3 +121,40 @@ class OfferInfo(Resource):
             return offers
         elif not offers:
             return abort(400, message="There are no current offers")
+
+
+@customer_ns.route("/<int:customer_id>/offer/<int:offer_id>")
+class CustomerOfferAPI(Resource):
+
+    @customer_ns.doc(customer_offer_model, description="React to an offer")
+    @customer_ns.expect(customer_offer_model, validate="True")
+    def post(self, customer_id, offer_id):
+
+        status = customer_ns.payload["input"]
+
+        # existance checks
+
+        customer = db.session.query(Customer).filter_by(customer_id=customer_id).one_or_none()
+        offer = db.session.query(Offer).filter_by(offer_id=offer_id).one_or_none()
+
+        if not customer:
+            return abort(400,message="Customer not found")
+
+        if not offer or offer.customer_id != customer_id:
+            return abort(400,message="Offer not found")
+
+        if offer.status not in ["pending","changed"]:
+            return abort(400,message="Invalid offer status")
+
+        if status not in ["accept", "change", "decline"]:
+            return abort(400,message="Please insert accept, change or decline to react to this offer")
+
+        result = Agency.get_instance().handle_offer(status, offer)
+
+        if result.status == "accepted":
+            return jsonify(f"Your trip to {offer.country} has been accepted, Thank you for choosing hammertrips")
+        elif result.status == "resend":
+            return jsonify("Request send to TravelAgent to improve this offer")
+        elif result.status == "declined":
+            return jsonify("This trip has been cancelled")
+
