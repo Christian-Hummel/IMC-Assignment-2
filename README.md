@@ -98,7 +98,7 @@ add_agent() - introduces a new travel agent to the agency under his supervision 
 
 raise_salary() - increases the salary for a specific travel agent - c
 
-delete_agent() - removes an agent from the agency, all his customers will be transferred to one of his colleagues, if he is the only one left, he cannot be fired.
+delete_agent() - removes an agent from the agency, all his customers will be transferred to one of his colleagues, if he is the only one left, he cannot be fired. - c
 
 set_discount() - lowers the price for the total price of an offer by a set percentage
 
