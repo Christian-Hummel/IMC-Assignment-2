@@ -56,7 +56,7 @@ request_expert() - require an travel agent with expert status for country specif
 
 **TravelAgent**
 
-present_offer() - sends a possible trip recommendation to the customer, it cannot exceed the budget in terms of total price and a customer can only receive one
+present_offer() - sends a possible trip recommendation to the customer, it cannot exceed the budget in terms of total price and a customer can receive multiple different offers from his travelAgent - c
 
 request_raise() - send a request to the respective supervisor to get an increase in salary
 
