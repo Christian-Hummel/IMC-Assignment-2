@@ -503,7 +503,7 @@ def test_show_offers(agency):
         customer = db.session.query(Customer).filter_by(customer_id=713).first()
         customer_id = customer.customer_id
 
-        assert len(customer.offers) == 4
+        assert len(customer.offers) == 3
 
         result = agency.show_offers(customer_id)
 
@@ -525,6 +525,26 @@ def test_show_offers_errors(agency):
         result2 = agency.show_offers(customer_id2)
 
         assert not result2
+
+def test_handle_offer(agency):
+
+        offer1 = db.session.query(Offer).filter_by(offer_id=806).first()
+        offer2 = db.session.query(Offer).filter_by(offer_id=815).first()
+        offer3 = db.session.query(Offer).filter_by(offer_id=816).first()
+
+        result1 = agency.handle_offer("accept",offer1)
+
+        assert result1.status == "accepted"
+
+        result2 = agency.handle_offer("change",offer2)
+
+        assert result2.status == "resend"
+
+        result3 = agency.handle_offer("decline", offer3)
+
+        assert result3.status == "declined"
+
+
 
 # Country
 
