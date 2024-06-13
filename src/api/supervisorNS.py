@@ -147,7 +147,7 @@ customer_output_model = supervisor_ns.model("CustomerModel", {
                                 help="The preferred country of a customer, e.g. Kanada"),
     "expert": fields.Boolean(required=True,
                              help="Status for the request of an expert of the preffered country"),
-    "travel_agent_id": fields.Integer(required=True,
+    "agent_id": fields.Integer(required=True,
                                       help="The unique identifier of a TravelAgent this customer is assigned to")
 })
 

@@ -1,7 +1,7 @@
 from typing import List, Union, Optional
 
 
-from ..database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, db
+from ..database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, AgentStats, db
 
 
 
@@ -108,6 +108,14 @@ class Agency(object):
                 for agent in supervisor.teammembers:
                     if agent.employee_id == employee_id:
                         customer.agent_id = employee_id
+
+                        stats = db.session.query(AgentStats).filter_by(agent_id=agent_id).one_or_none()
+                        if not stats:
+                            stats = AgentStats(num_customers=1, agent_id=agent_id)
+                            db.session.add(stats)
+                        elif stats:
+                            stats.num_customers += 1
+
                         db.session.commit()
                         return [agent,customer]
             elif customer.expert and agent.nationality != customer.preference:
@@ -117,6 +125,14 @@ class Agency(object):
                 for agent in supervisor.teammembers:
                     if agent.employee_id == employee_id:
                         customer.agent_id = employee_id
+
+                        stats = db.session.query(AgentStats).filter_by(agent_id=agent_id).one_or_none()
+                        if not stats:
+                            stats = AgentStats(num_customers=1, agent_id=agent_id)
+                            db.session.add(stats)
+                        elif stats:
+                            stats.num_customers += 1
+
                         db.session.commit()
                         return [agent,customer]
             # customer does not require an expert but has got a preference
@@ -124,6 +140,14 @@ class Agency(object):
                 for agent in supervisor.teammembers:
                     if agent.employee_id == employee_id and customer.preference in [country.name for country in agent.countries]:
                         customer.agent_id = employee_id
+
+                        stats = db.session.query(AgentStats).filter_by(agent_id=agent_id).one_or_none()
+                        if not stats:
+                            stats = AgentStats(num_customers=1, agent_id=agent_id)
+                            db.session.add(stats)
+                        elif stats:
+                            stats.num_customers += 1
+
                         db.session.commit()
                         return [agent,customer]
                     elif customer.preference not in [country.name for country in agent.countries]:
@@ -249,6 +273,33 @@ class Agency(object):
                 return result
             elif not len(result):
                 return None
+
+    def handle_offer(self, status, offer:Offer):
+
+        if status == "accept":
+
+            agent_id = offer.agent_id
+            stats = db.session.query(AgentStats).filter_by(agent_id=agent_id).first()
+            stats.num_trips += 1
+            stats.total_revenue += offer.total_price
+            offer.status = "accepted"
+            db.session.commit()
+            return offer
+
+
+        elif status == "change":
+
+            offer.status = "resend"
+            db.session.commit()
+            return offer
+
+        elif status == "decline":
+
+            offer.status = "declined"
+            db.session.commit()
+            return offer
+
+
 
 # Country
 
