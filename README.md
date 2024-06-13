@@ -47,9 +47,7 @@ A country represents the desired destination of a Customer. Each country is conn
 
 register() - adds a customer to the agency - c
 
-book_trip() - accepting the offer from the agent, a booked trip will be counted as visited for stats
-
-cancel_trip() - reject an offer from the travel agent
+book_trip() - accepting the offer from the agent, a booked trip will be counted as visited for stats -- combined with -- cancel_trip() - reject an offer from the travel agent - c
 
 request_expert() - require an travel agent with expert status for country specified in preferences - c
 
