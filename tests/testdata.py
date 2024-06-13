@@ -43,7 +43,9 @@ def create_supervisors(agency: Agency):
         Supervisor(employee_id=201, name="Tom Hiddleston", address="777 Magnolia Avenue, Latveria",
                    email="Tom.Hiddleston@hammertrips.com", salary=21985, nationality="UK", role="supervisor"),
         Supervisor(employee_id=212, name="Karen Gillan", address="888 Walnut Lane, Oa",
-                   email="Karen.Gillan@hammertrips.com", salary=23975, nationality="UK", role="supervisor")
+                   email="Karen.Gillan@hammertrips.com", salary=23975, nationality="UK", role="supervisor"),
+        Supervisor(employee_id=213, name="John Lord", address="Smoke Lane 4, 3232 New York",
+                   email="John.Lord@hammertrips.com",salary=33000, nationality="USA",role="supervisor")
     ]
 
     # add Supervisors to fixture
@@ -70,7 +72,8 @@ def create_users(agency: Agency):
         User(id=15, username="Hugh", password_hash="Q8s!2Pw$6Lf#3Jr@", manager_id=157),
         User(id=16, username="Emily", password_hash="T4m@1Kr$9Qh!7Lz#", manager_id=168),
         User(id=17, username="Christian", password_hash="Y5c#8Mv$3Lf!1Jr@", manager_id=179),
-        User(id=18, username="Zoe", password_hash="Z2p$6Qh!4Ls@9Kr#", manager_id=190)
+        User(id=18, username="Zoe", password_hash="Z2p$6Qh!4Ls@9Kr#", manager_id=190),
+        User(id=19, username="John", password_hash="Z2p$6Qh!5Islw#", manager_id=213)
     ]
 
     db.session.add_all(users)
@@ -108,116 +111,87 @@ def create_agents(agency: Agency):
     agent1 = TravelAgent(employee_id=240, name="Christopher Lee", address="Arlington Boulevard 9, 3829 Chicago",
                     email="Christopher.Lee@hammertrips.com", salary=3500, role="travelAgent", nationality="UK",
                     supervisor_id=23)
-
-
-    agent2 =  TravelAgent(employee_id=245, name="Philipp Lienhart", address="Brauhausgasse 38, 3829 Freiburg",
+    agent2 = TravelAgent(employee_id=245, name="Philipp Lienhart", address="Brauhausgasse 38, 3829 Freiburg",
                     email="Philipp.Lienhart@hammertrips.com", salary=3900, role="travelAgent", nationality="Austria",
                     supervisor_id=34)
-
-
     agent3 = TravelAgent(employee_id=250, name="John Doe", address="Main Street 5, 1234 Springfield",
                     email="John.Doe@hammertrips.com", salary=3100, role="travelAgent", nationality="USA",
                     supervisor_id=45)
-
-
     agent4 = TravelAgent(employee_id=255, name="Jane Smith", address="Elm Street 12, 5678 Gotham",
                     email="Jane.Smith@hammertrips.com", salary=3200, role="travelAgent", nationality="Canada",
                     supervisor_id=56)
-
-
-
     agent5 = TravelAgent(employee_id=260, name="Robert Brown", address="Oak Avenue 22, 9101 Metropolis",
                     email="Robert.Brown@hammertrips.com", salary=3400, role="travelAgent", nationality="Australia",
                     supervisor_id=67)
-
-
     agent6 = TravelAgent(employee_id=265, name="Emily Davis", address="Pine Lane 34, 1121 Smallville",
                     email="Emily.Davis@hammertrips.com", salary=3300, role="travelAgent", nationality="Germany",
                     supervisor_id=78)
-
-
-
     agent7 = TravelAgent(employee_id=270, name="Michael Johnson", address="Maple Road 45, 3141 Star City",
                     email="Michael.Johnson@hammertrips.com", salary=3500, role="travelAgent", nationality="France",
                     supervisor_id=89)
-
-
-
     agent8 = TravelAgent(employee_id=275, name="Sarah Wilson", address="Birch Boulevard 56, 5161 Central City",
                     email="Sarah.Wilson@hammertrips.com", salary=3200, role="travelAgent", nationality="Italy",
                     supervisor_id=91)
-
-
-    agent9 =  TravelAgent(employee_id=280, name="David Miller", address="Cedar Drive 67, 7181 Coast City",
+    agent9 = TravelAgent(employee_id=280, name="David Miller", address="Cedar Drive 67, 7181 Coast City",
                     email="David.Miller@hammertrips.com", salary=3700, role="travelAgent", nationality="Spain",
                     supervisor_id=102)
-
-
-
     agent10 = TravelAgent(employee_id=285, name="Emma Taylor", address="Willow Way 78, 9201 Bludhaven",
                     email="Emma.Taylor@hammertrips.com", salary=3600, role="travelAgent", nationality="Japan",
                     supervisor_id=113)
-
-
     agent11 = TravelAgent(employee_id=290, name="James Anderson", address="Aspen Avenue 89, 1122 Atlantis",
                     email="James.Anderson@hammertrips.com", salary=3300, role="travelAgent", nationality="China",
                     supervisor_id=124)
-
-
-
     agent12 = TravelAgent(employee_id=295, name="Olivia Thomas", address="Cypress Street 90, 3344 Wakanda",
                     email="Olivia.Thomas@hammertrips.com", salary=3500, role="travelAgent", nationality="India",
                     supervisor_id=135)
-
-
     agent13 = TravelAgent(employee_id=300, name="William Martinez", address="Redwood Lane 101, 5566 Asgard",
                     email="William.Martinez@hammertrips.com", salary=3700, role="travelAgent", nationality="Brazil",
                     supervisor_id=146)
-
-
-
     agent14 = TravelAgent(employee_id=305, name="Isabella Moore", address="Juniper Drive 112, 7788 Themyscira",
                     email="Isabella.Moore@hammertrips.com", salary=3400, role="travelAgent", nationality="Mexico",
                     supervisor_id=157)
-
-
-
     agent15 = TravelAgent(employee_id=310, name="Benjamin Harris", address="Olive Road 123, 9900 Nanda Parbat",
                     email="Benjamin.Harris@hammertrips.com", salary=3600, role="travelAgent",
                     nationality="South Africa", supervisor_id=168)
-
-
-
-    agent16 =  TravelAgent(employee_id=315, name="Sophia Clark", address="Spruce Street 134, 1112 Korugar",
+    agent16 = TravelAgent(employee_id=315, name="Sophia Clark", address="Spruce Street 134, 1112 Korugar",
                     email="Sophia.Clark@hammertrips.com", salary=3700, role="travelAgent", nationality="Finland",
                     supervisor_id=179)
-
-
-
-    agent17 =  TravelAgent(employee_id=320, name="Matthew Lewis", address="Chestnut Avenue 145, 3334 K'un-Lun",
+    agent17 = TravelAgent(employee_id=320, name="Matthew Lewis", address="Chestnut Avenue 145, 3334 K'un-Lun",
                     email="Matthew.Lewis@hammertrips.com", salary=3300, role="travelAgent", nationality="Netherlands",
                     supervisor_id=190)
-
-
-
     agent18 = TravelAgent(employee_id=325, name="Charlotte Walker", address="Hickory Lane 156, 5556 Madripoor",
                     email="Charlotte.Walker@hammertrips.com", salary=3100, role="travelAgent", nationality="Sweden",
                     supervisor_id=201)
-
-
-
     agent19 = TravelAgent(employee_id=330, name="Elijah Young", address="Poplar Boulevard 167, 7778 Attilan",
                     email="Elijah.Young@hammertrips.com", salary=3900, role="travelAgent", nationality="Norway",
                     supervisor_id=23)
-
-
-
     agent20 = TravelAgent(employee_id=335, name="Amelia King", address="Alder Drive 178, 9990 Genosha",
                     email="Amelia.King@hammertrips.com", salary=3400, role="travelAgent", nationality="Denmark",
                     supervisor_id=34)
     agent21 = TravelAgent(employee_id=360, name="Aretha Franklin", address="Sunshine Road 23, 3234 Los Angeles",
                           email="Aretha.Franklin@hammertrips.com", salary=3500, role="travelAgent",nationality="USA",
                           supervisor_id=45)
+    agent22 = TravelAgent(employee_id=365, name="Sophia White", address="Maple Avenue 10, 7845 Seattle",
+                          email="Sophia.White@hammertrips.com", salary=3600, role="travelAgent", nationality="USA",
+                          supervisor_id=213)
+    agent23 = TravelAgent(employee_id=370, name="Aretha Franklin", address="Birch Boulevard 7, 9000 Vancouver",
+                          email="Liam.Green@hammertrips.com", salary=3200, role="travelAgent", nationality="Canada",
+                          supervisor_id=213)
+    agent24 = TravelAgent(employee_id=375, name="Emma Brown", address="Pine Street 21, 5432 Wellington",
+                          email="Emma.Brown@hammertrips.com", salary=3400, role="travelAgent", nationality="Japan",
+                          supervisor_id=213)
+    agent25 = TravelAgent(employee_id=380, name="Noah Wilson", address="Cedar Road 15, 9021 Melbourne",
+                          email="Noah.Wilson@hammertrips.com", salary=3700, role="travelAgent", nationality="Japan",
+                          supervisor_id=213)
+    agent26 = TravelAgent(employee_id=385, name="Olivia Jones", address="Aspen Lane 5, 8765 Dublin",
+                          email="Olivia.Jones@hammertrips.com", salary=3300, role="travelAgent", nationality="Ireland",
+                          supervisor_id=213)
+    agent27 = TravelAgent(employee_id=390, name="Bernhard Hoecker", address="Nürnbergweg 5, 4721 München",
+                          email="Bernhard.Hoecker@hammertrips.com", salary=3000, role="travelAgent", nationality="Germany",
+                          supervisor_id=67)
+    agent28 = TravelAgent(employee_id=395, name="Kevin Hart", address="Short Road 3, 2342 Denver",
+                          email="Kevin.Hart@hammertrips.com", salary=2500, role="travelAgent", nationality="USA",
+                          supervisor_id=34)
 
 
 
@@ -251,10 +225,19 @@ def create_agents(agency: Agency):
     agent12.countries.extend([country1,country12])
     agent13.countries.extend([country1,country2,country8,country13])
     agent14.countries.extend([country1,country4,country7])
+    agent22.countries.extend([country1, country2, country7])
+    agent23.countries.extend([country2, country6, country9, country13])
+    agent24.countries.extend([country13, country7, country11])
+    agent25.countries.extend([country4, country12, country13])
+    agent26.countries.extend([country4, country11, country13])
+    agent27.countries.extend([country8])
+    agent28.countries.extend([country5])
 
 
 
-    db.session.add_all([agent1,agent2,agent3,agent4,agent5,agent6,agent7,agent8,agent9,agent10,agent11,agent12,agent13,agent14,agent15,agent16,agent17,agent18,agent19,agent20,agent21])
+
+
+    db.session.add_all([agent1,agent2,agent3,agent4,agent5,agent6,agent7,agent8,agent9,agent10,agent11,agent12,agent13,agent14,agent15,agent16,agent17,agent18,agent19,agent20,agent21,agent22,agent23,agent24,agent25,agent26,agent27,agent28])
     db.session.commit()
 
 
@@ -300,7 +283,21 @@ def create_customers(agency: Agency):
         Customer(customer_id=719, name="Alfred Nobel", address="Mining Road 5, 1120 Stockholm",
                  email="Alfred.Nobel@chemistry.se", budget=27000, preference="France", expert=False, agent_id=0),
         Customer(customer_id=720, name="Marie Tharp", address="Ocean Avenue 4, 1001 New York",
-                 email="Marie.Tharp@geology.us", budget=21000, preference="Austria", expert=True, agent_id=0)
+                 email="Marie.Tharp@geology.us", budget=21000, preference="Austria", expert=True, agent_id=0),
+        Customer(customer_id=721, name="John Wick", address="Continental Street 101, 4021 New York",
+                 email="John.Wick@continental.com", budget=25000, preference="Japan", expert=True, agent_id=375),
+        Customer(customer_id=722, name="Hannah Abbott", address="Magic Lane 2, 2104 London",
+                 email="Hannah.Abbott@hogwarts.uk", budget=22000, preference="France", expert=False, agent_id=370),
+        Customer(customer_id=723, name="Max Mustermann", address="Sample Street 5, 1200 Berlin",
+                 email="Max.Mustermann@sample.de", budget=3000, preference="Brazil", expert=False, agent_id=375),
+        Customer(customer_id=724, name="Nina Rossi", address="Piazza del Duomo 8, 5012 Florence",
+                 email="Nina.Rossi@italy.it", budget=18000, preference="Canada", expert=True, agent_id=365),
+        Customer(customer_id=725, name="Carlos Oliveira", address="Avenida Brasil 10, 2020 Rio de Janeiro",
+                 email="Carlos.Oliveira@brasil.com", budget=15000, preference="None", expert=False, agent_id=375),
+        Customer(customer_id=726, name="Daniel Radcliffe", address="Richard's Street 23, 3438 London",
+                 email="Thechosenone@hotmail.com", budget=20000, preference="USA", expert=True, agent_id=360),
+        Customer(customer_id=727, name="Mario Matt", address="Krummweg 4, 2314 Schladming",
+                 email="MarioM@gmail.com", budget=30000, preference="Senegal", expert=False, agent_id=390)
     ]
 
     db.session.add_all(customers)
@@ -400,6 +397,10 @@ def create_offers(agency: Agency):
     offer14 = Offer(offer_id=814, country="Scotland", total_price=1400, status="pending", agent_id=280, customer_id=709)
     offer15 = Offer(offer_id=815, country="Poland", total_price=1400, status="pending", agent_id=260, customer_id=705)
     offer16 = Offer(offer_id=816, country="France", total_price=7000, status="pending", agent_id=245, customer_id=702)
+    offer17 = Offer(offer_id=817, country="Japan", total_price=250, status="pending", agent_id=375,customer_id=721)
+    offer18 = Offer(offer_id=818, country="France", total_price=400, status="pending", agent_id=370,customer_id=722)
+    offer19 = Offer(offer_id=819, country="Brazil", total_price=600, status="changed", agent_id=375,customer_id=723)
+    offer20 = Offer(offer_id=820, country="Germany", total_price=2000, status="declined", agent_id=375,customer_id=725)
 
     offer1.activities.extend([activity1, activity11])
     offer2.activities.extend([activity2])
@@ -417,9 +418,14 @@ def create_offers(agency: Agency):
     offer14.activities.extend([activity4,activity11])
     offer15.activities.extend([activity5])
     offer16.activities.extend([activity16])
+    offer17.activities.extend([activity7])
+    offer18.activities.extend([activity2])
+    offer19.activities.extend([activity11])
+    offer20.activities.extend([activity1])
 
 
-    db.session.add_all([offer1, offer2, offer3, offer4, offer5, offer6, offer7, offer8, offer9, offer10, offer11, offer12, offer13, offer14, offer15, offer16])
+
+    db.session.add_all([offer1, offer2, offer3, offer4, offer5, offer6, offer7, offer8, offer9, offer10, offer11, offer12, offer13, offer14, offer15, offer16, offer17, offer18, offer19, offer20])
     db.session.commit()
 
 
@@ -444,7 +450,10 @@ def create_stats(agency: Agency):
         AgentStats(stats_id=46, num_customers=4, num_trips=3, total_revenue=3000, agent_id=320),
         AgentStats(stats_id=47, num_customers=2, num_trips=1, total_revenue=1000, agent_id=325),
         AgentStats(stats_id=48, num_customers=8, num_trips=6, total_revenue=7800, agent_id=330),
-        AgentStats(stats_id=49, num_customers=7, num_trips=5, total_revenue=6100, agent_id=335)
+        AgentStats(stats_id=49, num_customers=7, num_trips=5, total_revenue=6100, agent_id=335),
+        AgentStats(stats_id=50, num_customers=2, num_trips=3, total_revenue=4500, agent_id=365),
+        AgentStats(stats_id=51, num_customers=2, num_trips=5, total_revenue=6500, agent_id=370),
+        AgentStats(stats_id=52, num_customers=1, num_trips=0, total_revenue=0, agent_id=375)
     ]
 
 
