@@ -215,6 +215,9 @@ def create_agents(agency: Agency):
     agent20 = TravelAgent(employee_id=335, name="Amelia King", address="Alder Drive 178, 9990 Genosha",
                     email="Amelia.King@hammertrips.com", salary=3400, role="travelAgent", nationality="Denmark",
                     supervisor_id=34)
+    agent21 = TravelAgent(employee_id=360, name="Aretha Franklin", address="Sunshine Road 23, 3234 Los Angeles",
+                          email="Aretha.Franklin@hammertrips.com", salary=3500, role="travelAgent",nationality="USA",
+                          supervisor_id=45)
 
 
 
@@ -251,7 +254,7 @@ def create_agents(agency: Agency):
 
 
 
-    db.session.add_all([agent1,agent2,agent3,agent4,agent5,agent6,agent7,agent8,agent9,agent10,agent11,agent12,agent13,agent14,agent15,agent16,agent17,agent18,agent19,agent20])
+    db.session.add_all([agent1,agent2,agent3,agent4,agent5,agent6,agent7,agent8,agent9,agent10,agent11,agent12,agent13,agent14,agent15,agent16,agent17,agent18,agent19,agent20,agent21])
     db.session.commit()
 
 
