@@ -39,6 +39,14 @@ agent_country = db.Table(
 
 )
 
+class AgentStats(db.Model):
+    __tablename__ = "agent_stats"
+    stats_id = db.Column(db.Integer, primary_key=True)
+    num_customers = db.Column(db.Integer, nullable=False)
+    num_trips = db.Column(db.Integer, nullable=False, default=0)
+    total_revenue = db.Column(db.Integer, nullable=False, default=0)
+
+    agent_id = db.Column(db.Integer, db.ForeignKey('travel_agent.employee_id'),nullable=False)
 
 
 class TravelAgent(db.Model):
@@ -51,9 +59,8 @@ class TravelAgent(db.Model):
     nationality = db.Column(db.String(20),nullable=False)
     role = db.Column(db.String(20),nullable=False, default='travelAgent')
 
-
-
     supervisor_id = db.Column(db.Integer, db.ForeignKey('supervisor.employee_id'), nullable=False)
+    stats = db.relationship('AgentStats', backref='TravelAgent', uselist=False)
     countries = db.relationship('Country', secondary='agent_country', back_populates='agents')
     customers = db.relationship('Customer', backref='TravelAgent')
     offers = db.relationship('Offer', backref='TravelAgent')
