@@ -1,5 +1,5 @@
 from src.model.agency import Agency
-from src.database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, db
+from src.database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, AgentStats, db
 
 
 def create_supervisors(agency: Agency):
@@ -217,6 +217,7 @@ def create_agents(agency: Agency):
                     supervisor_id=34)
 
 
+
     country1 = db.session.query(Country).filter_by(country_id=901).first()
     country2 = db.session.query(Country).filter_by(country_id=902).first()
     country3 = db.session.query(Country).filter_by(country_id=903).first()
@@ -245,7 +246,7 @@ def create_agents(agency: Agency):
     agent10.countries.extend([country1,country10])
     agent11.countries.extend([country1,country11])
     agent12.countries.extend([country1,country12])
-    agent13.countries.extend([country1,country13])
+    agent13.countries.extend([country1,country2,country8,country13])
     agent14.countries.extend([country1,country4,country7])
 
 
@@ -282,11 +283,11 @@ def create_customers(agency: Agency):
         Customer(customer_id=712, name="Thomas Edison", address="Inventor's Alley 19, 7310 New Jersey",
                  email="Thomas.Edison@invention.us", budget=25000, preference="USA", expert=False, agent_id=295),
         Customer(customer_id=713, name="Sigmund Freud", address="Mind Way 6, 1010 Vienna",
-                 email="Sigmund.Freud@psychology.at", budget=23000, preference="Austria", expert=False, agent_id=300),
+                 email="Sigmund.Freud@psychology.at", budget=2000, preference="France", expert=False, agent_id=300),
         Customer(customer_id=714, name="Gregor Mendel", address="Genetics Blvd 22, 6120 Brno",
                  email="Gregor.Mendel@biology.cz", budget=28000, preference="None", expert=False, agent_id=305),
         Customer(customer_id=715, name="Louis Pasteur", address="Bacteriology Street 17, 7505 Paris",
-                 email="Louis.Pasteur@microbiology.fr", budget=29000, preference="France", expert=True, agent_id=310),
+                 email="Louis.Pasteur@microbiology.fr", budget=1500, preference="None", expert=False, agent_id=310),
         Customer(customer_id=716, name="Jane Goodall", address="Primate Alley 21, 9012 Nairobi",
                  email="Jane.Goodall@anthropology.ke", budget=20000, preference="None", expert=True, agent_id=315),
         Customer(customer_id=717, name="Rosalind Franklin", address="DNA Lane 33, 1012 London",
@@ -322,6 +323,7 @@ def create_activities(agency: Agency):
     activity13 = Activity(activity_id=613, name="Sagrada Familia", price=26)
     activity14 = Activity(activity_id=614, name="City Tour", price=50)
     activity15 = Activity(activity_id=615, name="Horseriding", price=30)
+    activity16 = Activity(activity_id=616, name="Skydiving", price=2000)
 
 
     country1 = db.session.query(Country).filter_by(country_id=901).first()
@@ -340,18 +342,18 @@ def create_activities(agency: Agency):
     country14 = db.session.query(Country).filter_by(country_id=914).first()
 
     country1.activities.extend([activity1, activity11, activity15])
-    country2.activities.extend([activity2, activity11])
+    country2.activities.extend([activity2, activity11, activity16])
     country3.activities.extend([activity3, activity15])
-    country4.activities.extend([activity4, activity15])
+    country4.activities.extend([activity4, activity11, activity15])
     country5.activities.extend([activity5, activity15])
     country6.activities.extend([activity6, activity15])
     country7.activities.extend([activity7, activity15])
-    country8.activities.extend([activity8, activity15])
+    country8.activities.extend([activity8, activity15, activity16])
     country9.activities.extend([activity9, activity15])
     country10.activities.extend([activity10,activity15])
     country11.activities.extend([activity11,activity15])
     country12.activities.extend([activity12, activity15])
-    country13.activities.extend([activity13, activity15])
+    country13.activities.extend([activity13, activity11, activity15])
     country14.activities.extend([activity14, activity15])
 
 
@@ -375,24 +377,29 @@ def create_offers(agency: Agency):
     activity13 = db.session.query(Activity).filter_by(activity_id=613).first()
     activity14 = db.session.query(Activity).filter_by(activity_id=614).first()
     activity15 = db.session.query(Activity).filter_by(activity_id=615).first()
+    activity16 = db.session.query(Activity).filter_by(activity_id=616).first()
 
 
 
     offer1 = Offer(offer_id=801, country="Germany", total_price=6000, status="pending", agent_id=255, customer_id=704)
-    offer2 = Offer(offer_id=802, country="France", total_price=200, status="resend", agent_id=270, customer_id=707)
+    offer2 = Offer(offer_id=802, country="France", total_price=200, status="resend", agent_id=300, customer_id=713)
     offer3 = Offer(offer_id=803, country="England", total_price=350, status="changed", agent_id=275, customer_id=708)
     offer4 = Offer(offer_id=804, country="Scotland", total_price=500, status="pending", agent_id=280, customer_id=709)
     offer5 = Offer(offer_id=805, country="Poland", total_price=22, status="resend", agent_id=260, customer_id=705)
     offer6 = Offer(offer_id=806, country="Senegal", total_price=300, status="changed", agent_id=290, customer_id=711)
-    offer7 = Offer(offer_id=807, country="Czech Republic", total_price=350, status="pending", agent_id=295, customer_id=712)
-    offer8 = Offer(offer_id=808, country="Canada", total_price=400, status="pending", agent_id=300, customer_id=713)
-    offer9 = Offer(offer_id=809, country="Lativa", total_price=600, status="pending", agent_id=305, customer_id=714)
-    offer10 = Offer(offer_id=810, country="Spain", total_price=800, status="pending", agent_id=310, customer_id=715)
+    offer7 = Offer(offer_id=807, country="Czech Republic", total_price=350, status="changed", agent_id=295, customer_id=712)
+    offer8 = Offer(offer_id=808, country="Canada", total_price=2000, status="changed", agent_id=300, customer_id=713)
+    offer9 = Offer(offer_id=809, country="Lativa", total_price=600, status="changed", agent_id=305, customer_id=714)
+    offer10 = Offer(offer_id=810, country="Spain", total_price=800, status="changed", agent_id=310, customer_id=715)
     offer11 = Offer(offer_id=811, country="Brazil", total_price=1000, status="budget", agent_id=315, customer_id=716)
-    offer12 = Offer(offer_id=812, country="Finland", total_price=2000, status="declined", agent_id=265, customer_id=706)
+    offer12 = Offer(offer_id=812, country="France", total_price=2000, status="declined", agent_id=300, customer_id=713)
+    offer13 = Offer(offer_id=813, country="Scotland", total_price=2000, status="changed", agent_id=280, customer_id=709)
+    offer14 = Offer(offer_id=814, country="Scotland", total_price=1400, status="pending", agent_id=280, customer_id=709)
+    offer15 = Offer(offer_id=815, country="Poland", total_price=1400, status="pending", agent_id=260, customer_id=705)
+    offer16 = Offer(offer_id=816, country="France", total_price=7000, status="pending", agent_id=245, customer_id=702)
 
     offer1.activities.extend([activity1, activity11])
-    offer2.activities.extend([activity2, activity15])
+    offer2.activities.extend([activity2])
     offer3.activities.extend([activity3, activity15])
     offer4.activities.extend([activity4])
     offer5.activities.extend([activity5])
@@ -402,10 +409,43 @@ def create_offers(agency: Agency):
     offer9.activities.extend([activity12])
     offer10.activities.extend([activity13])
     offer11.activities.extend([activity11])
-    offer12.activities.extend([activity14])
+    offer12.activities.extend([activity16])
+    offer13.activities.extend([activity16])
+    offer14.activities.extend([activity4,activity11])
+    offer15.activities.extend([activity5])
+    offer16.activities.extend([activity16])
 
 
-    db.session.add_all([offer1, offer2, offer3, offer4, offer5, offer6, offer7, offer8, offer9, offer10, offer11, offer12])
+    db.session.add_all([offer1, offer2, offer3, offer4, offer5, offer6, offer7, offer8, offer9, offer10, offer11, offer12, offer13, offer14, offer15, offer16])
+    db.session.commit()
+
+
+def create_stats(agency: Agency):
+    stats = [
+        AgentStats(stats_id=30, num_customers=5, num_trips=3, total_revenue=4500, agent_id=240),
+        AgentStats(stats_id=31, num_customers=3, num_trips=1, total_revenue=900, agent_id=245),
+        AgentStats(stats_id=32, num_customers=8, num_trips=6, total_revenue=7200, agent_id=250),
+        AgentStats(stats_id=33, num_customers=2, num_trips=0, total_revenue=0, agent_id=255),
+        AgentStats(stats_id=34, num_customers=7, num_trips=5, total_revenue=6100, agent_id=260),
+        AgentStats(stats_id=35, num_customers=6, num_trips=4, total_revenue=4000, agent_id=265),
+        AgentStats(stats_id=36, num_customers=9, num_trips=8, total_revenue=9600, agent_id=270),
+        AgentStats(stats_id=37, num_customers=4, num_trips=3, total_revenue=3500, agent_id=275),
+        AgentStats(stats_id=38, num_customers=1, num_trips=0, total_revenue=0, agent_id=280),
+        AgentStats(stats_id=39, num_customers=10, num_trips=7, total_revenue=8400, agent_id=285),
+        AgentStats(stats_id=40, num_customers=2, num_trips=1, total_revenue=1200, agent_id=290),
+        AgentStats(stats_id=41, num_customers=7, num_trips=4, total_revenue=4500, agent_id=295),
+        AgentStats(stats_id=42, num_customers=5, num_trips=2, total_revenue=2000, agent_id=300),
+        AgentStats(stats_id=43, num_customers=6, num_trips=5, total_revenue=5500, agent_id=305),
+        AgentStats(stats_id=44, num_customers=3, num_trips=2, total_revenue=2300, agent_id=310),
+        AgentStats(stats_id=45, num_customers=9, num_trips=8, total_revenue=9000, agent_id=315),
+        AgentStats(stats_id=46, num_customers=4, num_trips=3, total_revenue=3000, agent_id=320),
+        AgentStats(stats_id=47, num_customers=2, num_trips=1, total_revenue=1000, agent_id=325),
+        AgentStats(stats_id=48, num_customers=8, num_trips=6, total_revenue=7800, agent_id=330),
+        AgentStats(stats_id=49, num_customers=7, num_trips=5, total_revenue=6100, agent_id=335)
+    ]
+
+
+    db.session.add_all(stats)
     db.session.commit()
 
 
@@ -417,6 +457,7 @@ def populate(agency: Agency):
     create_customers(agency)
     create_activities(agency)
     create_offers(agency)
+    create_stats(agency)
 
 
 
