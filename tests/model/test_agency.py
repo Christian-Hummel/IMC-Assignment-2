@@ -2,7 +2,7 @@ import pytest
 
 
 
-from src.database import Supervisor, TravelAgent, Customer, Country, Activity, User, db
+from src.database import Supervisor, TravelAgent, Customer, Offer, Country, Activity, User, db
 
 
 
@@ -350,6 +350,105 @@ def test_assign_country_errors(agency):
 
 # TravelAgent
 
+## do not need a test for update_agent, because sqlalchemy is already tested
+
+def test_present_new_offer(agency):
+
+        new_offer = Offer(offer_id=833, country="Spain", total_price=96, status="pending", agent_id=310, customer_id=715)
+        activity1 = db.session.query(Activity).filter_by(activity_id=611).first()
+        activity2 = db.session.query(Activity).filter_by(activity_id=613).first()
+        new_offer.activities.extend([activity1, activity2])
+        customer = db.session.query(Customer).filter_by(customer_id=715).first()
+
+        before = Offer.query.count()
+
+        result = agency.present_offer(new_offer,customer)
+
+        assert len(db.session.query(Offer).all()) == before + 1
+
+        assert result.offer_id == 833
+        assert result.country == "Spain"
+        assert result.total_price == 96
+        assert result.status == "pending"
+        assert result.agent_id == 310
+        assert result.customer_id == 715
+
+
+
+
+
+def test_present_changed_offer(agency):
+
+        before = Offer.query.count()
+        offer = db.session.query(Offer).filter_by(offer_id=810).first()
+
+        assert len(offer.activities) == 1
+
+        offer.activities = []
+        activity1 = db.session.query(Activity).filter_by(activity_id=611).first()
+        activity2 = db.session.query(Activity).filter_by(activity_id=613).first()
+        offer.activities.extend([activity1, activity2])
+        offer.total_price = 96
+        customer = db.session.query(Customer).filter_by(customer_id=715).first()
+
+        result = agency.present_offer(offer, customer)
+
+        assert len(db.session.query(Offer).all()) == before
+        assert len(offer.activities) == 2
+
+        assert result.offer_id == 810
+        assert result.country == "Spain"
+        assert result.total_price == 96
+        assert result.status == "changed"
+        assert result.agent_id == 310
+        assert result.customer_id == 715
+
+
+
+def test_present_offer_errors(agency):
+
+        # new offer - budget
+
+        before1 = Offer.query.count()
+        customer1 = db.session.query(Customer).filter_by(customer_id=713).first()
+
+        new_offer = Offer(offer_id=845, country="France", total_price=2030, status="pending", agent_id=300, customer_id=713)
+        activity1 = db.session.query(Activity).filter_by(activity_id=602).first()
+        activity2 = db.session.query(Activity).filter_by(activity_id=616).first()
+        new_offer.activities.extend([activity1, activity2])
+
+        result1 = agency.present_offer(new_offer,customer1)
+
+        assert not result1
+
+        assert len(db.session.query(Offer).all()) == before1 + 1
+
+
+
+        # changed offer - budget
+        before2 = Offer.query.count()
+        offer = db.session.query(Offer).filter_by(offer_id=808).first()
+
+        customer2 = db.session.query(Customer).filter_by(customer_id=715).first()
+
+
+        offer.activities = []
+        activity = db.session.query(Activity).filter_by(activity_id=616).first()
+        offer.activities.append(activity)
+        offer.total_price = 2000
+
+        assert offer.status == "changed"
+
+        result2 = agency.present_offer(offer,customer2)
+
+        assert not result2
+
+        assert len(db.session.query(Offer).all()) == before2
+
+        assert offer.status == "budget"
+
+
+
 
 # Customer
 
@@ -388,7 +487,7 @@ def test_request_expert(agency):
 
 def test_request_expert_errors(agency):
 
-        customer1 = db.session.query(Customer).filter_by(customer_id=715).first()
+        customer1 = db.session.query(Customer).filter_by(customer_id=709).first()
 
         expert_result = agency.request_expert(customer1)
 
