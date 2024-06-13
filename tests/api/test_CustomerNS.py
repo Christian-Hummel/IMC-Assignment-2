@@ -136,3 +136,108 @@ def test_show_offers_errors(client,agency):
     ncustomer_error = parsed_ncustomer["message"]
 
     assert ncustomer_error == "Customer not found"
+
+
+def test_handle_offer(client,agency):
+
+    customer = db.session.query(Customer).filter_by(customer_id=709).first()
+
+    customer_id = customer.customer_id
+
+    offer1 = db.session.query(Offer).filter_by(offer_id=804).first()
+    offer2 = db.session.query(Offer).filter_by(offer_id=813).first()
+    offer3 = db.session.query(Offer).filter_by(offer_id=814).first()
+
+    offer_id1 = offer1.offer_id
+    offer_id2 = offer2.offer_id
+    offer_id3 = offer3.offer_id
+
+    response_accept = client.post(f"/customer/{customer_id}/offer/{offer_id1}", json={
+        "input": "accept"
+    })
+
+    assert response_accept.status_code == 200
+
+    message1 = response_accept.get_json()
+
+    assert message1 == "Your trip to Scotland has been accepted, Thank you for choosing hammertrips"
+    assert offer1.status == "accepted"
+
+    response_change = client.post(f"/customer/{customer_id}/offer/{offer_id2}", json={
+        "input": "change"
+    })
+
+    assert response_change.status_code == 200
+
+    message2 = response_change.get_json()
+
+    assert message2 == "Request send to TravelAgent to improve this offer"
+
+    response_decline = client.post(f"/customer/{customer_id}/offer/{offer_id3}", json={
+        "input": "decline"
+    })
+
+    assert response_decline.status_code == 200
+
+    message3 = response_decline.get_json()
+
+    assert message3 == "This trip has been cancelled"
+
+
+def test_handle_offer_errors(client,agency):
+
+    offer1 = db.session.query(Offer).filter_by(offer_id=809).first()
+
+    offer_id1 = offer1.offer_id
+
+    offer2 = db.session.query(Offer).filter_by(offer_id=813).first()
+
+    offer_id2 = offer2.offer_id
+
+    customer = db.session.query(Customer).filter_by(customer_id=709).first()
+
+    customer_id = customer.customer_id
+
+    response_noffer1 = client.post(f"/customer/{customer_id}/offer/583",json={
+        "input": "accept"
+    })
+
+    assert response_noffer1.status_code == 400
+
+    parsed_noffer1 = response_noffer1.get_json()
+    noffer_error1 = parsed_noffer1["message"]
+
+    assert noffer_error1 == "Offer not found"
+
+    response_noffer2 = client.post(f"/customer/{customer_id}/offer/802", json={
+        "input": "accept"
+    })
+
+    assert response_noffer1.status_code == 400
+
+    parsed_noffer2 = response_noffer2.get_json()
+    noffer_error2 = parsed_noffer2["message"]
+
+    assert noffer_error2 == "Offer not found"
+
+    response_ncustomer = client.post(f"/customer/429/offer/{offer_id1}", json={
+        "input": "accept"
+    })
+
+    assert response_ncustomer.status_code == 400
+
+    parsed_ncustomer = response_ncustomer.get_json()
+    ncustomer_error = parsed_ncustomer["message"]
+
+    assert ncustomer_error == "Customer not found"
+
+    response_winput = client.post(f"/customer/{customer_id}/offer/{offer_id2}", json={
+        "input": "cancel"
+    })
+
+    assert response_winput.status_code == 400
+
+    parsed_winput = response_winput.get_json()
+    winput_error = parsed_winput["message"]
+
+    assert winput_error == "Please insert accept, change or decline to react to this offer"
