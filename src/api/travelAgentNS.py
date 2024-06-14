@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_restx import Namespace, Resource, fields, abort
 
 from ..model.agency import Agency
-from ..database import Supervisor, TravelAgent, Offer, Customer, Country, User, db
+from ..database import TravelAgent, Offer, Customer, Country, db
 
 
 travelAgent_ns = Namespace("travelAgent", description="TravelAgent related operations")

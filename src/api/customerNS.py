@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_restx import Namespace, Resource, fields, abort
 
 from ..model.agency import Agency
-from ..database import Customer, Offer, AgentStats, db
+from ..database import Customer, Offer, db
 
 from .travelAgentNS import offer_output_model
 

@@ -1,10 +1,10 @@
 from flask import jsonify
 from flask_restx import Namespace, Resource, fields, abort
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, current_user
+from flask_jwt_extended import jwt_required, create_access_token, current_user
 from werkzeug.security import generate_password_hash,check_password_hash
 
 from ..model.agency import Agency
-from ..database import Supervisor, TravelAgent, Customer, Country, User, Offer, Message, db
+from ..database import Supervisor, TravelAgent, Customer, Country, User, Offer, db
 from .travelAgentNS import offer_discount_model, offer_output_model
 
 
