@@ -317,28 +317,9 @@ def test_remove_agent_errors(agency):
 
 def test_increase_agent_salary(agency):
 
-        supervisor = db.session.query(Supervisor).filter_by(employee_id=91).first()
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=190).first()
 
-        agent = db.session.query(TravelAgent).filter_by(employee_id=275).first()
-
-        supervisor_id = supervisor.employee_id
-
-        employee_id = agent.employee_id
-
-        increase = 0.05
-
-        assert agent.salary == 3200
-
-        result = agency.increase_agent_salary(supervisor_id,employee_id,increase)
-
-        assert result.name == "Sarah Wilson"
-        assert result.salary == 3360
-
-def test_increase_agent_salary_error(agency):
-
-        supervisor = db.session.query(Supervisor).filter_by(employee_id=91).first()
-
-        agent = db.session.query(TravelAgent).filter_by(employee_id=250).first()
+        agent = db.session.query(TravelAgent).filter_by(employee_id=400).first()
 
         supervisor_id = supervisor.employee_id
 
@@ -346,9 +327,65 @@ def test_increase_agent_salary_error(agency):
 
         increase = 0.05
 
+        assert agent.salary == 3700
+
         result = agency.increase_agent_salary(supervisor_id,employee_id,increase)
+
+        assert result.name == "Sylvester Stallone"
+        assert result.salary == 3885
+
+def test_increase_agent_salary_errors(agency):
+
+        supervisor1 = db.session.query(Supervisor).filter_by(employee_id=91).first()
+
+        agent1 = db.session.query(TravelAgent).filter_by(employee_id=250).first()
+
+        supervisor_id1 = supervisor1.employee_id
+
+        employee_id1 = agent1.employee_id
+
+        increase = 0.05
+
+        result = agency.increase_agent_salary(supervisor_id1,employee_id1,increase)
 
         assert not result
+
+        # no request
+
+        agent2 = db.session.query(TravelAgent).filter_by(employee_id=280).first()
+
+        supervisor2 = db.session.query(Supervisor).filter_by(employee_id=102).first()
+
+        supervisor_id2 = supervisor2.employee_id
+
+        employee_id2 = agent2.employee_id
+
+        with pytest.raises(Exception, match="There is no request for a raise from this agent"):
+                agency.increase_agent_salary(supervisor_id2,employee_id2,increase)
+
+        # does not fulfill requirements
+
+        agent3 = db.session.query(TravelAgent).filter_by(employee_id=275).first()
+        supervisor3 = db.session.query(Supervisor).filter_by(employee_id=91).first()
+
+        supervisor_id3 = supervisor3.employee_id
+        employee_id3 = agent3.employee_id
+
+        with pytest.raises(Exception, match="This TravelAgent is not allowed to have a raise in salary"):
+                agency.increase_agent_salary(supervisor_id3,employee_id3,increase)
+
+        # not assigned to customers
+
+        agent4 = db.session.query(TravelAgent).filter_by(employee_id=390).first()
+        supervisor4 = db.session.query(Supervisor).filter_by(employee_id=67).first()
+
+        supervisor_id4 = supervisor4.employee_id
+        employee_id4 = agent4.employee_id
+
+        with pytest.raises(Exception, match="This TravelAgent is not assigned to customers"):
+                agency.increase_agent_salary(supervisor_id4, employee_id4, increase)
+
+
 
 def test_assign_country(agency):
 

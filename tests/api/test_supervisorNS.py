@@ -668,9 +668,9 @@ def test_get_agent_by_id_error(client,agency):
 
 def test_increase_agent_salary(client,agency):
 
-    user = db.session.query(User).filter_by(id=7).first()
+    user = db.session.query(User).filter_by(id=18).first()
 
-    agent = db.session.query(TravelAgent).filter_by(employee_id=265).first()
+    agent = db.session.query(TravelAgent).filter_by(employee_id=400).first()
 
     employee_id = agent.employee_id
 
@@ -680,7 +680,7 @@ def test_increase_agent_salary(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
-    assert agent.salary == 3300
+    assert agent.salary == 3700
 
     response_raise = client.post(f"/supervisor/agent/{employee_id}/raise", headers=headers, json={
         "percentage_increase": 5
@@ -690,7 +690,7 @@ def test_increase_agent_salary(client,agency):
 
     parsed_raise = response_raise.get_json()
 
-    assert parsed_raise == "TravelAgent Emily Davis updated salary is 3465"
+    assert parsed_raise == "TravelAgent Sylvester Stallone updated salary is 3885"
 
 def test_increase_agent_salary_errors(client,agency):
 
