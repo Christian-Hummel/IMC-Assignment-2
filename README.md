@@ -60,7 +60,7 @@ present_offer() - sends a possible trip recommendation to the customer, it canno
 
 request_raise() - send a request to the respective supervisor to get an increase in salary - c
 
-request_discount() - send a request to the respective supervisor to lower the total price of an offer that exceeds the budget of a customer
+request_discount() - send a request to the respective supervisor to lower the total price of an offer that exceeds the budget of a customer - c
 
 update_agent() - allows to update following attributes: name, email, address - c
 
