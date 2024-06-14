@@ -28,6 +28,17 @@ class Supervisor(db.Model):
 
     account = db.relationship('User', backref='Supervisor', uselist=False)
     teammembers = db.relationship('TravelAgent', backref='Supervisor')
+    messages = db.relationship('Message', backref='Supervisor')
+
+
+class Message(db.Model):
+    __tablename__ = "message"
+    message_id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(50), nullable=False)
+    offer_id = db.Column(db.Integer, nullable=False,default=0)
+
+    supervisor_id = db.Column(db.Integer, db.ForeignKey('supervisor.employee_id'),nullable=False)
+    agent_id = db.Column(db.Integer, db.ForeignKey('travel_agent.employee_id'),nullable=False)
 
 
 # joined table travelAgent and country
@@ -64,6 +75,7 @@ class TravelAgent(db.Model):
     countries = db.relationship('Country', secondary='agent_country', back_populates='agents')
     customers = db.relationship('Customer', backref='TravelAgent')
     offers = db.relationship('Offer', backref='TravelAgent')
+    messages = db.relationship('Message', backref='TravelAgent')
 
 
 
