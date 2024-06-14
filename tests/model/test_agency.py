@@ -2,7 +2,7 @@ import pytest
 
 
 
-from src.database import Supervisor, TravelAgent, Customer, Offer, Country, Activity, User, db
+from src.database import Supervisor, TravelAgent, Customer, Offer, Country, Activity, User, Message, db
 
 
 
@@ -499,7 +499,21 @@ def test_present_offer_errors(agency):
 
         assert offer.status == "budget"
 
+def test_request_raise(agency):
 
+        agent = db.session.query(TravelAgent).filter_by(employee_id=360).first()
+
+        result = agency.request_raise(agent)
+
+        assert result == "A request for a raise in salary has been sent"
+
+def test_request_raise_error(agency):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=400).first()
+
+        result = agency.request_raise(agent)
+
+        assert not result
 
 
 # Customer
@@ -666,7 +680,7 @@ def test_get_country_stats(agency):
 
 def test_get_country_stats_error(agency):
 
-        country = db.session.query(Country).filter_by(country_id=903).first()
+        country = db.session.query(Country).filter_by(country_id=904).first()
 
         result = agency.get_country_stats(country)
 

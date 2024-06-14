@@ -1,6 +1,6 @@
 import pytest
 
-from src.database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, db
+from src.database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, Message, db
 
 from tests.fixtures import app, client, agency
 
@@ -479,6 +479,46 @@ def test_present_offer_errors(client,agency):
     nagent_error = parsed_nagent["message"]
 
     assert nagent_error == "TravelAgent not found"
+
+def test_request_raise(client,agency):
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=375).first()
+
+    employee_id = agent.employee_id
+
+    response_raise = client.post(f"/travelAgent/{employee_id}/raise")
+
+    assert response_raise.status_code == 200
+
+    message = response_raise.get_json()
+
+    assert message == "A request for a raise in salary has been sent"
+
+def test_request_raise_error(client,agency):
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=400).first()
+
+    employee_id = agent.employee_id
+
+    response_alsent = client.post(f"/travelAgent/{employee_id}/raise")
+
+    assert response_alsent.status_code == 400
+
+    parsed_alsent = response_alsent.get_json()
+    alsent_response = parsed_alsent["message"]
+
+    assert alsent_response == "Request for raise still pending"
+
+    response_nagent = client.post("/travelAgent/439/raise")
+
+    assert response_nagent.status_code == 400
+
+    parsed_nagent = response_nagent.get_json()
+    nagent_error = parsed_nagent["message"]
+
+    assert nagent_error == "TravelAgent not found"
+
+
 
 
 
