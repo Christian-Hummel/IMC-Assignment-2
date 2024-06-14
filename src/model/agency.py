@@ -18,13 +18,13 @@ class Agency(object):
 
 # Supervisor
 
-    def add_supervisor(self, new_supervisor:Supervisor):
+    def add_supervisor(self, new_supervisor: Supervisor):
 
         db.session.add(new_supervisor)
         db.session.commit()
 
 
-    def register_user(self, new_user:User):
+    def register_user(self, new_user: User):
 
         db.session.add(new_user)
         db.session.commit()
@@ -263,8 +263,8 @@ class Agency(object):
 
                 if stats.total_revenue >= 5000:
                     agent.salary = agent.salary * (1 + increase)
+                    db.session.query(Message).filter(Message.agent_id == employee_id).filter(Message.message == "raise").delete()
                     db.session.commit()
-
                     return agent
                 else:
                     raise Exception("This TravelAgent is not allowed to have a raise in salary")
@@ -346,16 +346,35 @@ class Agency(object):
             db.session.commit()
             return "A request for a raise in salary has been sent"
 
+    def request_discount(self, agent: TravelAgent, offer: Offer, percentage):
+
+        agent_id = agent.employee_id
+        offer_id = offer.offer_id
+        supervisor_id = agent.supervisor_id
+
+        request = db.session.query(Message).filter_by(offer_id=offer_id).one_or_none()
+
+        if request:
+            return None
+
+        new_message = Message(supervisor_id=supervisor_id,
+                              agent_id=agent_id,
+                              offer_id=offer_id,
+                              percentage=percentage,
+                              message="discount")
+        db.session.add(new_message)
+        db.session.commit()
+        return f"A request for lowering the total price of Offer {offer_id} by {percentage} percent has been sent"
 
 # Customer
 
-    def register_customer(self, new_customer:Customer):
+    def register_customer(self, new_customer: Customer):
 
         db.session.add(new_customer)
         db.session.commit()
 
 
-    def request_expert(self, customer:Customer):
+    def request_expert(self, customer: Customer):
 
         if customer.preference == "None":
             raise ValueError("No country registered as a preference")
@@ -382,7 +401,7 @@ class Agency(object):
             elif not len(result):
                 return None
 
-    def handle_offer(self, status, offer:Offer):
+    def handle_offer(self, status, offer: Offer):
 
         if status == "accept":
 
@@ -411,7 +430,7 @@ class Agency(object):
 
 # Country
 
-    def add_country(self, new_country:Country):
+    def add_country(self, new_country: Country):
 
         db.session.add(new_country)
         db.session.commit()
@@ -534,7 +553,7 @@ class Agency(object):
                 db.session.commit()
 
 
-    def remove_activity(self, country:Country, r_activity:Activity):
+    def remove_activity(self, country: Country, r_activity:Activity):
 
         for activity in country.activities:
             if activity.activity_id == r_activity.activity_id:

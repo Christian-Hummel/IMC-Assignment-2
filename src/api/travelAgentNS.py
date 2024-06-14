@@ -61,7 +61,10 @@ offer_output_model = travelAgent_ns.model("OfferOutputModel", {
 })
 
 
-
+offer_discount_model = travelAgent_ns.model("OfferDiscountModel", {
+    "percentage":fields.Integer(required=True,
+                   help="Percentage of the requested discount for an offer")
+})
 
 @travelAgent_ns.route("/<int:employee_id>/update")
 class AgentUpdate(Resource):
@@ -243,5 +246,41 @@ class RequestRaise(Resource):
 
         if not result:
             return abort(400,"Request for raise still pending")
+
+
+
+@travelAgent_ns.route("/<int:employee_id>/offer/<int:offer_id>/discount")
+class RequestDiscount(Resource):
+
+    @travelAgent_ns.doc(offer_discount_model,description="Request a discount for the total cost of a trip")
+    @travelAgent_ns.expect(offer_discount_model, validate=True)
+    def post(self, employee_id,offer_id):
+
+        percentage = travelAgent_ns.payload["percentage"]
+        agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+        offer = db.session.query(Offer).filter_by(offer_id=offer_id).one_or_none()
+
+
+        if percentage <= 0 or percentage > 40:
+            return abort(400, message="Please insert a valid percentage in the range from 1 to 40")
+
+        if not agent:
+            return abort(400, message="TravelAgent not found")
+
+        if not offer:
+            return abort(400, message="Offer not found")
+
+        if offer.agent_id != agent.employee_id:
+            return abort(400, message="This offer is not one of yours")
+
+        if offer.status != "budget":
+            return abort(400, message="This offer is not available for discounts")
+
+        result = Agency.get_instance().request_discount(agent,offer,percentage)
+
+        if result:
+            return jsonify(result)
+        if not result:
+            return abort(400, message="The request for lowering this offer is still pending")
 
 
