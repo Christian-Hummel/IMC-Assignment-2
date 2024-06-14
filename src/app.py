@@ -1,24 +1,29 @@
+import os
 from flask import Flask
 from flask_restx import Api
-import os
-
-
+from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 
 from .model.agency import Agency
-from .database import db
+from .database import User,db
 from .api.supervisorNS import supervisor_ns
-
-
+from .api.countryNS import country_ns
+from .api.customerNS import customer_ns
+from .api.travelAgentNS import travelAgent_ns
 
 agency = Agency()
+migrate = Migrate()
 
-def create_app():
+def create_app(database_uri="sqlite:///travelbase.db"):
+
     travelroute_app = Flask(__name__)
     # Configure the database
-    travelroute_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///travelbase.db'
+    travelroute_app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
+    travelroute_app.config['JWT_SECRET_KEY'] = "IZGYWPW82P7QY"
 
     # Initialize database on app
     db.init_app(travelroute_app)
+    migrate.init_app(travelroute_app, db)
 
 
     # create db in current directory if not already present
@@ -26,15 +31,32 @@ def create_app():
         with travelroute_app.app_context():
             db.create_all()
 
+    # create Class for handling web tokens
+    jwt = JWTManager()
 
-    # need to extend this class for custom objects, so that they can be jsonified
+    #initialize jwt it on app
+    jwt.init_app(travelroute_app)
+
+
+
     travelroute_api = Api(travelroute_app, title="Hammertrips: An App for booking journeys that you will not forget")
 
     # add individual namespaces
     travelroute_api.add_namespace(supervisor_ns)
-    #travelroute_api.add_namespace(travelagent_ns)
-    #travelroute_api.add_namespace(customer_ns)
-    #travelroute_api.add_namespace(country_ns)
+    travelroute_api.add_namespace(travelAgent_ns)
+    travelroute_api.add_namespace(customer_ns)
+    travelroute_api.add_namespace(country_ns)
+
+
+    @jwt.user_identity_loader
+    def user_identity_lookup(user):
+        return user.id
+
+
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        return User.query.filter_by(id=identity).first()
 
 
     return travelroute_app
