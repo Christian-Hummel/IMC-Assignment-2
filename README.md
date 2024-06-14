@@ -94,6 +94,8 @@ add_supervisor() - registers a supervisor for this agency
 
 add_user() - creates a login user for this supervisor, the employee_id will be connected to this table
 
+log_in() - creates the Token for the supervisor to unlock more functionality - has to be used in this format: "Bearer <access_token>"
+
 get_supervisor_by_id() - displays supervisor attributes: employer_ID, name, email, address, salary, nationality and number of travel agents under his supervision
 
 add_agent() - introduces a new travel agent to the agency under his supervision - adds the supervisor attribute to this class 
