@@ -71,7 +71,7 @@ get_country_by_id() - displays country attributes: country_ID, name and all curr
 
 get_all_countries() - shows a list of all countries - c
 
-get_country_stats() - displays the number of total visits, the most popular activity and the total revenue it generated
+get_country_stats() - displays the number of total visits, the most popular activity and the total revenue it generated - c
 
 
 **Activity**
@@ -119,4 +119,4 @@ the travel agent supervisor interaction with raise salary could made with certai
 
 the salary of each travel agent can be set to a default value, the same holds for supervisors, but their default value will be higher, naturally.
 
-Employee ID might be convenient because of inheritance, but I do not see a problem with this variable name, in most businesses the higher do also have the same type of ID number like everyone else.
+Employee ID might be convenient because of inheritance, but I do not see a problem with this variable name, in most businesses the higher ups do also have the same type of ID number like everyone else.
