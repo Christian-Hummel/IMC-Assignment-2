@@ -330,3 +330,68 @@ def test_get_activity_by_id_errors(client,agency):
     ncountry_error = parsed_ncountry["message"]
 
     assert ncountry_error == "Country not found"
+
+
+def test_get_country_stats(client,agency):
+
+    country1 = db.session.query(Country).filter_by(country_id=901).first()
+
+    country_id1 = country1.country_id
+
+    response_stats1 = client.get(f"/country/{country_id1}/stats")
+
+    assert response_stats1.status_code == 200
+
+    stats_response1 = response_stats1.get_json()
+
+    assert stats_response1["country"] == "Germany"
+    assert stats_response1["total_revenue"] == 1600
+    assert "Miniatur Wunderland" in stats_response1["favourite_activity"]
+    assert stats_response1["visits"] == 2
+
+
+    # favourite activity tied, so there are multiple Maxima
+
+    country2 = db.session.query(Country).filter_by(country_id=907).first()
+
+    country_id2 = country2.country_id
+
+    response_stats2 = client.get(f"/country/{country_id2}/stats")
+
+    assert response_stats2.status_code == 200
+
+    stats_response2 = response_stats2.get_json()
+
+    assert stats_response2["country"] == "Japan"
+    assert stats_response2["total_revenue"] == 7000
+    assert "Baseball Game" in stats_response2["favourite_activities"]
+    assert "Horseriding" in stats_response2["favourite_activities"]
+    assert stats_response2["visits"] == 2
+
+
+
+def test_get_country_stats_errors(client,agency):
+
+    country = db.session.query(Country).filter_by(country_id=908).first()
+
+    country_id = country.country_id
+
+    response_nvisits = client.get(f"/country/{country_id}/stats")
+
+    assert response_nvisits.status_code == 400
+
+    parsed_nvisits = response_nvisits.get_json()
+    nvisits_error = parsed_nvisits["message"]
+
+    assert nvisits_error == "This country has not been visited by a customer yet"
+
+    response_ncountry = client.get("country/684/stats")
+
+    assert response_ncountry.status_code == 400
+
+    parsed_ncountry = response_ncountry.get_json()
+    ncountry_error = parsed_ncountry["message"]
+
+    assert ncountry_error == "Country not found"
+
+

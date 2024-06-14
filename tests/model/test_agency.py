@@ -642,6 +642,37 @@ def test_get_country_by_id(agency):
         assert country["name"] == "Netherlands"
         assert len(country["activities"]) == 0
 
+def test_get_country_stats(agency):
+
+        country1 = db.session.query(Country).filter_by(country_id=901).first()
+
+        result1 = agency.get_country_stats(country1)
+
+        assert result1["country"] == "Germany"
+        assert result1["visits"] == 2
+        assert result1["total_revenue"] == 1600
+        assert "Miniatur Wunderland" in result1["favourite_activity"]
+
+        country2 = db.session.query(Country).filter_by(country_id=907).first()
+
+        result2 = agency.get_country_stats(country2)
+
+        assert result2["country"] == "Japan"
+        assert result2["visits"] == 2
+        assert result2["total_revenue"] == 7000
+        assert "Baseball Game" in result2["favourite_activities"]
+        assert "Horseriding" in result2["favourite_activities"]
+
+
+def test_get_country_stats_error(agency):
+
+        country = db.session.query(Country).filter_by(country_id=903).first()
+
+        result = agency.get_country_stats(country)
+
+        assert not result
+
+
 # Activity
 
 def test_add_activity(agency):
