@@ -552,6 +552,25 @@ def test_request_raise_error(agency):
 
         assert not result
 
+def test_request_discount(agency):
+
+        percentage = 10
+        agent = db.session.query(TravelAgent).filter_by(employee_id=370).first()
+        offer = db.session.query(Offer).filter_by(offer_id=831).first()
+
+        result = agency.request_discount(agent,offer,percentage)
+
+        assert result == "A request for lowering the total price of Offer 831 by 10 percent has been sent"
+
+def test_request_discount_errors(agency):
+
+        percentage = 10
+        agent = db.session.query(TravelAgent).filter_by(employee_id=315).first()
+        offer = db.session.query(Offer).filter_by(offer_id=811).first()
+
+        result = agency.request_discount(agent,offer,percentage)
+
+        assert not result
 
 # Customer
 

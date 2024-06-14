@@ -519,6 +519,119 @@ def test_request_raise_error(client,agency):
     assert nagent_error == "TravelAgent not found"
 
 
+def test_request_discount(client,agency):
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=370).first()
+    offer = db.session.query(Offer).filter_by(offer_id=831).first()
+
+    employee_id = agent.employee_id
+    offer_id = offer.offer_id
+
+    response_discount = client.post(f"/travelAgent/{employee_id}/offer/{offer_id}/discount", json={
+        "percentage": 10
+    })
+
+    assert response_discount.status_code == 200
+
+    message = response_discount.get_json()
+
+    assert message == "A request for lowering the total price of Offer 831 by 10 percent has been sent"
+
+
+def test_request_discount_errors(client,agency):
+
+    # request already sent
+
+    agent1 = db.session.query(TravelAgent).filter_by(employee_id=315).first()
+    offer1 = db.session.query(Offer).filter_by(offer_id=811).first()
+
+    employee_id1 = agent1.employee_id
+    offer_id1 = offer1.offer_id
+
+    response_alsent = client.post(f"/travelAgent/{employee_id1}/offer/{offer_id1}/discount", json={
+        "percentage": 20
+    })
+
+    assert response_alsent.status_code == 400
+
+    parsed_alsent = response_alsent.get_json()
+    alsent_error = parsed_alsent["message"]
+
+    assert alsent_error == "The request for lowering this offer is still pending"
+
+    # wrong status
+
+    agent2 = db.session.query(TravelAgent).filter_by(employee_id=375).first()
+    offer2 = db.session.query(Offer).filter_by(offer_id=824).first()
+
+    employee_id2 = agent2.employee_id
+    offer_id2 = offer2.offer_id
+
+    response_nav = client.post(f"/travelAgent/{employee_id2}/offer/{offer_id2}/discount", json={
+        "percentage": 30
+    })
+
+    assert response_nav.status_code == 400
+
+    parsed_nav = response_nav.get_json()
+    nav_error = parsed_nav["message"]
+
+    assert nav_error == "This offer is not available for discounts"
+
+    # Offer does not exist
+
+    response_noffer1 = client.post(f"/travelAgent/{employee_id1}/offer/473/discount", json={
+        "percentage": 4
+    })
+
+    assert response_noffer1.status_code == 400
+
+    parsed_noffer1 = response_noffer1.get_json()
+    noffer_error1 = parsed_noffer1["message"]
+
+    assert noffer_error1 == "Offer not found"
+
+    # Offer belongs to different TravelAgent
+
+    response_diffagent = client.post(f"/travelAgent/{employee_id1}/offer/816/discount", json={
+        "percentage": 4
+    })
+
+    assert response_diffagent.status_code == 400
+
+    parsed_diffagent = response_diffagent.get_json()
+    diffagent_error = parsed_diffagent["message"]
+
+    assert diffagent_error == "This offer is not one of yours"
+
+    # TravelAgent not found
+
+    response_nagent = client.post(f"/travelAgent/548/offer/{offer_id1}/discount", json={
+        "percentage": 10
+    })
+
+    assert response_nagent.status_code == 400
+
+    parsed_nagent = response_nagent.get_json()
+    nagent_error = parsed_nagent["message"]
+
+    assert nagent_error == "TravelAgent not found"
+
+    # wrong input
+
+    response_winput = client.post(f"/travelAgent/{employee_id1}/offer/{offer_id1}/discount", json={
+        "percentage": 50
+    })
+
+    assert response_winput.status_code == 400
+
+    parsed_winput = response_winput.get_json()
+    winput_error = parsed_winput["message"]
+
+    assert winput_error == "Please insert a valid percentage in the range from 1 to 40"
+
+
+
 
 
 
