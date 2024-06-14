@@ -58,7 +58,9 @@ show_offers() - show all valid offers (status "pending" or "changed") for this c
 
 present_offer() - sends a possible trip recommendation to the customer, it cannot exceed the budget in terms of total price and a customer can receive multiple different offers from his travelAgent - c
 
-request_raise() - send a request to the respective supervisor to get an increase in salary
+request_raise() - send a request to the respective supervisor to get an increase in salary - c
+
+request_discount() - send a request to the respective supervisor to lower the total price of an offer that exceeds the budget of a customer
 
 update_agent() - allows to update following attributes: name, email, address - c
 
