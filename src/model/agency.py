@@ -239,29 +239,39 @@ class Agency(object):
             return None
 
 
-
-
-
-
-
-
-
-
     def increase_agent_salary(self,supervisor_id,employee_id,increase):
 
         agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).first()
 
         supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
 
+
+
         if agent not in supervisor.teammembers:
             return None
 
         elif agent in supervisor.teammembers:
 
-            agent.salary = agent.salary * (1 + increase)
-            db.session.commit()
+            request = db.session.query(Message).filter(Message.agent_id==employee_id).filter(Message.message=="raise").one_or_none()
 
-            return agent
+            if request:
+
+                stats = db.session.query(AgentStats).filter_by(agent_id=employee_id).one_or_none()
+
+                if not stats:
+                    raise Exception("This TravelAgent is not assigned to customers")
+
+                if stats.total_revenue >= 5000:
+                    agent.salary = agent.salary * (1 + increase)
+                    db.session.commit()
+
+                    return agent
+                else:
+                    raise Exception("This TravelAgent is not allowed to have a raise in salary")
+
+            elif not request:
+
+                raise Exception("There is no request for a raise from this agent")
 
     def assign_country(self, country:Country, agent:TravelAgent, supervisor:Supervisor):
 
