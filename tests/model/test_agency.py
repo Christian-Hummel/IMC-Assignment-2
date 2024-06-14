@@ -477,6 +477,26 @@ def test_discount_offer_error(agency):
         with pytest.raises(Exception, match="There is no discount request for this offer"):
                 agency.discount_offer(agent,offer,percentage)
 
+def test_get_all_messages(agency):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=213).first()
+        supervisor_id = supervisor.employee_id
+
+        supervisor_messages_count = len(db.session.query(Message).filter_by(supervisor_id=213).all())
+
+        result = agency.get_all_messages(supervisor_id)
+
+        assert len(result) == supervisor_messages_count
+
+def test_get_all_messages_error(agency):
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=146).first()
+        supervisor_id = supervisor.employee_id
+
+        result = agency.get_all_messages(supervisor_id)
+
+        assert not result
+
 # TravelAgent
 
 ## do not need a test for update_agent, because sqlalchemy is already tested

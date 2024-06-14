@@ -1,6 +1,6 @@
 import pytest
 
-from src.database import Supervisor, TravelAgent, Customer, Offer, Country, Activity, User,AgentStats, db
+from src.database import Supervisor, TravelAgent, Customer, Offer, Country, User, Message, db
 
 from tests.fixtures import app, client, agency
 
@@ -1126,3 +1126,50 @@ def test_discount_offer_errors(client,agency):
     winput_error = parsed_winput["message"]
 
     assert winput_error == "Please enter a valid percentage from 1 to 50"
+
+def test_get_all_messages(client, agency):
+
+
+    user = db.session.query(User).filter_by(id=19).first()
+
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+
+    messages_supervisor_count = len(db.session.query(Message).filter_by(supervisor_id=user.manager_id).all())
+
+    response_messages = client.get("/supervisor/inbox", headers=headers)
+
+    assert response_messages.status_code == 200
+
+    parsed_messages = response_messages.get_json()
+    messages_response = parsed_messages["messages"]
+
+    assert len(messages_response) == messages_supervisor_count
+
+
+def test_get_all_messages_error(client, agency):
+
+
+    user = db.session.query(User).filter_by(id=5).first()
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response_nmessages = client.get("/supervisor/inbox", headers=headers)
+
+    assert response_nmessages.status_code == 400
+
+    parsed_nmessages = response_nmessages.get_json()
+    nmessages_error = parsed_nmessages["message"]
+
+    assert nmessages_error == "Inbox is empty"
+
+
