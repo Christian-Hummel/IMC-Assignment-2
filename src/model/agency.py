@@ -317,6 +317,15 @@ class Agency(object):
         db.session.commit()
         return offer
 
+    def get_all_messages(self, supervisor_id):
+
+        inbox = db.session.query(Message).filter_by(supervisor_id=supervisor_id).all()
+
+        if len(inbox):
+            return inbox
+        elif not len(inbox):
+            return None
+
 # TravelAgent
 
     def update_agent(self,employee_id,updated_agent:TravelAgent):
@@ -387,14 +396,7 @@ class Agency(object):
         db.session.commit()
         return f"A request for lowering the total price of Offer {offer_id} by {percentage} percent has been sent"
 
-    def get_all_messages(self, supervisor_id):
 
-        inbox = db.session.query(Message).filter_by(supervisor_id=supervisor_id).all()
-
-        if len(inbox):
-            return inbox
-        elif not len(inbox):
-            return None
 
 # Customer
 
