@@ -91,6 +91,24 @@ class CountryInfo(Resource):
         else:
             return abort(400, message="country not found")
 
+@country_ns.route("/<int:country_id>/stats")
+class CountryStats(Resource):
+
+
+    @country_ns.doc(description="Get detailed Information about a Country")
+    def get(self,country_id):
+
+        country = db.session.query(Country).filter_by(country_id=country_id).one_or_none()
+
+        if not country:
+            return abort(400, message="Country not found")
+
+        stats = Agency.get_instance().get_country_stats(country)
+
+        if stats:
+            return jsonify(stats)
+        if not stats:
+            return abort(400, message="This country has not been visited by a customer yet")
 
 # Activity
 

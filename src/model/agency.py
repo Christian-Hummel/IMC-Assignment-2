@@ -418,6 +418,47 @@ class Agency(object):
         elif not country:
             return None
 
+    def get_country_stats(self, country: Country):
+
+        country_name = country.name
+
+        offers = db.session.query(Offer).filter(Offer.country==country.name).filter(Offer.status=="accepted").all()
+
+
+        if not len(offers):
+            return None
+        elif len(offers):
+
+            stats = {
+                "country": country_name,
+                "visits": 0,
+                "total_revenue": 0,
+
+            }
+            activities_dict = {}
+
+            for offer in offers:
+                stats["visits"] += 1
+                stats["total_revenue"] += offer.total_price
+                for activity in offer.activities:
+                    if activity.name not in activities_dict:
+                        activities_dict[activity.name] = 1
+                    elif activity.name in activities_dict:
+                        activities_dict[activity.name] += 1
+
+            favourite = [key for key,value in activities_dict.items() if value == max(activities_dict.values())]
+
+            if len(favourite) == 1:
+                stats["favourite_activity"] = favourite
+            else:
+                stats["favourite_activities"] = favourite
+
+            return stats
+
+
+
+
+
 
 # Activity
 
