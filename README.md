@@ -102,7 +102,7 @@ raise_salary() - increases the salary for a specific travel agent - c
 
 delete_agent() - removes an agent from the agency, all his customers will be transferred to one of his colleagues, if he is the only one left, he cannot be fired. - c
 
-set_discount() - lowers the price for the total price of an offer by a set percentage
+discount_offer() - lowers the price for the total price of an offer by a set percentage - c
 
 get_agent_stats() - shows the number of customers, the total revenue he produced and the amount of trips he sold - c
 
@@ -113,6 +113,8 @@ show_all_agents() - displays information about all agents he or she supervises: 
 get_supervisor_by_id() - displays supervisor attributes: employer_ID, name, email, address, salary, nationality and number of travel agents under his supervision - c
 
 assign_country() - registers a travel agent to a specific country, such that he can make offers for it - c
+
+get_all_messages() - shows all messages(requests) sent by the TravelAgents of the team of the corresponding Supervisor - c
 
 
 #### Notes
