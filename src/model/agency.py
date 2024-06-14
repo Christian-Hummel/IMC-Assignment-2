@@ -1,4 +1,4 @@
-from ..database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, AgentStats, db
+from ..database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, AgentStats, Message, db
 
 
 
@@ -319,6 +319,22 @@ class Agency(object):
             # db.session.commit()
             return None
 
+
+    def request_raise(self, agent: TravelAgent):
+
+        agent_id = agent.employee_id
+        supervisor_id = agent.supervisor_id
+
+        request = db.session.query(Message).filter(Message.agent_id==agent_id).filter(Message.message=="raise").one_or_none()
+
+        if request:
+            return None
+
+        if not request:
+            new_message = Message(supervisor_id=supervisor_id, agent_id=agent_id, message="raise")
+            db.session.add(new_message)
+            db.session.commit()
+            return "A request for a raise in salary has been sent"
 
 
 # Customer

@@ -225,3 +225,23 @@ class TravelAgentAPI(Resource):
             return abort(400, message="This offer exceeds the budget of the customer")
 
 
+@travelAgent_ns.route("/<int:employee_id>/raise")
+class RequestRaise(Resource):
+
+    @travelAgent_ns.doc(description="Request a raise in salary from your supervisor")
+    def post(self, employee_id):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+
+        if not agent:
+            return abort(400, message="TravelAgent not found")
+
+        result = Agency.get_instance().request_raise(agent)
+
+        if result:
+            return jsonify(result)
+
+        if not result:
+            return abort(400,"Request for raise still pending")
+
+
