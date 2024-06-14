@@ -437,6 +437,46 @@ def test_get_agent_stats_error(agency):
 
         assert not result
 
+def test_discount_offer(agency):
+
+        # percentage set by Travel Agent
+
+        agent1 = db.session.query(TravelAgent).filter_by(employee_id=315).first()
+        offer1 = db.session.query(Offer).filter_by(offer_id=811).first()
+        percentage1 = 0
+
+        assert offer1.total_price == 1000
+        assert offer1.status == "budget"
+
+        result1 = agency.discount_offer(agent1,offer1,percentage1)
+
+        assert result1.total_price == 900
+        assert result1.status == "changed"
+
+        # percentage set by Supervisor
+
+        agent2= db.session.query(TravelAgent).filter_by(employee_id=315).first()
+        offer2 = db.session.query(Offer).filter_by(offer_id=832).first()
+        percentage2 = 30
+
+        assert offer2.total_price == 2000
+        assert offer2.status == "budget"
+
+        result2 = agency.discount_offer(agent2, offer2, percentage2)
+
+        assert result2.total_price == 1400
+        assert result2.status == "changed"
+
+
+def test_discount_offer_error(agency):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=370).first()
+        offer = db.session.query(Offer).filter_by(offer_id=831).first()
+        percentage = 10
+
+        with pytest.raises(Exception, match="There is no discount request for this offer"):
+                agency.discount_offer(agent,offer,percentage)
+
 # TravelAgent
 
 ## do not need a test for update_agent, because sqlalchemy is already tested

@@ -1009,4 +1009,120 @@ def test_remove_agent_errors(client,agency):
 
     assert nagent_error == "TravelAgent not found"
 
+def test_discount_offer(client,agency):
 
+    # discount with the percentage set by travelAgent
+
+    user = db.session.query(User).filter_by(id=17).first()
+
+    offer1 = db.session.query(Offer).filter_by(offer_id=811).first()
+    offer_id1 = offer1.offer_id
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    assert offer1.total_price == 1000
+    assert offer1.status == "budget"
+
+    response_discount1 = client.post(f"/supervisor/offer/{offer_id1}/discount", headers=headers, json={
+        "percentage": 0
+    })
+
+    assert response_discount1.status_code == 200
+
+    parsed_discount1 = response_discount1.get_json()
+    discount1_response = parsed_discount1["offer"]
+
+    assert discount1_response["offer_id"] == 811
+    assert discount1_response["total_price"] == 900
+    assert discount1_response["status"] == "changed"
+
+    # discount with percentage set by Supervisor
+
+    offer2 = db.session.query(Offer).filter_by(offer_id=832).first()
+    offer_id2 = offer2.offer_id
+
+    assert offer2.total_price == 2000
+    assert offer2.status == "budget"
+
+    response_discount2 = client.post(f"/supervisor/offer/{offer_id2}/discount", headers=headers, json={
+        "percentage": 50
+    })
+
+    assert response_discount2.status_code == 200
+
+    parsed_discount2 = response_discount2.get_json()
+    discount2_response = parsed_discount2["offer"]
+
+    assert discount2_response["offer_id"] == 832
+    assert discount2_response["total_price"] == 1000
+    assert discount2_response["status"] == "changed"
+
+
+
+def test_discount_offer_errors(client,agency):
+
+    # different TravelAgent
+
+    user1 = db.session.query(User).filter_by(id=4).first()
+
+    offer1 = db.session.query(Offer).filter_by(offer_id=832).first()
+    offer_id1 = offer1.offer_id
+
+
+    access_token1 = create_access_token(user1)
+
+    headers1 = {
+        "Authorization": f"Bearer {access_token1}"
+    }
+
+    response_diffagent = client.post(f"/supervisor/offer/{offer_id1}/discount", headers=headers1, json={
+        "percentage": 20
+    })
+
+    assert response_diffagent.status_code == 400
+
+    parsed_diffagent = response_diffagent.get_json()
+    diffagent_error = parsed_diffagent["message"]
+
+    assert diffagent_error == "This offer is managed by a TravelAgent from a different team"
+
+    # Offer not found
+
+    response_noffer = client.post("/supervisor/offer/493/discount", headers=headers1, json={
+        "percentage": 20
+    })
+
+    assert response_noffer.status_code == 400
+
+    parsed_noffer = response_noffer.get_json()
+    noffer_error = parsed_noffer["message"]
+
+    assert noffer_error == "Offer not found"
+
+    # wrong input
+
+    user2 = db.session.query(User).filter_by(id=17).first()
+
+    offer2 = db.session.query(Offer).filter_by(offer_id=811).first()
+    offer_id2 = offer2.offer_id
+
+    access_token2 = create_access_token(user2)
+
+    headers2 = {
+        "Authorization": f"Bearer {access_token2}"
+    }
+
+    response_winput = client.post(f"/supervisor/offer/{offer_id2}/discount", headers=headers2, json={
+        "percentage": 80
+    })
+
+    assert response_winput.status_code == 400
+
+    parsed_winput = response_winput.get_json()
+    winput_error = parsed_winput["message"]
+
+    assert winput_error == "Please enter a valid percentage from 1 to 50"
