@@ -296,6 +296,27 @@ class Agency(object):
         elif not stats:
             return None
 
+    def discount_offer(self, agent: TravelAgent, offer: Offer, percentage):
+
+        employee_id = agent.employee_id
+        offer_id = offer.offer_id
+
+        request = db.session.query(Message).filter(Message.agent_id==employee_id).filter(Message.offer_id==offer_id).one_or_none()
+
+        if not request:
+            raise Exception("There is no discount request for this offer")
+
+        if percentage == 0:
+            percentage = request.percentage
+
+        offer.total_price = offer.total_price * (1-(percentage/100))
+        offer.status = "changed"
+
+        db.session.query(Message).filter(Message.agent_id==employee_id).filter(Message.offer_id==offer_id).delete()
+
+        db.session.commit()
+        return offer
+
 # TravelAgent
 
     def update_agent(self,employee_id,updated_agent:TravelAgent):

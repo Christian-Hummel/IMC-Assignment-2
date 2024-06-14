@@ -4,7 +4,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_tok
 from werkzeug.security import generate_password_hash,check_password_hash
 
 from ..model.agency import Agency
-from ..database import Supervisor, TravelAgent, Customer, Country, User, AgentStats, db
+from ..database import Supervisor, TravelAgent, Customer, Country, User, Offer, db
+from .travelAgentNS import offer_discount_model, offer_output_model
 
 
 authorizations = {
@@ -544,3 +545,39 @@ class TeammemberStatsAPI(Resource):
 
             if not stats:
                 return abort(400, message="This TravelAgent has not been assigned to a customer")
+
+
+@supervisor_ns.route("/offer/<int:offer_id>/discount")
+class OfferDiscount(Resource):
+    method_decorators = [jwt_required()]
+
+    @supervisor_ns.doc(offer_discount_model, description="Lower the total price of an offer", security="authorizationToken")
+    @supervisor_ns.expect(offer_discount_model, validate=True)
+    @supervisor_ns.marshal_with(offer_output_model, envelope="offer")
+    def post(self, offer_id):
+
+        percentage = supervisor_ns.payload["percentage"]
+
+        if percentage < 0 or percentage > 50:
+            return abort(400,"Please enter a valid percentage from 1 to 50")
+
+        offer = db.session.query(Offer).filter_by(offer_id=offer_id).one_or_none()
+
+        if not offer:
+            return abort(400, message="Offer not found")
+
+        agent_id = offer.agent_id
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=agent_id).first()
+
+        supervisor_id = current_user.manager_id
+
+        supervisor = db.session.query(Supervisor).filter_by(employee_id=supervisor_id).first()
+
+        if agent not in supervisor.teammembers:
+            return abort(400, message="This offer is managed by a TravelAgent from a different team")
+
+        updated_offer = Agency.get_instance().discount_offer(agent, offer, percentage)
+
+        return updated_offer
+
