@@ -35,7 +35,8 @@ class Message(db.Model):
     __tablename__ = "message"
     message_id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(50), nullable=False)
-    offer_id = db.Column(db.Integer, nullable=False,default=0)
+    offer_id = db.Column(db.Integer, nullable=False, default=0)
+    percentage = db.Column(db.Integer, nullable=False, default=0)
 
     supervisor_id = db.Column(db.Integer, db.ForeignKey('supervisor.employee_id'),nullable=False)
     agent_id = db.Column(db.Integer, db.ForeignKey('travel_agent.employee_id'),nullable=False)
