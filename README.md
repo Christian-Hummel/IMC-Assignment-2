@@ -37,7 +37,7 @@ A country represents the desired destination of a Customer. Each country is conn
 - flask-sqlalchemy
 - swagger
 - sqlite3
-- threadings
+
 
 
 
@@ -45,76 +45,76 @@ A country represents the desired destination of a Customer. Each country is conn
 
 **Customer**
 
-register() - adds a customer to the agency - c
+register() - adds a customer to the agency 
 
-book_trip() - accepting the offer from the agent, a booked trip will be counted as visited for stats -- combined with -- cancel_trip() - reject an offer from the travel agent - c
+book_trip() - accepting the offer from the agent, a booked trip will be counted as visited for stats -- combined with -- cancel_trip() - reject an offer from the travel agent 
 
-request_expert() - require an travel agent with expert status for country specified in preferences - c
+request_expert() - require an travel agent with expert status for country specified in preferences 
 
-show_offers() - show all valid offers (status "pending" or "changed") for this customer - c
+show_offers() - show all valid offers (status "pending" or "changed") for this customer 
 
 
 **TravelAgent**
 
-present_offer() - sends a possible trip recommendation to the customer, it cannot exceed the budget in terms of total price and a customer can receive multiple different offers from his travelAgent - c
+present_offer() - sends a possible trip recommendation to the customer, it cannot exceed the budget in terms of total price and a customer can receive multiple different offers from his travelAgent 
 
-request_raise() - send a request to the respective supervisor to get an increase in salary - c
+request_raise() - send a request to the respective supervisor to get an increase in salary
 
-request_discount() - send a request to the respective supervisor to lower the total price of an offer that exceeds the budget of a customer - c
+request_discount() - send a request to the respective supervisor to lower the total price of an offer that exceeds the budget of a customer 
 
-update_agent() - allows to update following attributes: name, email, address - c
+update_agent() - allows to update following attributes: name, email, address
 
 
 **Country**
 
-add_country() - registers a country to be used for trip plans by the agents - c
+add_country() - registers a country to be used for trip plans by the agents 
 
-get_country_by_id() - displays country attributes: country_ID, name and all current activities - c
+get_country_by_id() - displays country attributes: country_ID, name and all current activities 
 
-get_all_countries() - shows a list of all countries - c
+get_all_countries() - shows a list of all countries
 
-get_country_stats() - displays the number of total visits, the most popular activity and the total revenue it generated - c
+get_country_stats() - displays the number of total visits, the most popular activity and the total revenue it generated 
 
 
 **Activity**
 
-add_activity() - connects an activity to a country - c
+add_activity() - connects an activity to a country 
 
-update_activity() - enables to change the name and the price of an activity - c
+update_activity() - enables to change the name and the price of an activity 
 
-delete_activity() - removes an activity from the agency - c
+delete_activity() - removes an activity from the agency 
 
-get_activity_by_id() - displays attributes of an activity: activity_id, name, price - c
+get_activity_by_id() - displays attributes of an activity: activity_id, name, price
 
 
 
 **Supervisor**
 
-get_customer_by_id() - display attributes from customer: customer_id, name, email, address, budget, preference, expert, TravelAgent_id - c
+get_customer_by_id() - display attributes from customer: customer_id, name, email, address, budget, preference, expert, TravelAgent_id 
 
-get_all_customers() - show a list of all customers - c
+get_all_customers() - show a list of all customers
 
-assign_agent() - assigns an agent to counsel a customer - c
+assign_agent() - assigns an agent to counsel a customer
 
-add_agent() - introduces a new travel agent to the agency under his supervision - adds the supervisor attribute to this class - c
+add_agent() - introduces a new travel agent to the agency under his supervision - adds the supervisor attribute to this class 
 
-raise_salary() - increases the salary for a specific travel agent - c
+raise_salary() - increases the salary for a specific travel agent
 
-delete_agent() - removes an agent from the agency, all his customers will be transferred to one of his colleagues, if he is the only one left, he cannot be fired. - c
+delete_agent() - removes an agent from the agency, all his customers will be transferred to one of his colleagues, if he is the only one left, he cannot be fired. 
 
-discount_offer() - lowers the price for the total price of an offer by a set percentage - c
+discount_offer() - lowers the price for the total price of an offer by a set percentage 
 
-get_agent_stats() - shows the number of customers, the total revenue he produced and the amount of trips he sold - c
+get_agent_stats() - shows the number of customers, the total revenue he produced and the amount of trips he sold 
 
-get_agent_by_id() - displays travel agent attributes: employer_ID, name, email, address, salary, nationality, supervisor_id - c
+get_agent_by_id() - displays travel agent attributes: employer_ID, name, email, address, salary, nationality, supervisor_id 
 
-show_all_agents() - displays information about all agents he or she supervises: employer_ID, name, email, address, salary, nationality, - c
+show_all_agents() - displays information about all agents he or she supervises: employer_ID, name, email, address, salary, nationality,
 
-get_supervisor_by_id() - displays supervisor attributes: employer_ID, name, email, address, salary, nationality and number of travel agents under his supervision - c
+get_supervisor_by_id() - displays supervisor attributes: employer_ID, name, email, address, salary, nationality and number of travel agents under his supervision
 
-assign_country() - registers a travel agent to a specific country, such that he can make offers for it - c
+assign_country() - registers a travel agent to a specific country, such that he can make offers for it 
 
-get_all_messages() - shows all messages(requests) sent by the TravelAgents of the team of the corresponding Supervisor - c
+get_all_messages() - shows all messages(requests) sent by the TravelAgents of the team of the corresponding Supervisor 
 
 
 #### Notes
