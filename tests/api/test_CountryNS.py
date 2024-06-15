@@ -220,10 +220,7 @@ def test_remove_activity(client,agency):
     country_id = country.country_id
     activity_id = activity.activity_id
 
-    response_delete = client.delete(f"/country/{country_id}/activity/delete",json={
-        "activity_id": activity_id
-    })
-
+    response_delete = client.delete(f"/country/{country_id}/activity/{activity_id}/delete")
 
     assert response_delete.status_code == 200
 
@@ -240,9 +237,7 @@ def test_remove_activity_errors(client,agency):
     country_id = country.country_id
     activity_id = activity.activity_id
 
-    response_inv_country = client.delete("/country/438/activity/delete", json={
-        "activity_id": activity_id
-    })
+    response_inv_country = client.delete(f"/country/438/activity/{activity_id}/delete")
 
     assert response_inv_country.status_code == 400
 
@@ -251,9 +246,7 @@ def test_remove_activity_errors(client,agency):
 
     assert country_error == "Country not found"
 
-    response_inv_activity = client.delete(f"/country/{country_id}/activity/delete", json={
-        "activity_id": 593
-    })
+    response_inv_activity = client.delete(f"/country/{country_id}/activity/593/delete")
 
     assert response_inv_activity.status_code == 400
 
@@ -262,10 +255,7 @@ def test_remove_activity_errors(client,agency):
 
     assert activity_error == "Activity not found"
 
-    response_wcountry = client.delete(f"/country/{country_id}/activity/delete", json={
-        "activity_id": 614
-    })
-
+    response_wcountry = client.delete(f"/country/{country_id}/activity/{activity_id}/delete")
     assert response_wcountry.status_code == 400
 
     parsed_wcountry = response_wcountry.get_json()

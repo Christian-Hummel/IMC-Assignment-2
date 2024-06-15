@@ -204,14 +204,13 @@ class ActivityUpdate(Resource):
                 return abort(400, message="Please insert values to be updated")
 
 
-@country_ns.route("/<int:country_id>/activity/delete")
+@country_ns.route("/<int:country_id>/activity/<int:activity_id>/delete")
 class ActivityDelete(Resource):
 
-    @country_ns.doc(activityID_model,description="Delete an Activity")
-    @country_ns.expect(activityID_model, validate=True)
-    def delete(self,country_id):
+    @country_ns.doc(description="Delete an Activity")
+    def delete(self,country_id, activity_id):
 
-        activity_id = country_ns.payload["activity_id"]
+
         # check if activity is registered
         r_activity = db.session.query(Activity).filter_by(activity_id=activity_id).one_or_none()
         # check if country is registered
