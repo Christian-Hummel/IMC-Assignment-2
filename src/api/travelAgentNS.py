@@ -224,6 +224,9 @@ class TravelAgentAPI(Resource):
             elif update_offer.status == "pending":
                 return abort(400, message="This offer is still pending, please wait for a response")
 
+            elif update_offer.status == "changed":
+                return abort(400, message="This offer has already been changed")
+
             elif update_offer.status == "declined":
                 return abort(400, message="This offer is already declined by the customer")
 
