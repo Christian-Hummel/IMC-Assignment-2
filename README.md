@@ -64,6 +64,8 @@ request_discount() - send a request to the respective supervisor to lower the to
 
 update_agent() - allows to update following attributes: name, email, address
 
+show_offers() - Displays all offers from this travelAgent, regardless of status
+
 
 **Country**
 
