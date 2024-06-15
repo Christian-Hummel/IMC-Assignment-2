@@ -404,7 +404,7 @@ class AgentInfo(Resource):
             return abort(400, message="TravelAgent not found")
 
 
-@supervisor_ns.route("/assign/<int:employee_id>")
+@supervisor_ns.route("/agent/<int:employee_id>/assign")
 class SupervisorAssignments(Resource):
     method_decorators = [jwt_required()]
 

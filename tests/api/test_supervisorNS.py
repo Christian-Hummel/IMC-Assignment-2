@@ -414,7 +414,7 @@ def test_assign_agent_nexpertnpreference(client,agency):
 
 
 
-    response = client.post(f"/supervisor/assign/{employee_id}", headers=headers, json={
+    response = client.post(f"/supervisor/agent/{employee_id}/assign", headers=headers, json={
         "customer_id": customer_id
     })
 
@@ -447,7 +447,7 @@ def test_assign_agent_expert(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
-    response = client.post(f"/supervisor/assign/{employee_id}", headers=headers, json={
+    response = client.post(f"/supervisor/agent/{employee_id}/assign", headers=headers, json={
         "customer_id": customer_id
     })
 
@@ -478,7 +478,7 @@ def test_assign_agent_nexpertpreference(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
-    response = client.post(f"/supervisor/assign/{employee_id}", headers=headers, json={
+    response = client.post(f"/supervisor/agent/{employee_id}/assign", headers=headers, json={
         "customer_id": customer_id
     })
 
@@ -509,7 +509,7 @@ def test_assign_agent_errors(client,agency):
 
     # customer is already connected to a TravelAgent
 
-    response_assigned = client.post(f"/supervisor/assign/{employee_id}",headers=headers,json={
+    response_assigned = client.post(f"/supervisor/agent/{employee_id}/assign",headers=headers,json={
         "customer_id": customer_id
     })
 
@@ -522,7 +522,7 @@ def test_assign_agent_errors(client,agency):
 
     # TravelAgent not registered in the agency
 
-    response_agent = client.post("supervisor/assign/594", headers=headers, json={
+    response_agent = client.post("supervisor/agent/594/assign", headers=headers, json={
         "customer_id": customer_id
     })
 
@@ -535,7 +535,7 @@ def test_assign_agent_errors(client,agency):
 
     # Customer not registered in the agency
 
-    response_customer = client.post(f"supervisor/assign/{employee_id}", headers=headers, json={
+    response_customer = client.post(f"supervisor/agent/{employee_id}/assign", headers=headers, json={
         "customer_id": 493
     })
 
