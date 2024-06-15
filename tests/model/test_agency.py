@@ -629,6 +629,27 @@ def test_request_discount_errors(agency):
 
         assert not result
 
+def test_get_all_offers(agency):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=400).first()
+
+        employee_id = agent.employee_id
+
+        offers = agency.get_all_offers(employee_id)
+
+        assert len(offers) == 6
+
+
+def test_get_all_offers_error(agency):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=240).first()
+
+        employee_id = agent.employee_id
+
+        offers = agency.get_all_offers(employee_id)
+
+        assert not offers
+
 # Customer
 
 def test_register_customer(agency):

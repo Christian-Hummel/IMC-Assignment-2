@@ -631,6 +631,46 @@ def test_request_discount_errors(client,agency):
     assert winput_error == "Please insert a valid percentage in the range from 1 to 40"
 
 
+def test_get_all_offers(client,agency):
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=400).first()
+
+    employee_id = agent.employee_id
+
+    response_offers = client.get(f"/travelAgent/{employee_id}/offer")
+
+    assert response_offers.status_code == 200
+
+    parsed_offers = response_offers.get_json()
+    offers_response= parsed_offers["offers"]
+
+    assert len(offers_response) == 6
+
+def test_get_all_offers_errors(client,agency):
+
+    agent = db.session.query(TravelAgent).filter_by(employee_id=240).first()
+
+    employee_id = agent.employee_id
+
+    response_noffers = client.get(f"/travelAgent/{employee_id}/offer")
+
+    assert response_noffers.status_code == 400
+
+    parsed_noffers = response_noffers.get_json()
+    noffers_error = parsed_noffers["message"]
+
+    assert noffers_error == "There are no Offers created by you"
+
+    response_nagent = client.get("/travelAgent/432/offer")
+
+    assert response_nagent.status_code == 400
+
+    parsed_nagent = response_nagent.get_json()
+    nagent_error = parsed_nagent["message"]
+
+    assert nagent_error == "TravelAgent not found"
+
+
 
 
 
