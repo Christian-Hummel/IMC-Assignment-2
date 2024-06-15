@@ -167,6 +167,7 @@ class TravelAgentAPI(Resource):
                             new_offer.activities.append(activity[0])
                             new_offer.total_price += activity[0].price
                     elif idx not in [activ.activity_id for activ in country.activities]:
+                        db.session.rollback()
                         return abort(400, message=f"Activity with id {idx} not registered for this country")
             elif activ_ids[0] == 0:
                 return abort(400, message="Please insert activities for your offer")
@@ -207,6 +208,7 @@ class TravelAgentAPI(Resource):
                             update_offer.activities.append(activity[0])
                             update_offer.total_price += activity[0].price
                         elif idx not in [activ.activity_id for activ in country.activities]:
+                            db.session.rollback()
                             return abort(400, message=f"Activity with id {idx} not registered for this country")
                 elif activ_ids[0] == 0:
                     return abort(400, message="Please insert activities for your offer")
@@ -225,6 +227,7 @@ class TravelAgentAPI(Resource):
 
 
         elif not offer_result:
+            db.session.rollback()
             return abort(400, message="This offer exceeds the budget of the customer")
 
     @travelAgent_ns.doc(offer_output_model, description="Get information about all offers from this TravelAgent")
