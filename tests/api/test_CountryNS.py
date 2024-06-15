@@ -287,9 +287,7 @@ def test_get_activity_by_id(client,agency):
     country_id = country.country_id
     activity_id = activity.activity_id
 
-    response = client.get(f"/country/{country_id}/activity", json={
-        "activity_id": activity_id
-    })
+    response = client.get(f"/country/{country_id}/activity/{activity_id}")
 
     assert response.status_code == 200
 
@@ -309,9 +307,7 @@ def test_get_activity_by_id_errors(client,agency):
     country_id = country.country_id
     activity_id = activity.activity_id
 
-    response_diffcountry = client.get(f"/country/{country_id}/activity", json={
-        "activity_id": activity_id
-    })
+    response_diffcountry = client.get(f"/country/{country_id}/activity/{activity_id}")
 
     assert response_diffcountry.status_code == 400
 
@@ -320,9 +316,7 @@ def test_get_activity_by_id_errors(client,agency):
 
     assert diffcountry_error == "This activity is not registered for Brazil"
 
-    response_ncountry = client.get("/country/349/activity", json={
-        "activity_id": activity_id
-    })
+    response_ncountry = client.get(f"/country/349/activity/{activity_id}")
 
     assert response_ncountry.status_code == 400
 
@@ -330,6 +324,15 @@ def test_get_activity_by_id_errors(client,agency):
     ncountry_error = parsed_ncountry["message"]
 
     assert ncountry_error == "Country not found"
+
+    response_nactivity = client.get(f"/country/{country_id}/activity/453")
+
+    assert response_nactivity.status_code == 400
+
+    parsed_nactivity = response_nactivity.get_json()
+    nactivity_error = parsed_nactivity["message"]
+
+    assert nactivity_error == "Activity not found"
 
 
 def test_get_country_stats(client,agency):

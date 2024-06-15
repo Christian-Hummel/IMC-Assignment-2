@@ -524,8 +524,6 @@ def test_present_new_offer(agency):
 
 
 
-
-
 def test_present_changed_offer(agency):
 
         before = Offer.query.count()
@@ -551,7 +549,6 @@ def test_present_changed_offer(agency):
         assert result.status == "changed"
         assert result.agent_id == 310
         assert result.customer_id == 715
-
 
 
 def test_present_offer_errors(agency):
@@ -885,26 +882,17 @@ def test_get_activity_by_id(agency):
         country = db.session.query(Country).filter_by(country_id=911).first()
         activity = db.session.query(Activity).filter_by(activity_id=611).first()
 
-        country_id = country.country_id
-        activity_id = activity.activity_id
-
-        result = agency.get_activity_by_id(activity_id,country_id)
+        result = agency.get_activity_by_id(country,activity)
 
         assert result.activity_id == 611
         assert result.name == "Stadion Tour"
         assert result.price == 70
 
-def test_get_activity_by_id_errors(agency):
+def test_get_activity_by_id_error(agency):
 
         country = db.session.query(Country).filter_by(country_id=904).first()
         activity = db.session.query(Activity).filter_by(activity_id=612).first()
 
-        country_id = country.country_id
-        activity_id = activity.activity_id
-
-        with pytest.raises(Exception, match="Activity not found"):
-                agency.get_activity_by_id(823,country_id)
-
-        result = agency.get_activity_by_id(activity_id, country_id)
+        result = agency.get_activity_by_id(country, activity)
 
         assert not result
