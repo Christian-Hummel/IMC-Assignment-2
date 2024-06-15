@@ -326,6 +326,12 @@ class Agency(object):
         elif not len(inbox):
             return None
 
+    def get_all_supervisors(self):
+
+        supervisors = db.session.query(Supervisor).all()
+
+        return supervisors
+
 # TravelAgent
 
     def update_agent(self,employee_id,updated_agent:TravelAgent):

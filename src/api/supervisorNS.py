@@ -187,6 +187,19 @@ message_output_model = supervisor_ns.model("MessageModel", {
                                  help="The suggested percentage to raise an Offer by the TravelAgent ")
 })
 
+supervisor_output_model = supervisor_ns.model("SupervisorOutputModel", {
+    "employee_id": fields.Integer(required=False,
+                                  help="the unique identifier of a supervisor"),
+    "name": fields.String(required=True,
+                          help="name of a supervisor e.g. Josh Brolin"),
+    "address": fields.String(required=True,
+                             help="address of a travel agent e.g. Strongarm Street 2, 4674 Chicago"),
+    "email": fields.String(required=False,
+                           help="email address of a supervisor e.g. Josh.Brolin@hammertrips.com"),
+    "nationality": fields.String(required=True,
+                                 help="nationality of a supervisor e.g. Spain")
+})
+
 @supervisor_ns.route("/")
 class SupervisorAPI(Resource):
 
@@ -610,3 +623,19 @@ class SupervisorMessages(Resource):
             return inbox
         elif not inbox:
             return abort(400, message="Inbox is empty")
+
+@supervisor_ns.route("/managers")
+class AllSupervisors(Resource):
+    method_decorators = [jwt_required()]
+
+
+    @supervisor_ns.doc(supervisor_output_model, description="Get Information about all supervisors", security="authorizationToken")
+    @supervisor_ns.marshal_list_with(supervisor_output_model, envelope="supervisors")
+    def get(self):
+
+        supervisors = Agency.get_instance().get_all_supervisors()
+
+        if supervisors:
+            return supervisors
+
+
