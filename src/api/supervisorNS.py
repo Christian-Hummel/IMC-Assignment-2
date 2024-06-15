@@ -315,6 +315,10 @@ class EmployAgent(Resource):
         if same_agent:
             return abort(400, message="This travelAgent is already registered in the agency")
 
+        expert = new_agent.nationality
+        expert_country = db.session.query(Country).filter_by(name=expert).one_or_none()
+
+
         # set salary to a minimum if not set to a higher amount
         if new_agent.salary < 2000:
             new_agent.salary = 2000
@@ -327,10 +331,23 @@ class EmployAgent(Resource):
             new_agent.email = f"{first}.{last}@hammertrips.com"
         else:
             return abort(400, message="Please insert your first and last name seperated by a space")
+
         # set role to supervisor
         new_agent.role = "travelAgent"
         # assign supervisor_id
         new_agent.supervisor_id = current_user.manager_id
+
+        # create expert country if it is not registered in the agency yet
+
+        if not expert_country:
+            expert_country = Country(country_id=id(self),name=expert)
+            db.session.add(expert_country)
+
+
+        # add it to the countries of the new agent if it is already registered
+
+        new_agent.countries.append(expert_country)
+
 
         # transfer new supervisor to the agency
         Agency.get_instance().add_supervisor(new_agent)
