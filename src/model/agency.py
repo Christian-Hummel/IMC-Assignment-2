@@ -32,19 +32,6 @@ class Agency(object):
 
     def add_travelagent(self, new_agent: TravelAgent):
 
-        expert = new_agent.nationality
-        # check if the country of the expert status already exists
-        expert_country = db.session.query(Country).filter_by(name=expert).one_or_none()
-
-        # register expert country if it is already in the agency
-        if expert_country:
-            new_agent.countries.append(expert_country)
-
-        # register country if it does not exist
-        elif not expert_country:
-            new_country = Country(country_id=id(self),name=expert)
-            db.session.add(new_country)
-            new_agent.countries.append(new_country)
 
         db.session.add(new_agent)
         db.session.commit()
@@ -193,9 +180,9 @@ class Agency(object):
                 for diffagent in teammembers:
                     for offer in customer.offers:
                         if customer.expert and customer.preference == diffagent.nationality:
-                            if offer.country == diffagent.nationality and offer != "declined":
-                                offer.agent_id = diffagent.employee_id
                             customer.agent_id = diffagent.employee_id
+                            if offer.country == diffagent.nationality and offer.status not in ["declined","accepted"]:
+                                offer.agent_id = diffagent.employee_id
                             if diffagent.stats is None:
                                 stats = AgentStats(num_customers=1, agent_id=diffagent.employee_id)
                                 db.session.add(stats)
@@ -203,9 +190,9 @@ class Agency(object):
                                 diffagent.stats.num_customers += 1
 
                         elif not customer.expert and customer.preference != "None" and customer.preference in [country.name for country in diffagent.countries]:
-                            if offer.country in [country.name for country in diffagent.countries] and offer != "declined":
-                                offer.agent_id = diffagent.employee_id
                             customer.agent_id = diffagent.employee_id
+                            if offer.country in [country.name for country in diffagent.countries] and offer.status not in ["declined","accepted"]:
+                                offer.agent_id = diffagent.employee_id
                             if diffagent.stats is None:
                                 stats = AgentStats(num_customers=1, agent_id=diffagent.employee_id)
                                 db.session.add(stats)
@@ -213,9 +200,9 @@ class Agency(object):
                                 diffagent.stats.num_customers += 1
 
                         elif not customer.expert and customer.preference == "None":
-                            if offer.country in [country.name for country in diffagent.countries] and offer != "declined":
-                                offer.agent_id = diffagent.employee_id
                             customer.agent_id = diffagent.employee_id
+                            if offer.country in [country.name for country in diffagent.countries] and offer.status not in ["declined","accepted"]:
+                                offer.agent_id = diffagent.employee_id
                             if diffagent.stats is None:
                                 stats = AgentStats(num_customers=1, agent_id=diffagent.employee_id)
                                 db.session.add(stats)
@@ -225,8 +212,8 @@ class Agency(object):
                             continue
 
 
-        # check if there are offers that were not transferred (status declined excluded)
-        offers = db.session.query(Offer).filter(Offer.agent_id==employee_id).filter(Offer.status!="declined").all()
+        # check if there are offers that were not transferred (status declined and accepted excluded)
+        offers = db.session.query(Offer).filter(Offer.agent_id==employee_id).filter(Offer.status!="declined").filter(Offer.status!="accepted").all()
         customers = db.session.query(Customer).filter_by(agent_id=employee_id).all()
 
 
