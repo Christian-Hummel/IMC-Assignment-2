@@ -217,6 +217,8 @@ def test_add_agent(client,agency):
 
 
 
+
+
 def test_add_agent_errors(client,agency):
 
     user = db.session.query(User).filter_by(id=15).first()
@@ -1173,3 +1175,21 @@ def test_get_all_messages_error(client, agency):
     assert nmessages_error == "Inbox is empty"
 
 
+def test_get_all_supervisors(client,agency):
+
+    user = db.session.query(User).filter_by(id=5).first()
+
+    access_token = create_access_token(user)
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response_supervisors = client.get("/supervisor/managers", headers=headers)
+
+    assert response_supervisors.status_code == 200
+
+    parsed_supervisors = response_supervisors.get_json()
+    supervisors_response = parsed_supervisors["supervisors"]
+
+    assert len(supervisors_response) == 21

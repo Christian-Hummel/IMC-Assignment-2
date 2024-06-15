@@ -497,6 +497,12 @@ def test_get_all_messages_error(agency):
 
         assert not result
 
+def test_get_all_supervisors(agency):
+
+        result = agency.get_all_supervisors()
+
+        assert len(result) == 21
+
 # TravelAgent
 
 ## do not need a test for update_agent, because sqlalchemy is already tested
