@@ -396,6 +396,16 @@ class Agency(object):
         db.session.commit()
         return f"A request for lowering the total price of Offer {offer_id} by {percentage} percent has been sent"
 
+    def get_all_offers(self, employee_id):
+
+
+        offers = db.session.query(Offer).filter_by(agent_id=employee_id).all()
+
+        if not len(offers):
+            return None
+
+        return offers
+
 
 
 # Customer

@@ -227,6 +227,22 @@ class TravelAgentAPI(Resource):
         elif not offer_result:
             return abort(400, message="This offer exceeds the budget of the customer")
 
+    @travelAgent_ns.doc(offer_output_model, description="Get information about all offers from this TravelAgent")
+    @travelAgent_ns.marshal_list_with(offer_output_model, envelope="offers")
+    def get(self, employee_id):
+
+        agent = db.session.query(TravelAgent).filter_by(employee_id=employee_id).one_or_none()
+
+        if not agent:
+            return abort(400, message="TravelAgent not found")
+
+        offers = Agency.get_instance().get_all_offers(employee_id)
+
+        if offers:
+            return offers
+        elif not offers:
+            return abort(400, message="There are no Offers created by you")
+
 
 @travelAgent_ns.route("/<int:employee_id>/raise")
 class RequestRaise(Resource):
@@ -282,5 +298,7 @@ class RequestDiscount(Resource):
             return jsonify(result)
         if not result:
             return abort(400, message="The request for lowering this offer is still pending")
+
+
 
 
