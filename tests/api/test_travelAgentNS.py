@@ -1,6 +1,6 @@
 import pytest
 
-from src.database import Supervisor, TravelAgent, Offer, Customer, Country, Activity, User, Message, db
+from src.database import  TravelAgent, Offer, Customer, Country, db
 
 from tests.fixtures import app, client, agency
 
