@@ -186,6 +186,7 @@ def test_present_offer_errors(client,agency):
     offer1 = db.session.query(Offer).filter_by(offer_id=802).first()
     offer2 = db.session.query(Offer).filter_by(offer_id=804).first()
     offer3 = db.session.query(Offer).filter_by(offer_id=811).first()
+    offer4 = db.session.query(Offer).filter_by(offer_id=813).first()
 
     employee_id1 = agent1.employee_id
     employee_id2 = agent2.employee_id
@@ -202,6 +203,7 @@ def test_present_offer_errors(client,agency):
     offer_id1 = offer1.offer_id
     offer_id2 = offer2.offer_id
     offer_id3 = offer3.offer_id
+    offer_id4 = offer4.offer_id
 
     # country not assigned
     response_wcountry = client.post(f"/travelAgent/{employee_id1}/offer", json={
@@ -528,6 +530,22 @@ def test_present_offer_errors(client,agency):
     budget_error = parsed_budget["message"]
 
     assert budget_error == "This offer exceeds the budget contact your supervisor"
+
+    response_changed = client.post(f"travelAgent/{employee_id2}/offer", json={
+        "offer_id": offer_id4,
+        "customer_id": customer_id2,
+        "country": country_name2,
+        "activities": [
+            616
+        ]
+    })
+
+    assert response_changed.status_code == 400
+
+    parsed_changed = response_changed.get_json()
+    changed_error = parsed_changed["message"]
+
+    assert changed_error == "This offer has already been changed"
 
 def test_request_raise(client,agency):
 
