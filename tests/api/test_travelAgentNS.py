@@ -169,28 +169,45 @@ def test_present_offer_errors(client,agency):
     # do not need an error for expert status, because if a customer requires one, this is
     # already checked by the assignment of the travelAgent
 
-    agent = db.session.query(TravelAgent).filter_by(employee_id=300).first()
-    customer = db.session.query(Customer).filter_by(customer_id=713).first()
-    country = db.session.query(Country).filter_by(country_id=908).first()
+
+    agent1 = db.session.query(TravelAgent).filter_by(employee_id=300).first()
+    agent2 = db.session.query(TravelAgent).filter_by(employee_id=280).first()
+    agent3 = db.session.query(TravelAgent).filter_by(employee_id=315).first()
+    customer1 = db.session.query(Customer).filter_by(customer_id=713).first()
+    customer2 = db.session.query(Customer).filter_by(customer_id=709).first()
+    customer3 = db.session.query(Customer).filter_by(customer_id=716).first()
+    country1 = db.session.query(Country).filter_by(country_id=908).first()
+    country2 = db.session.query(Country).filter_by(country_id=904).first()
+    country3 = db.session.query(Country).filter_by(country_id=911).first()
 
     rcountry = db.session.query(Country).filter_by(country_id=902).first()
 
 
-    offer = db.session.query(Offer).filter_by(offer_id=802).first()
+    offer1 = db.session.query(Offer).filter_by(offer_id=802).first()
+    offer2 = db.session.query(Offer).filter_by(offer_id=804).first()
+    offer3 = db.session.query(Offer).filter_by(offer_id=811).first()
 
-    employee_id = agent.employee_id
-    customer_id = customer.customer_id
-    country_name = country.name
+    employee_id1 = agent1.employee_id
+    employee_id2 = agent2.employee_id
+    employee_id3 = agent3.employee_id
+    customer_id1 = customer1.customer_id
+    customer_id2 = customer2.customer_id
+    customer_id3 = customer3.customer_id
+    country_name1 = country1.name
+    country_name2 = country2.name
+    country_name3 = country3.name
 
     rcountry_name = rcountry.name
 
-    offer_id = offer.offer_id
+    offer_id1 = offer1.offer_id
+    offer_id2 = offer2.offer_id
+    offer_id3 = offer3.offer_id
 
     # country not assigned
-    response_wcountry = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_wcountry = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 0,
-        "customer_id": customer_id,
-        "country": country_name,
+        "customer_id": customer_id1,
+        "country": country_name1,
         "activities": [
             608
         ]
@@ -205,10 +222,10 @@ def test_present_offer_errors(client,agency):
 
     # activity not registered for this country
 
-    response_wactivity = client.post(f"/travelAgent/{employee_id}/offer",json={
+    response_wactivity = client.post(f"/travelAgent/{employee_id1}/offer",json={
         "offer_id": 0,
-        "customer_id": customer_id,
-        "country": country_name,
+        "customer_id": customer_id1,
+        "country": country_name1,
         "activities": [
             611
         ]
@@ -225,9 +242,9 @@ def test_present_offer_errors(client,agency):
 
     # Offer exceeds budget of customer
 
-    response_budget = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_budget = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 0,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": rcountry_name,
         "activities": [
             602, 616
@@ -243,9 +260,9 @@ def test_present_offer_errors(client,agency):
 
     # no activities
 
-    response_nactivities = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_nactivities = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 0,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": rcountry_name,
         "activities": [
             0
@@ -262,9 +279,9 @@ def test_present_offer_errors(client,agency):
 
     # changed offer different agent
 
-    response_diffagent = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_diffagent = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 805,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": rcountry_name,
         "activities": [
             602
@@ -280,9 +297,9 @@ def test_present_offer_errors(client,agency):
 
     # changed offer - not found
 
-    response_noffer = client.post(f"/travelAgent/{employee_id}/offer",json={
+    response_noffer = client.post(f"/travelAgent/{employee_id1}/offer",json={
         "offer_id": 493,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": rcountry_name,
         "activities": [
             602
@@ -298,9 +315,9 @@ def test_present_offer_errors(client,agency):
 
     # changed offer no activities
 
-    response_cnactivities = client.post(f"/travelAgent/{employee_id}/offer", json={
-        "offer_id": 802,
-        "customer_id": customer_id,
+    response_cnactivities = client.post(f"/travelAgent/{employee_id1}/offer", json={
+        "offer_id": offer_id1,
+        "customer_id": customer_id1,
         "country": rcountry_name,
         "activities": [
             0
@@ -316,9 +333,9 @@ def test_present_offer_errors(client,agency):
 
     # changed offer activity not registered
 
-    response_cwactivity = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_cwactivity = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 802,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": rcountry_name,
         "activities": [
             602, 610
@@ -334,9 +351,9 @@ def test_present_offer_errors(client,agency):
 
     # changed offer budget
 
-    response_cbudget = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_cbudget = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 802,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": rcountry_name,
         "activities": [
             602, 616
@@ -353,9 +370,9 @@ def test_present_offer_errors(client,agency):
 
     # changed offer already declined
 
-    response_declined = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_declined = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 812,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": rcountry_name,
         "activities": [
             602
@@ -374,7 +391,7 @@ def test_present_offer_errors(client,agency):
 
     # Customer not assigned
 
-    response_wcustomer = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_wcustomer = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 0,
         "customer_id": 714,
         "country": rcountry_name,
@@ -392,9 +409,9 @@ def test_present_offer_errors(client,agency):
 
     # Country not assigned to this agent
 
-    response_wcountry = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_wcountry = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 0,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": "Finland",
         "activities": [
             901
@@ -410,9 +427,9 @@ def test_present_offer_errors(client,agency):
 
     # Country not found 1
 
-    response_ncountry1 = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_ncountry1 = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 0,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": "La La Land",
         "activities": [
             901
@@ -428,9 +445,9 @@ def test_present_offer_errors(client,agency):
 
     # Country not found 2 - string
 
-    response_ncountry2 = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_ncountry2 = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 0,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": "string",
         "activities": [
             901
@@ -446,7 +463,7 @@ def test_present_offer_errors(client,agency):
 
     # Customer not found
 
-    response_ncustomer = client.post(f"/travelAgent/{employee_id}/offer", json={
+    response_ncustomer = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 0,
         "customer_id": 548,
         "country": rcountry_name,
@@ -466,7 +483,7 @@ def test_present_offer_errors(client,agency):
 
     response_nagent = client.post(f"/travelAgent/777/offer", json={
         "offer_id": 0,
-        "customer_id": customer_id,
+        "customer_id": customer_id1,
         "country": rcountry_name,
         "activities": [
             602
@@ -479,6 +496,38 @@ def test_present_offer_errors(client,agency):
     nagent_error = parsed_nagent["message"]
 
     assert nagent_error == "TravelAgent not found"
+
+    response_pending = client.post(f"/travelAgent/{employee_id2}/offer", json={
+        "offer_id": offer_id2,
+        "customer_id": customer_id2,
+        "country": country_name2,
+        "activities": [
+            604
+        ]
+    })
+
+    assert response_pending.status_code == 400
+
+    parsed_pending = response_pending.get_json()
+    pending_error = parsed_pending["message"]
+
+    assert pending_error == "This offer is still pending, please wait for a response"
+
+    response_budget = client.post(f"/travelAgent/{employee_id3}/offer", json={
+        "offer_id": offer_id3,
+        "customer_id": customer_id3,
+        "country": country_name3,
+        "activities": [
+            611
+        ]
+    })
+
+    assert response_budget.status_code == 400
+
+    parsed_budget = response_budget.get_json()
+    budget_error = parsed_budget["message"]
+
+    assert budget_error == "This offer exceeds the budget contact your supervisor"
 
 def test_request_raise(client,agency):
 
