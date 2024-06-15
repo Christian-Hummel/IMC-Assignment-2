@@ -134,6 +134,8 @@ class ActivityAPI(Resource):
 
         return new_activity
 
+
+    """
     @country_ns.doc(activityID_model, description="Get information about an activity")
     @country_ns.expect(activityID_model, validate=True)
     @country_ns.marshal_with(activity_output_model, envelope="activity")
@@ -152,6 +154,34 @@ class ActivityAPI(Resource):
             return activity
 
         elif not activity:
+            return abort(400, message=f"This activity is not registered for {country.name}")
+            
+        """
+
+@country_ns.route("/<int:country_id>/activity/<int:activity_id>")
+class ActivityInfo(Resource):
+
+    @country_ns.doc(description="Get information about an activity")
+    @country_ns.marshal_with(activity_output_model, envelope="activity")
+    def get(self, country_id, activity_id):
+
+
+
+        country = db.session.query(Country).filter_by(country_id=country_id).one_or_none()
+        activity = db.session.query(Activity).filter_by(activity_id=activity_id).one_or_none()
+
+        if not activity:
+            return abort(400, message="Activity not found")
+
+        if not country:
+            return abort(400, message="Country not found")
+
+        targeted_activity = Agency.get_instance().get_activity_by_id(country,activity)
+
+        if targeted_activity:
+            return activity
+
+        elif not targeted_activity:
             return abort(400, message=f"This activity is not registered for {country.name}")
 
 

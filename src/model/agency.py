@@ -488,7 +488,7 @@ class Agency(object):
             country_json = {
                 "country_id": country.country_id,
                 "name": country.name,
-                "activities": [f"Name: {activity.name} Price: {activity.price} ID: {activity.activity_id} " for activity in country.activities]
+                "activities": [f"{activity.name} ID: {activity.activity_id} " for activity in country.activities]
             }
 
             return country_json
@@ -594,14 +594,8 @@ class Agency(object):
                 return country
         return None
 
-    def get_activity_by_id(self, activity_id, country_id):
+    def get_activity_by_id(self, country, activity):
 
-        country = db.session.query(Country).filter_by(country_id=country_id).first()
-
-        activity = db.session.query(Activity).filter_by(activity_id=activity_id).one_or_none()
-
-        if not activity:
-            raise Exception("Activity not found")
 
         if activity in country.activities:
             return activity
