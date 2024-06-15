@@ -362,7 +362,7 @@ class SupervisorAgents(Resource):
 class AgentInfo(Resource):
     method_decorators = [jwt_required()]
 
-    @supervisor_ns.doc(agent_info_model,"Get Information about a TravelAgent",security="authorizationToken")
+    @supervisor_ns.doc(agent_info_model,description="Get Information about a TravelAgent",security="authorizationToken")
     @supervisor_ns.marshal_with(agent_info_model, envelope="travelAgent")
     def get(self, employee_id):
 
