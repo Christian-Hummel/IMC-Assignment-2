@@ -42,6 +42,13 @@ activityID_model = country_ns.model("ActivityDeleteModel", {
                                  help="unique identifier of activity to be removed from this country")
 })
 
+activity_update_model = country_ns.model("ActivityUpdateModel", {
+    "name": fields.String(required=True,
+                          help="name of an activity e.g. Wakeboarding"),
+    "price": fields.Integer(required=True,
+                            help="price of an activity")
+})
+
 
 
 # Country
@@ -164,16 +171,16 @@ class ActivityInfo(Resource):
             return abort(400, message=f"This activity is not registered for {country.name}")
 
 
-@country_ns.route("/<int:country_id>/activity/update")
+@country_ns.route("/<int:country_id>/activity/<int:activity_id>/update")
 class ActivityUpdate(Resource):
 
-    @country_ns.doc(activity_output_model, description="Update an activity")
-    @country_ns.expect(activity_output_model,validate=True)
+    @country_ns.doc(activity_update_model, description="Update an activity")
+    @country_ns.expect(activity_update_model,validate=True)
     @country_ns.marshal_with(activity_output_model,envelope="activity")
-    def post(self,country_id):
+    def post(self,country_id, activity_id):
 
 
-        activity_id = country_ns.payload["activity_id"]
+
         # check if this activity exists
         targeted_activity = db.session.query(Activity).filter_by(activity_id=activity_id).one_or_none()
         targeted_country = db.session.query(Country).filter_by(country_id=country_id).one_or_none()

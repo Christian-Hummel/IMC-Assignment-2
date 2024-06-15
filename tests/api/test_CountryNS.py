@@ -145,8 +145,7 @@ def test_update_activity(client,agency):
 
     activity_id = response_activity["activity_id"]
 
-    update_response = client.post(f"/country/{country_id}/activity/update", json={
-        "activity_id": activity_id,
+    update_response = client.post(f"/country/{country_id}/activity/{activity_id}/update", json={
         "name": "City Tour",
         "price": 50
     })
@@ -165,8 +164,7 @@ def test_update_activity(client,agency):
 
 def test_update_activity_errors(client,agency):
 
-    response_country = client.post(f"/country/423/activity/update", json={
-        "activity_id": 603,
+    response_country = client.post(f"/country/423/activity/603/update", json={
         "name": "London Leg",
         "price": 50
     })
@@ -178,8 +176,7 @@ def test_update_activity_errors(client,agency):
 
     assert country_error == "Country not found"
 
-    response_activity = client.post(f"country/903/activity/update",json={
-        "activity_id": 502,
+    response_activity = client.post(f"country/903/activity/502/update",json={
         "name": "London Alley",
         "price": 70
     })
@@ -191,8 +188,7 @@ def test_update_activity_errors(client,agency):
 
     assert activity_error == "Activity not found"
 
-    response_default1 = client.post(f"country/903/activity/update",json={
-        "activity_id": 603,
+    response_default1 = client.post(f"country/903/activity/603/update",json={
         "name": "London Eye",
         "price": 50
     })
@@ -204,8 +200,7 @@ def test_update_activity_errors(client,agency):
 
     assert default_error1 == "Please insert values to be updated"
 
-    response_default2 = client.post(f"country/903/activity/update",json={
-        "activity_id": 603,
+    response_default2 = client.post(f"country/903/activity/603/update",json={
         "name": "string",
         "price": 50
     })
