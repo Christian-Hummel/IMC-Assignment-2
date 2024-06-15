@@ -218,6 +218,12 @@ class TravelAgentAPI(Resource):
 
                 offer_result = Agency.get_instance().present_offer(update_offer, customer)
 
+            elif update_offer.status == "budget":
+                return abort(400, message="This offer exceeds the budget contact your supervisor")
+
+            elif update_offer.status == "pending":
+                return abort(400, message="This offer is still pending, please wait for a response")
+
             elif update_offer.status == "declined":
                 return abort(400, message="This offer is already declined by the customer")
 
