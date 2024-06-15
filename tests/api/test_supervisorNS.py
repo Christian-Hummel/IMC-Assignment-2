@@ -181,6 +181,8 @@ def test_supervisor_login_errors(client,agency):
 
 def test_add_agent(client,agency):
 
+    # new country
+
     before = TravelAgent.query.count()
 
     user = db.session.query(User).filter_by(id=13).first()
@@ -191,7 +193,7 @@ def test_add_agent(client,agency):
         "Authorization": f"Bearer {access_token}"
     }
 
-    response_agent = client.post("/supervisor/employee", headers=headers, json={
+    response_agent1 = client.post("/supervisor/employee", headers=headers, json={
         "name":"Keanu Reeves",
         "address": "Runaway Street 24, 3829 Plymouth",
         "salary": 3000,
@@ -199,23 +201,43 @@ def test_add_agent(client,agency):
     })
 
 
-    assert response_agent.status_code == 200
+    assert response_agent1.status_code == 200
 
-    parsed_agent = response_agent.get_json()
-    agent_response = parsed_agent["travelAgent"]
+    parsed_agent1 = response_agent1.get_json()
+    agent_response1 = parsed_agent1["travelAgent"]
 
-    assert agent_response["name"] == "Keanu Reeves"
-    assert agent_response["address"] == "Runaway Street 24, 3829 Plymouth"
-    assert agent_response["email"] == "Keanu.Reeves@hammertrips.com"
-    assert agent_response["salary"] == 3000
-    assert agent_response["nationality"] == "USA"
-    assert agent_response["supervisor_id"] == 135
+    assert agent_response1["name"] == "Keanu Reeves"
+    assert agent_response1["address"] == "Runaway Street 24, 3829 Plymouth"
+    assert agent_response1["email"] == "Keanu.Reeves@hammertrips.com"
+    assert agent_response1["salary"] == 3000
+    assert agent_response1["nationality"] == "USA"
+    assert agent_response1["supervisor_id"] == 135
 
 
     assert TravelAgent.query.count() == before + 1
 
+    # existing country
 
+    response_agent2 = client.post("/supervisor/employee", headers=headers, json={
+        "name": "Michael Mittermaier",
+        "address": "Alserstraße 23, 2352 Hamburg",
+        "salary": 3100,
+        "nationality": "Germany"
+    })
 
+    assert response_agent2.status_code == 200
+
+    parsed_agent2 = response_agent2.get_json()
+    agent_response2 = parsed_agent2["travelAgent"]
+
+    assert agent_response2["name"] == "Michael Mittermaier"
+    assert agent_response2["address"] == "Alserstraße 23, 2352 Hamburg"
+    assert agent_response2["email"] == "Michael.Mittermaier@hammertrips.com"
+    assert agent_response2["salary"] == 3100
+    assert agent_response2["nationality"] == "Germany"
+    assert agent_response2["supervisor_id"] == 135
+
+    assert TravelAgent.query.count() == before + 2
 
 
 
