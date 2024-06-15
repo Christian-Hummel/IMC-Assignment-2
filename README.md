@@ -94,6 +94,8 @@ get_activity_by_id() - displays attributes of an activity: activity_id, name, pr
 
 add_supervisor() - registers a supervisor for this agency
 
+get_all_supervisors() - displays information about all supervisors, employee_id, name, address, email, nationality
+
 add_user() - creates a login user for this supervisor, the employee_id will be connected to this table
 
 log_in() - creates the Token for the supervisor to unlock more functionality - has to be used in this format: "Bearer <access_token>"
