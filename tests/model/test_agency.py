@@ -513,9 +513,13 @@ def test_present_new_offer(agency):
         activity1 = db.session.query(Activity).filter_by(activity_id=611).first()
         activity2 = db.session.query(Activity).filter_by(activity_id=613).first()
         new_offer.activities.extend([activity1, activity2])
-        customer = db.session.query(Customer).filter_by(customer_id=715).first()
 
-        before = Offer.query.count()
+
+        with db.session.no_autoflush:
+                customer = db.session.query(Customer).filter_by(customer_id=715).first()
+
+
+                before = Offer.query.count()
 
         result = agency.present_offer(new_offer,customer)
 

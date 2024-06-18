@@ -205,7 +205,9 @@ def test_present_offer_errors(client,agency):
     offer_id3 = offer3.offer_id
     offer_id4 = offer4.offer_id
 
+
     # country not assigned
+
     response_wcountry = client.post(f"/travelAgent/{employee_id1}/offer", json={
         "offer_id": 0,
         "customer_id": customer_id1,
@@ -223,15 +225,15 @@ def test_present_offer_errors(client,agency):
     assert wcountry_error == "This country does not match with the preference of your customer"
 
     # activity not registered for this country
-
-    response_wactivity = client.post(f"/travelAgent/{employee_id1}/offer",json={
-        "offer_id": 0,
-        "customer_id": customer_id1,
-        "country": country_name1,
-        "activities": [
-            611
-        ]
-    })
+    with db.session.no_autoflush:
+        response_wactivity = client.post(f"/travelAgent/{employee_id1}/offer",json={
+            "offer_id": 0,
+            "customer_id": customer_id1,
+            "country": country_name1,
+            "activities": [
+                611
+            ]
+        })
 
 
     assert response_wactivity.status_code == 400
@@ -499,6 +501,8 @@ def test_present_offer_errors(client,agency):
 
     assert nagent_error == "TravelAgent not found"
 
+    # response status "pending"
+
     response_pending = client.post(f"/travelAgent/{employee_id2}/offer", json={
         "offer_id": offer_id2,
         "customer_id": customer_id2,
@@ -515,6 +519,8 @@ def test_present_offer_errors(client,agency):
 
     assert pending_error == "This offer is still pending, please wait for a response"
 
+    # response status "budget"
+
     response_budget = client.post(f"/travelAgent/{employee_id3}/offer", json={
         "offer_id": offer_id3,
         "customer_id": customer_id3,
@@ -530,6 +536,8 @@ def test_present_offer_errors(client,agency):
     budget_error = parsed_budget["message"]
 
     assert budget_error == "This offer exceeds the budget contact your supervisor"
+
+    # response status "changed"
 
     response_changed = client.post(f"travelAgent/{employee_id2}/offer", json={
         "offer_id": offer_id4,
